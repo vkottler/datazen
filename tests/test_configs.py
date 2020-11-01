@@ -20,5 +20,5 @@ def test_load_configs():
     assert config_data["e"]["e"] == "e"
     assert config_data["f"]["f"] == "f"
 
-    assert config_data["yaml"] == "test"
-    assert config_data["json"] == "test"
+    assert config_data["yaml"] == "yaml"
+    assert config_data["json"] == "json"

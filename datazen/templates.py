@@ -22,4 +22,4 @@ def get_template(template_dirs: List[str],
             loader=jinja2.FileSystemLoader(template_dirs, followlinks=True),
             trim_blocks=True,
             lstrip_blocks=True
-    ).get_template(template_name)
+    ).get_template(template_name + ".j2")
