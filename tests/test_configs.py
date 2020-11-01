@@ -3,22 +3,14 @@
 datazen - Tests for the 'configs' API.
 """
 
-# module under test
-from datazen.configs import load as load_configs
-from datazen.variables import load as load_variables
-
 # internal
-from .resources import get_test_configs, get_test_variables
+from . import ENV
 
 
 def test_load_configs():
     """ Test that the configuration data can be loaded. """
 
-    variable_data = load_variables([get_test_variables()])
-    assert variable_data
-
-    config_data = load_configs([get_test_configs()], variable_data)
-    assert config_data
+    config_data = ENV.get_configs(True)
 
     assert config_data["a"]["a"] == "a"
     assert config_data["b"]["b"] == "b"
