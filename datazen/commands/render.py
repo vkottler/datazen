@@ -14,7 +14,7 @@ import jinja2
 
 # internal
 from datazen.parsing import update_dict_from_stream
-from datazen.templates import get_template
+from datazen.templates import load as get_templates
 
 LOG = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ def cmd_render(template_dirs: List[str], template_name: str,
     """ Render the desired template from loaded configuration data. """
 
     # load specific template
-    template = get_template(template_dirs, template_name)
+    template = get_templates(template_dirs)[template_name]
 
     # render the template to the output file, using the new data
     with open(output_file_path, "w") as output:

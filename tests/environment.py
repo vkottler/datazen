@@ -3,6 +3,9 @@
 datazen - TODO.
 """
 
+# built-in
+from typing import Dict
+
 # third-party
 import jinja2
 
@@ -10,7 +13,7 @@ import jinja2
 from datazen.configs import load as load_configs
 from datazen.variables import load as load_variables
 from datazen.schemas import load as load_schemas
-from datazen.templates import get_template
+from datazen.templates import load as load_templates
 
 # internal
 from .resources import (
@@ -49,18 +52,13 @@ class TestEnvironment:
                                            require_all)
         return root["schemas"]
 
-    def get_template(self, name: str, valid: bool = True) -> jinja2.Template:
+    def get_templates(self, valid: bool = True) -> Dict[str, jinja2.Template]:
         """ TODO """
 
         root = self.valid if valid else self.invalid
-
         if "templates" not in root:
-            root["templates"] = {}
-
-        if name not in root["templates"]:
-            root["templates"][name] = get_template(get_test_templates(), name)
-
-        return root["templates"][name]
+            root["templates"] = load_templates(get_test_templates())
+        return root["templates"]
 
     def get_variables(self, valid: bool = True) -> dict:
         """ TODO """
