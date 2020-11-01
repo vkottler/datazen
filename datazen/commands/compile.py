@@ -30,7 +30,7 @@ def str_compile(configs: dict, data_type: str) -> str:
     # serialize the data
     if data_type == "json":
         result = json.dumps(configs, indent=4)
-    if data_type == "yaml":
+    elif data_type == "yaml":
         raw_result = yaml.dump(configs)
         result = raw_result if raw_result else ""
     else:

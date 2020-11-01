@@ -43,8 +43,7 @@ def validate(schema_data: Dict[str, Validator], data: dict) -> bool:
     for item in schema_data.items():
         key = item[0]
         if key in data:
-            data[key] = ValidDict(key, data[key], item[1])
-            if not data[key].valid:
+            if not ValidDict(key, data[key], item[1]).valid:
                 return False
 
     return True

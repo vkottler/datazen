@@ -20,7 +20,7 @@ from .resources import (
     get_test_configs,
     get_test_schemas,
     get_test_templates,
-    get_test_variables
+    get_test_variables,
 )
 
 
