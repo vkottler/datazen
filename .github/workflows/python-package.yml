@@ -25,10 +25,10 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: lint
       run: |
-        make lint
+        make PYTHON_VERSION=${{matrix.python-version}} lint
     - name: sa
       run: |
-        make sa
+        make PYTHON_VERSION=${{matrix.python-version}} sa
     - name: test
       run: |
-        make test
+        make PYTHON_VERSION=${{matrix.python-version}} test
