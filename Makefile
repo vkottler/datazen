@@ -14,6 +14,7 @@ $(BUILD_DIR):
 
 $(VENV_DIR):
 	python$(PYTHON_VERSION) -m venv $(VENV_DIR)
+	$(PYTHON_BIN)/pip install --upgrade pip
 
 $(BUILD_DIR)/req-%.txt: $($(PROJ)_DIR)/%.txt | $(BUILD_DIR) $(VENV_DIR)
 	$(PYTHON_BIN)/pip install -r $<
