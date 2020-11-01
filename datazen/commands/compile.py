@@ -7,7 +7,6 @@ datazen - A command implementation for compiling configuration data and
 # built-in
 import json
 import logging
-import os
 from typing import List
 
 # third-party
@@ -15,6 +14,7 @@ from ruamel import yaml
 
 # internal
 from datazen.configs import load as load_configs
+from datazen.parsing import get_file_ext
 from datazen.schemas import load as load_schemas, validate
 from datazen.variables import load as load_variables
 
@@ -57,7 +57,7 @@ def cmd_compile(config_dirs: List[str], schema_dirs: List[str],
         return False
 
     # get extension
-    ext = os.path.splitext(os.path.basename(output_file_path))[1][1:].lower()
+    ext = get_file_ext(output_file_path)
 
     # serialize the data
     result = str_compile(configs, ext)

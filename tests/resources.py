@@ -5,7 +5,8 @@ datazen - An interface for retrieving and interacting with test data.
 
 # built-in
 import os
-from typing import List
+from tempfile import NamedTemporaryFile
+from typing import List, IO
 import pkg_resources
 
 
@@ -39,3 +40,9 @@ def get_test_variables(valid: bool = True) -> List[str]:
     """ Locate test-variables root. """
 
     return [get_resource("variables", valid)]
+
+
+def get_tempfile(extension: str) -> IO:
+    """ TODO """
+
+    return NamedTemporaryFile(suffix=extension)
