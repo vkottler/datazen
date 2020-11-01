@@ -1,4 +1,4 @@
-.PHONY: lint sa test clean clean-venv view all
+.PHONY: lint sa test clean clean-venv view all venv
 
 .DEFAULT_GOAL  := all
 PYTHON_VERSION := 3.8
@@ -22,6 +22,8 @@ $(BUILD_DIR)/req-%.txt: $($(PROJ)_DIR)/%.txt | $(BUILD_DIR) $(VENV_DIR)
 
 $(BUILD_DIR)/$(VENV_NAME).txt: $(BUILD_DIR)/req-requirements.txt $(BUILD_DIR)/req-dev_requirements.txt
 	@date > $@
+
+venv: $(BUILD_DIR)/$(VENV_NAME).txt
 
 lint-%: $(BUILD_DIR)/$(VENV_NAME).txt
 	$(PYTHON_BIN)/$* $(PROJ) tests
