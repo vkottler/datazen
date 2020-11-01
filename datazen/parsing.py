@@ -82,8 +82,7 @@ def update_dict_from_stream(data_stream: TextIO, data_path: str,
     return dict_to_update
 
 
-def load_and_resolve(data_path: str, variables: dict,
-                     dict_to_update: dict = None) -> dict:
+def load(data_path: str, variables: dict, dict_to_update: dict = None) -> dict:
     """
     Load raw file data and meld it into an existing dictionary. Update
     the result as if it's a template using the provided variables.
@@ -95,9 +94,3 @@ def load_and_resolve(data_path: str, variables: dict,
         output = io.StringIO(template.render(variables))
 
     return update_dict_from_stream(output, data_path, dict_to_update)
-
-
-def load(data_path: str, dict_to_update: dict = None) -> dict:
-    """ Load raw file data, optionally update an existing dictionary. """
-
-    return load_and_resolve(data_path, {}, dict_to_update)

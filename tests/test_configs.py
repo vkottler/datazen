@@ -12,9 +12,12 @@ def test_load_configs():
 
     config_data = ENV.get_configs(True)
 
-    assert config_data["a"]["a"] == "a"
-    assert config_data["b"]["b"] == "b"
-    assert config_data["c"]["c"] == "c"
+    expected = {"a": "a", "b": "b", "c": "c"}
+
+    assert config_data["a"] == expected
+    assert config_data["b"] == expected
+    assert config_data["c"] == expected
+
     assert config_data["d"]["d"] == "d"
     assert config_data["d"]["d"] == "d"
     assert config_data["e"]["e"] == "e"

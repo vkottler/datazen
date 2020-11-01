@@ -10,21 +10,20 @@ import os
 # internal
 from datazen.paths import get_path_list, advance_dict_by_path
 from datazen.parsing import get_file_name
-from datazen.parsing import load as load_raw
-from datazen.parsing import load_and_resolve as load_raw_resolve
+from datazen.parsing import load as load_raw_resolve
 
 LOG = logging.getLogger(__name__)
+GLOBAL_KEY = "global"
 
 
-def meld_and_resolve(full_path: str, existing_data: dict,
-                     variables: dict = None) -> None:
+def meld_and_resolve(full_path: str, existing_data: dict, variables: dict,
+                     globals_added: bool = False) -> None:
     """
     Meld dictionary data from a file into an existing dictionary, assume
     existing data is a template and attempt to resolve variables.
     """
 
-    if variables is None:
-        variables = {}
+    variables_root: dict = variables
 
     # allow directory/.{file_type} to be equivalent to directory.{file_type}
     key = get_file_name(full_path)
@@ -38,10 +37,16 @@ def meld_and_resolve(full_path: str, existing_data: dict,
             variables = variables[key]
 
     # meld the data
-    if variables:
-        load_raw_resolve(full_path, variables, data_dict)
-    else:
-        load_raw(full_path, data_dict)
+    global_add_success: bool = False
+    if globals_added:
+        if GLOBAL_KEY not in variables:
+            variables[GLOBAL_KEY] = variables_root[GLOBAL_KEY]
+            global_add_success = True
+
+    load_raw_resolve(full_path, variables, data_dict)
+
+    if global_add_success:
+        del variables[GLOBAL_KEY]
 
 
 def load_dir(path: str, existing_data: dict = None,
@@ -62,10 +67,23 @@ def load_dir(path: str, existing_data: dict = None,
         iter_data = advance_dict_by_path(path_list, existing_data)
         variable_data = advance_dict_by_path(path_list, variables)
 
+        # expose data globally, if it was provided
+        added_globals: bool = False
+        if GLOBAL_KEY not in variable_data:
+            variable_data[GLOBAL_KEY] = variables
+            added_globals = True
+        else:
+            msg = "can't add 'global' data to '%s', key was already found"
+            LOG.info(msg, root)
+
+        LOG.info(variable_data)
+
         # load (or meld) data
         for name in files:
             meld_and_resolve(os.path.join(root, name), iter_data,
-                             variable_data)
+                             variable_data, added_globals)
 
-    LOG.info(existing_data)
+        if added_globals:
+            del variable_data[GLOBAL_KEY]
+
     return existing_data
