@@ -11,8 +11,8 @@ import pkg_resources
 def get_resource(resource_name: str, valid: bool) -> str:
     """ Locate the path to a test resource. """
 
-    valid = "valid" if valid else "invalid"
-    resource_path = os.path.join("data", valid, resource_name)
+    valid_str = "valid" if valid else "invalid"
+    resource_path = os.path.join("data", valid_str, resource_name)
     return pkg_resources.resource_filename(__name__, resource_path)
 
 

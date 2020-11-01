@@ -1,6 +1,6 @@
-.PHONY: lint sa test clean clean-venv
+.PHONY: lint sa test clean clean-venv view all
 
-.DEFAULT_GOAL  := test
+.DEFAULT_GOAL  := all
 PYTHON_VERSION := 3.8
 PROJ           := datazen
 $(PROJ)_DIR    := .
@@ -31,7 +31,11 @@ sa: lint-mypy
 
 test: $(BUILD_DIR)/$(VENV_NAME).txt
 	$(PYTHON_BIN)/pytest --log-cli-level=10 --cov=$(PROJ) --cov-report html
+
+view:
 	@$(BROWSER) htmlcov/index.html
+
+all: lint sa test
 
 clean:
 	find -iname '*.pyc' -delete
