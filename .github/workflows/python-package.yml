@@ -19,7 +19,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: python${{matrix.python-version}} setup
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
@@ -35,3 +35,10 @@ jobs:
     - name: test
       run: |
         make PYTHON_VERSION=${{matrix.python-version}} test
+    - name: coverage-artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: datazen-coverage
+        path: |
+          htmlcov
+          .coverage
