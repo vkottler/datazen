@@ -1,0 +1,8 @@
+a:
+  type: "dict"
+  schema:
+    a:
+      type: "dict"
+      schema:
+        a:
+          type: "string"

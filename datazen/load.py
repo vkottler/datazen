@@ -8,6 +8,7 @@ import logging
 import os
 
 # internal
+from datazen.paths import get_path_list, advance_dict_by_path
 from datazen.parsing import get_file_name
 from datazen.parsing import load as load_raw
 from datazen.parsing import load_and_resolve as load_raw_resolve
@@ -53,39 +54,18 @@ def load_dir(path: str, existing_data: dict = None,
     if variables is None:
         variables = {}
 
-    root_base = os.path.basename(os.path.abspath(path))
+    root_abs = os.path.abspath(path)
     for root, _, files in os.walk(path):
-        iter_data = existing_data
-        variable_data = variables
-        iter_root = root
-        iter_base = os.path.basename(iter_root)
-
-        # populate the correct path
         LOG.debug("loading '%s'", root)
-        while iter_base != root_base:
-            iter_root = os.path.dirname(iter_root)
 
-            # advance iteration data by key, or use an empty dictionary as a
-            # placeholder
-            try:
-                iter_data = iter_data[iter_base]
-            except KeyError:
-                iter_data[iter_base] = {}
-                iter_data = iter_data[iter_base]
-
-            # advance variable data by key, or use an empty dictionary as a
-            # placeholder
-            try:
-                variable_data = variable_data[iter_base]
-            except KeyError:
-                variable_data[iter_base] = {}
-                variable_data = variable_data[iter_base]
-
-            iter_base = os.path.basename(iter_root)
+        path_list = get_path_list(root_abs, root)
+        iter_data = advance_dict_by_path(path_list, existing_data)
+        variable_data = advance_dict_by_path(path_list, variables)
 
         # load (or meld) data
         for name in files:
             meld_and_resolve(os.path.join(root, name), iter_data,
                              variable_data)
 
+    LOG.info(existing_data)
     return existing_data

@@ -28,3 +28,4 @@ class ValidDict(UserDict):
         if not self.valid:
             LOG.error("validation error(s) for '%s': %s", self.name,
                       self.validator.errors)
+            LOG.error("data: %s", data)
