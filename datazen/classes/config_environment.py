@@ -6,6 +6,7 @@ datazen - A child class for adding configuration-data loading capabilities to
 
 # built-in
 import logging
+from typing import List
 
 # internal
 from datazen.classes.base_environment import DataType
@@ -28,6 +29,8 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
         directories.
         """
 
+        self.configs_valid = False
+
         # determine directories that need to be loaded
         data_type = DataType.CONFIG
         to_load = self.get_to_load(data_type)
@@ -43,4 +46,13 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
             LOG.error("schema validation failed, returning an empty dict")
             return {}
 
+        self.configs_valid = True
         return config_data
+
+    def add_config_dirs(self, dir_paths: List[str]) -> int:
+        """
+        Add configuration-data directories, return the number of directories
+        added.
+        """
+
+        return self.add_dirs(DataType.CONFIG, dir_paths)

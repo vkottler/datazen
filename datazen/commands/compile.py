@@ -13,10 +13,8 @@ from typing import List
 from ruamel import yaml
 
 # internal
-from datazen.configs import load as load_configs
+from datazen.classes.environment import Environment
 from datazen.parsing import get_file_ext
-from datazen.schemas import load as load_schemas, validate
-from datazen.variables import load as load_variables
 
 LOG = logging.getLogger(__name__)
 
@@ -48,12 +46,16 @@ def cmd_compile(config_dirs: List[str], schema_dirs: List[str],
     by the file extension.
     """
 
-    # load data
-    configs = load_configs(config_dirs, load_variables(variable_dirs))
+    env = Environment()
 
-    # load and enforce schemas
-    if not validate(load_schemas(schema_dirs, True), configs):
-        LOG.info("schema validation on failed")
+    # add directories
+    env.add_config_dirs(config_dirs)
+    env.add_schema_dirs(schema_dirs)
+    env.add_variable_dirs(variable_dirs)
+
+    # load data (resolves variables and enforces schemas)
+    configs = env.load_configs()
+    if not env.configs_valid:
         return False
 
     # get extension

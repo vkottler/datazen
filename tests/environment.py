@@ -10,9 +10,7 @@ from typing import Dict
 import jinja2
 
 # modules under test
-from datazen.templates import load as load_templates
 from datazen.classes.environment import Environment
-from datazen.classes.base_environment import DataType
 
 # internal
 from .resources import (
@@ -32,25 +30,22 @@ class EnvironmentMock:
         self.valid = Environment()
 
         # add config directories
-        for config_dir in get_test_configs(True):
-            assert self.valid.add_dir(DataType.CONFIG, config_dir)
+        dirs = get_test_configs(True)
+        assert self.valid.add_config_dirs(dirs) == len(dirs)
 
         # add schema directories
-        for schema_dir in get_test_schemas(True):
-            assert self.valid.add_dir(DataType.SCHEMA, schema_dir)
+        dirs = get_test_schemas(True)
+        assert self.valid.add_schema_dirs(dirs) == len(dirs)
 
         # add template directories
-        for template_dir in get_test_templates(True):
-            assert self.valid.add_dir(DataType.TEMPLATE, template_dir)
+        dirs = get_test_templates(True)
+        assert self.valid.add_template_dirs(dirs) == len(dirs)
 
         # add variable directories
-        for variable_dir in get_test_variables(True):
-            assert self.valid.add_dir(DataType.VARIABLE, variable_dir)
+        dirs = get_test_variables(True)
+        assert self.valid.add_variable_dirs(dirs) == len(dirs)
 
         self.invalid = Environment()
-
-        self.valid_raw = {}
-        self.invalid_raw = {}
 
     def get_configs(self, valid: bool = True) -> dict:
         """ Attempt to load one of the sets of configuration data. """
@@ -68,10 +63,8 @@ class EnvironmentMock:
     def get_templates(self, valid: bool = True) -> Dict[str, jinja2.Template]:
         """ Attempt to load one of the sets of templates. """
 
-        root = self.valid_raw if valid else self.invalid_raw
-        if "templates" not in root:
-            root["templates"] = load_templates(get_test_templates())
-        return root["templates"]
+        env = self.valid if valid else self.invalid
+        return env.load_templates()
 
     def get_variables(self, valid: bool = True) -> dict:
         """ Attempt to load one of the sets of variables. """

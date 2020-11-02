@@ -4,6 +4,9 @@ datazen - A child class for adding variable-data loading capabilities to the
           environment dataset.
 """
 
+# built-in
+from typing import List
+
 # internal
 from datazen.classes.base_environment import BaseEnvironment, DataType
 from datazen.variables import load as load_variables
@@ -29,3 +32,10 @@ class VariableEnvironment(BaseEnvironment):
             self.update_load_state(data_type, to_load)
 
         return variable_data
+
+    def add_variable_dirs(self, dir_paths: List[str]) -> int:
+        """
+        Add variable-data directories, return the number of directories added.
+        """
+
+        return self.add_dirs(DataType.VARIABLE, dir_paths)

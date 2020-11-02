@@ -41,6 +41,8 @@ class BaseEnvironment:
             DataType.VARIABLE: {},
         }
 
+        self.configs_valid = False
+
     def get_to_load(self, dir_type: DataType) -> List[str]:
         """
         Build a list of the yet-to-be-loaded directories for a given data
@@ -94,3 +96,15 @@ class BaseEnvironment:
         dir_list.append({"path": dir_path, "loaded": False})
         LOG.info("added '%s' to '%s'", dir_path, dir_type.value)
         return True
+
+    def add_dirs(self, dir_type: DataType, dir_paths: List[str]) -> int:
+        """
+        Add multiple directories for a given data type, return the number of
+        directories added.
+        """
+
+        dirs_added = 0
+        for dir_path in dir_paths:
+            if self.add_dir(dir_type, dir_path):
+                dirs_added = dirs_added + 1
+        return dirs_added

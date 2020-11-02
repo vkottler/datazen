@@ -4,6 +4,9 @@ datazen - A child class for adding schema-data loading capabilities to the
           environment dataset.
 """
 
+# built-in
+from typing import List
+
 # internal
 from datazen.classes.base_environment import BaseEnvironment, DataType
 from datazen.schemas import load as load_schemas
@@ -37,3 +40,10 @@ class SchemaEnvironment(BaseEnvironment):
         """
 
         return validate(self.load_schemas(require_all), data)
+
+    def add_schema_dirs(self, dir_paths: List[str]) -> int:
+        """
+        Add schema-data directories, return the number of directories added.
+        """
+
+        return self.add_dirs(DataType.SCHEMA, dir_paths)
