@@ -1,6 +1,6 @@
 
 """
-datazen - TODO.
+datazen - A dict wrapper that enables simpler schema validation.
 """
 
 # built-in
@@ -14,10 +14,13 @@ LOG = logging.getLogger(__name__)
 
 
 class ValidDict(UserDict):
-    """ TODO """
+    """
+    An object that behaves like a dictionary but can have a provided schema
+    enforced.
+    """
 
     def __init__(self, name: str, data: dict, schema: Validator):
-        """ TODO """
+        """ Initialize a named, ValidDict. """
 
         # initialize the dict
         super().__init__(data)

@@ -1,6 +1,6 @@
 
 """
-datazen - TODO.
+datazen - A testing environment class for aggregating commonly used test data.
 """
 
 # built-in
@@ -25,16 +25,16 @@ from .resources import (
 
 
 class TestEnvironment:
-    """ TODO """
+    """ A class for simple test-data access. """
 
     def __init__(self):
-        """ TODO """
+        """ Initialize data storage. """
 
         self.valid = {}
         self.invalid = {}
 
     def get_configs(self, valid: bool = True) -> dict:
-        """ TODO """
+        """ Attempt to load one of the sets of configuration data. """
 
         root = self.valid if valid else self.invalid
         if "configs" not in root:
@@ -44,7 +44,7 @@ class TestEnvironment:
 
     def get_schemas(self, valid: bool = True,
                     require_all: bool = True) -> dict:
-        """ TODO """
+        """ Attempt to load one of the sets of schemas. """
 
         root = self.valid if valid else self.invalid
         if "schemas" not in root:
@@ -53,7 +53,7 @@ class TestEnvironment:
         return root["schemas"]
 
     def get_templates(self, valid: bool = True) -> Dict[str, jinja2.Template]:
-        """ TODO """
+        """ Attempt to load one of the sets of templates. """
 
         root = self.valid if valid else self.invalid
         if "templates" not in root:
@@ -61,7 +61,7 @@ class TestEnvironment:
         return root["templates"]
 
     def get_variables(self, valid: bool = True) -> dict:
-        """ TODO """
+        """ Attempt to load one of the sets of variables. """
 
         root = self.valid if valid else self.invalid
         if "variables" not in root:

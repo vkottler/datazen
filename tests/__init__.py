@@ -1,6 +1,6 @@
 
 """
-datazen - TODO.
+datazen - A collection of test-environment utilities.
 """
 
 # internal

@@ -43,6 +43,6 @@ def get_test_variables(valid: bool = True) -> List[str]:
 
 
 def get_tempfile(extension: str) -> IO:
-    """ TODO """
+    """ Obtain a temporary file name with a specific extension. """
 
     return NamedTemporaryFile(suffix=extension)

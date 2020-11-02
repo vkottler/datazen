@@ -1,4 +1,4 @@
-.PHONY: lint sa test clean clean-venv view all venv
+.PHONY: lint sa test clean clean-venv view all venv todo
 
 .DEFAULT_GOAL  := all
 PYTHON_VERSION := 3.8
@@ -39,6 +39,9 @@ view:
 	@$(BROWSER) htmlcov/index.html
 
 all: lint sa test
+
+todo:
+	cd $($(PROJ)_DIR) && ack -i todo $(PROJ) tests
 
 clean:
 	find -iname '*.pyc' -delete

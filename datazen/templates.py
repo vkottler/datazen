@@ -10,7 +10,7 @@ from typing import Dict, List
 import jinja2
 
 # internal
-from datazen.parsing import get_file_name, get_file_ext
+from datazen.paths import get_file_name, get_file_ext
 
 
 def load(template_dirs: List[str]) -> Dict[str, jinja2.Template]:

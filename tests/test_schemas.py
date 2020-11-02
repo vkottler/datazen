@@ -17,7 +17,7 @@ def test_load_schemas():
 
 
 def test_validate_configs():
-    """ TODO """
+    """ Test that schema data can successfully validate configuration data. """
 
     schema_data = ENV.get_schemas(True, True)
     assert schema_data

@@ -7,26 +7,16 @@ datazen - APIs for loading raw data from files.
 import io
 import json
 import logging
-import os
 from typing import TextIO
 
 # third-party
 import jinja2
 from ruamel import yaml  # type: ignore
 
+# internal
+from datazen.paths import get_file_ext
+
 LOG = logging.getLogger(__name__)
-
-
-def get_file_name(full_path: str) -> str:
-    """ TODO """
-
-    return os.path.basename(full_path).split(".")[0]
-
-
-def get_file_ext(full_path: str) -> str:
-    """ TODO """
-
-    return os.path.basename(full_path).split(".")[1]
 
 
 def get_json_data(data_file: TextIO) -> dict:

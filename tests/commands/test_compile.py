@@ -16,7 +16,7 @@ from ..resources import (
 
 
 def test_compile():
-    """ TODO """
+    """ Test the 'compile' command entry. """
 
     config_dirs = get_test_configs(True)
     schema_dirs = get_test_schemas(True)

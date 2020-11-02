@@ -9,7 +9,7 @@ import os
 
 # internal
 from datazen.paths import get_path_list, advance_dict_by_path
-from datazen.parsing import get_file_name
+from datazen.paths import get_file_name
 from datazen.parsing import load as load_raw_resolve
 
 LOG = logging.getLogger(__name__)
