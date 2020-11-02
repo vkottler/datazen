@@ -32,7 +32,7 @@ def test_compile():
 
 
 def test_invalid_compile():
-    """ TODO """
+    """ Test the off-nominal paths for the 'compile' command. """
 
     config_dirs = get_test_configs(False)
     schema_dirs = get_test_schemas(False)

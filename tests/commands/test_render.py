@@ -13,7 +13,7 @@ from ..resources import get_test_templates, get_tempfile
 
 
 def test_render():
-    """ TODO """
+    """ Test the 'render' command entry. """
 
     # compile monolithic yaml
     config_out = get_tempfile(".yaml")
