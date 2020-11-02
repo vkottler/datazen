@@ -4,6 +4,6 @@ datazen - A collection of test-environment utilities.
 """
 
 # internal
-from .environment import TestEnvironment
+from .environment import EnvironmentMock
 
-ENV = TestEnvironment()
+ENV = EnvironmentMock()

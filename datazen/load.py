@@ -76,8 +76,6 @@ def load_dir(path: str, existing_data: dict = None,
             msg = "can't add 'global' data to '%s', key was already found"
             LOG.info(msg, root)
 
-        LOG.info(variable_data)
-
         # load (or meld) data
         for name in files:
             meld_and_resolve(os.path.join(root, name), iter_data,
