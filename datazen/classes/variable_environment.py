@@ -4,14 +4,9 @@ datazen - A child class for adding variable-data loading capabilities to the
           environment dataset.
 """
 
-# built-in
-import logging
-
 # internal
 from datazen.classes.base_environment import BaseEnvironment, DataType
 from datazen.variables import load as load_variables
-
-LOG = logging.getLogger(__name__)
 
 
 class VariableEnvironment(BaseEnvironment):

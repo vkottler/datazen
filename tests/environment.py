@@ -10,7 +10,6 @@ from typing import Dict
 import jinja2
 
 # modules under test
-from datazen.schemas import load as load_schemas
 from datazen.templates import load as load_templates
 from datazen.classes.environment import Environment
 from datazen.classes.base_environment import DataType
@@ -63,11 +62,8 @@ class EnvironmentMock:
                     require_all: bool = True) -> dict:
         """ Attempt to load one of the sets of schemas. """
 
-        root = self.valid_raw if valid else self.invalid_raw
-        if "schemas" not in root:
-            root["schemas"] = load_schemas(get_test_schemas(valid),
-                                           require_all)
-        return root["schemas"]
+        env = self.valid if valid else self.invalid
+        return env.load_schemas(require_all)
 
     def get_templates(self, valid: bool = True) -> Dict[str, jinja2.Template]:
         """ Attempt to load one of the sets of templates. """
