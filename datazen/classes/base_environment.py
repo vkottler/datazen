@@ -1,6 +1,6 @@
 
 """
-datazen - TODO.
+datazen - A base class to be extended for runtime data loading and storing.
 """
 
 # built-in
@@ -13,7 +13,7 @@ LOG = logging.getLogger(__name__)
 
 
 class DataType(Enum):
-    """ TODO """
+    """ The discrete types of information that can be loaded. """
 
     CONFIG = "config"
     SCHEMA = "schema"
@@ -22,10 +22,10 @@ class DataType(Enum):
 
 
 class BaseEnvironment:
-    """ TODO """
+    """ The base class for environment loading-and-storing management. """
 
     def __init__(self):
-        """ TODO """
+        """ Base constructor. """
 
         self.directories = {
             DataType.CONFIG: [],
@@ -42,7 +42,10 @@ class BaseEnvironment:
         }
 
     def get_to_load(self, dir_type: DataType) -> List[str]:
-        """ TODO """
+        """
+        Build a list of the yet-to-be-loaded directories for a given data
+        type.
+        """
 
         dir_data = self.directories[dir_type]
 
@@ -53,7 +56,10 @@ class BaseEnvironment:
         return to_load
 
     def update_load_state(self, dir_type: DataType, to_load: List[str]) -> int:
-        """ TODO """
+        """
+        Update the load states of directories in 'to_load' for a given
+        data type.
+        """
 
         dir_data = self.directories[dir_type]
         loaded = 0
@@ -70,7 +76,7 @@ class BaseEnvironment:
         return loaded
 
     def add_dir(self, dir_type: DataType, dir_path: str) -> bool:
-        """ TODO """
+        """ Add a directory to be loaded for a given data type. """
 
         dir_list = self.directories[dir_type]
 

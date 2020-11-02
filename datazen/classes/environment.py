@@ -8,4 +8,4 @@ from datazen.classes.config_environment import ConfigEnvironment
 
 
 class Environment(ConfigEnvironment):
-    """ TODO """
+    """ A wrapper for inheriting all environment-loading capabilities. """

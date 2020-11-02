@@ -12,7 +12,7 @@ from ..resources import get_test_configs
 
 
 def test_environment():
-    """ TODO """
+    """ Basic tests for the Environment class, wrapped by EnvironmentMock. """
 
     env = EnvironmentMock()
     assert env

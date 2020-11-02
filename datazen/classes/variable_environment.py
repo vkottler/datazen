@@ -1,6 +1,7 @@
 
 """
-datazen - TODO.
+datazen - A child class for adding variable-data loading capabilities to the
+          environment dataset.
 """
 
 # built-in
@@ -14,10 +15,13 @@ LOG = logging.getLogger(__name__)
 
 
 class VariableEnvironment(BaseEnvironment):
-    """ TODO """
+    """
+    The variable-data loading environment mixin. Only requires the base
+    environment capability to function.
+    """
 
     def load_variables(self) -> dict:
-        """ TODO """
+        """ Load variable data, resolve any un-loaded variable directories. """
 
         # determine directories that need to be loaded
         data_type = DataType.VARIABLE

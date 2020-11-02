@@ -1,6 +1,7 @@
 
 """
-datazen - TODO.
+datazen - A child class for adding configuration-data loading capabilities to
+          the environment dataset.
 """
 
 # built-in
@@ -15,10 +16,16 @@ LOG = logging.getLogger(__name__)
 
 
 class ConfigEnvironment(VariableEnvironment):
-    """ TODO """
+    """
+    The configuration-data loading environment mixin, requires variable
+    loading to function.
+    """
 
     def load_configs(self) -> dict:
-        """ TODO """
+        """
+        Load configuration data, resolve any un-loaded configuration
+        directories.
+        """
 
         # determine directories that need to be loaded
         data_type = DataType.CONFIG
