@@ -13,8 +13,8 @@ from typing import List
 import jinja2
 
 # internal
+from datazen.classes.environment import Environment
 from datazen.parsing import update_dict_from_stream
-from datazen.templates import load as get_templates
 
 LOG = logging.getLogger(__name__)
 
@@ -33,8 +33,13 @@ def cmd_render(template_dirs: List[str], template_name: str,
                config_data_path: str, output_file_path: str) -> bool:
     """ Render the desired template from loaded configuration data. """
 
+    env = Environment()
+
+    # add directories
+    env.add_template_dirs(template_dirs)
+
     # load specific template
-    template = get_templates(template_dirs)[template_name]
+    template = env.load_templates()[template_name]
 
     # render the template to the output file, using the new data
     with open(output_file_path, "w") as output:
