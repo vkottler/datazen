@@ -46,13 +46,10 @@ def get_yaml_data(data_file: TextIO) -> dict:
 
 
 def update_dict_from_stream(data_stream: TextIO, data_path: str,
-                            dict_to_update: dict = None) -> dict:
+                            dict_to_update: dict) -> dict:
     """
     Load arbitrary data from a text stream, update an existing dictionary.
     """
-
-    if dict_to_update is None:
-        dict_to_update = {}
 
     # update the dictionary
     ext = get_file_ext(data_path)
@@ -72,7 +69,7 @@ def update_dict_from_stream(data_stream: TextIO, data_path: str,
     return dict_to_update
 
 
-def load(data_path: str, variables: dict, dict_to_update: dict = None) -> dict:
+def load(data_path: str, variables: dict, dict_to_update: dict) -> dict:
     """
     Load raw file data and meld it into an existing dictionary. Update
     the result as if it's a template using the provided variables.

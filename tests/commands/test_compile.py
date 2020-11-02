@@ -26,3 +26,18 @@ def test_compile():
     assert cmd_compile(config_dirs, schema_dirs, variable_dirs, yaml_out.name)
     json_out = get_tempfile(".json")
     assert cmd_compile(config_dirs, schema_dirs, variable_dirs, json_out.name)
+    toml_out = get_tempfile(".toml")
+    assert not cmd_compile(config_dirs, schema_dirs, variable_dirs,
+                           toml_out.name)
+
+
+def test_invalid_compile():
+    """ TODO """
+
+    config_dirs = get_test_configs(False)
+    schema_dirs = get_test_schemas(False)
+    variable_dirs = get_test_variables(False)
+
+    yaml_out = get_tempfile(".yaml")
+    assert not cmd_compile(config_dirs, schema_dirs, variable_dirs,
+                           yaml_out.name)

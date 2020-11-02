@@ -49,12 +49,8 @@ def meld_and_resolve(full_path: str, existing_data: dict, variables: dict,
         del variables[GLOBAL_KEY]
 
 
-def load_dir(path: str, existing_data: dict = None,
-             variables: dict = None) -> dict:
+def load_dir(path: str, existing_data: dict, variables: dict = None) -> dict:
     """ Load a directory tree into a dictionary, optionally meld. """
-
-    if existing_data is None:
-        existing_data = {}
 
     if variables is None:
         variables = {}
