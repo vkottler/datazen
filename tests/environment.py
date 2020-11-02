@@ -47,6 +47,22 @@ class EnvironmentMock:
 
         self.invalid = Environment()
 
+        # add config directories
+        dirs = get_test_configs(False)
+        assert self.invalid.add_config_dirs(dirs) == len(dirs)
+
+        # add schema directories
+        dirs = get_test_schemas(False)
+        assert self.invalid.add_schema_dirs(dirs) == len(dirs)
+
+        # add template directories
+        dirs = get_test_templates(False)
+        assert self.invalid.add_template_dirs(dirs) == len(dirs)
+
+        # add variable directories
+        dirs = get_test_variables(False)
+        assert self.invalid.add_variable_dirs(dirs) == len(dirs)
+
     def get_configs(self, valid: bool = True) -> dict:
         """ Attempt to load one of the sets of configuration data. """
 
