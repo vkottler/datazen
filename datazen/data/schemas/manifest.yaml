@@ -1,0 +1,4 @@
+configs:
+  type: list
+  schema:
+    type: "string"

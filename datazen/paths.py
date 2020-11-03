@@ -46,3 +46,7 @@ def advance_dict_by_path(path_list: List[str], data: dict) -> dict:
                 data = data[path]
 
     return data
+
+
+def get_package_data_root() -> str:
+    """ TODO """
