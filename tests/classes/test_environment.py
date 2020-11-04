@@ -35,12 +35,15 @@ def test_environment():
 
 
 def test_environment_from_manifest():
-    """ TODO """
+    """ Test scenarios for loading manifest files. """
 
-    manifest_path = get_resource(os.path.join("manifests", "test.yaml"), True)
-    env = from_manifest(manifest_path)
-    assert env
-
+    # load an invalid manifest (bad schema)
     manifest_path = get_resource(os.path.join("manifests", "test.yaml"), False)
     env = from_manifest(manifest_path)
-    assert env
+    assert not env.valid
+
+    # load an invalid manifest (bad content)
+    manifest_path = get_resource(os.path.join("manifests", "invalid.yaml"),
+                                 False)
+    env = from_manifest(manifest_path)
+    assert not env.valid

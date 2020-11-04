@@ -1,4 +1,4 @@
-.PHONY: lint sa test clean clean-venv view all venv todo
+.PHONY: lint sa test clean clean-venv view all venv todo host-coverage
 
 .DEFAULT_GOAL  := all
 PYTHON_VERSION := 3.8
@@ -37,6 +37,9 @@ test: $(BUILD_DIR)/$(VENV_NAME).txt
 
 view:
 	@$(BROWSER) htmlcov/index.html
+
+host-coverage:
+	cd $($(PROJ)_DIR)/htmlcov && python -m http.server 8080
 
 all: lint sa test
 

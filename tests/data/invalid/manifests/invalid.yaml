@@ -1,0 +1,9 @@
+configs:
+- "configs"
+schemas:
+- "schemas"
+templates:
+- "templates"
+variables:
+- "variables"
+

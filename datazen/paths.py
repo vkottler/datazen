@@ -5,6 +5,7 @@ datazen - APIs for working with file paths.
 
 # built-in
 import os
+import pkgutil
 from typing import List
 
 
@@ -48,5 +49,10 @@ def advance_dict_by_path(path_list: List[str], data: dict) -> dict:
     return data
 
 
-def get_package_data_root() -> str:
-    """ TODO """
+def get_package_data(relative_path: str) -> str:
+    """ Load a file from this package's data directory. """
+
+    rel_path = os.path.join("data", relative_path)
+    schema_raw = pkgutil.get_data("datazen", rel_path)
+    schema_bytes = schema_raw if schema_raw else bytes()
+    return schema_bytes.decode("utf-8")

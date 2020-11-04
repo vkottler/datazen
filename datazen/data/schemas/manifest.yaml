@@ -2,3 +2,15 @@ configs:
   type: list
   schema:
     type: "string"
+schemas:
+  type: list
+  schema:
+    type: "string"
+templates:
+  type: list
+  schema:
+    type: "string"
+variables:
+  type: list
+  schema:
+    type: "string"

@@ -4,21 +4,17 @@ datazen - A testing environment class for aggregating commonly used test data.
 """
 
 # built-in
+import os
 from typing import Dict
 
 # third-party
 import jinja2
 
 # modules under test
-from datazen.classes.environment import Environment
+from datazen.classes.environment import from_manifest
 
 # internal
-from .resources import (
-    get_test_configs,
-    get_test_schemas,
-    get_test_templates,
-    get_test_variables,
-)
+from .resources import get_resource
 
 
 class EnvironmentMock:
@@ -27,41 +23,15 @@ class EnvironmentMock:
     def __init__(self):
         """ Initialize data storage. """
 
-        self.valid = Environment()
+        manifest_path = get_resource(os.path.join("manifests", "test.yaml"),
+                                     True)
+        self.valid = from_manifest(manifest_path)
+        assert self.valid.valid
 
-        # add config directories
-        dirs = get_test_configs(True)
-        assert self.valid.add_config_dirs(dirs) == len(dirs)
-
-        # add schema directories
-        dirs = get_test_schemas(True)
-        assert self.valid.add_schema_dirs(dirs) == len(dirs)
-
-        # add template directories
-        dirs = get_test_templates(True)
-        assert self.valid.add_template_dirs(dirs) == len(dirs)
-
-        # add variable directories
-        dirs = get_test_variables(True)
-        assert self.valid.add_variable_dirs(dirs) == len(dirs)
-
-        self.invalid = Environment()
-
-        # add config directories
-        dirs = get_test_configs(False)
-        assert self.invalid.add_config_dirs(dirs) == len(dirs)
-
-        # add schema directories
-        dirs = get_test_schemas(False)
-        assert self.invalid.add_schema_dirs(dirs) == len(dirs)
-
-        # add template directories
-        dirs = get_test_templates(False)
-        assert self.invalid.add_template_dirs(dirs) == len(dirs)
-
-        # add variable directories
-        dirs = get_test_variables(False)
-        assert self.invalid.add_variable_dirs(dirs) == len(dirs)
+        manifest_path = get_resource(os.path.join("manifests", "valid.yaml"),
+                                     False)
+        self.invalid = from_manifest(manifest_path)
+        assert self.invalid.valid
 
     def get_configs(self, valid: bool = True) -> dict:
         """ Attempt to load one of the sets of configuration data. """

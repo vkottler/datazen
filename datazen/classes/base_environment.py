@@ -42,6 +42,7 @@ class BaseEnvironment:
         }
 
         self.configs_valid = False
+        self.valid = True
 
     def get_to_load(self, dir_type: DataType) -> List[str]:
         """
@@ -77,10 +78,18 @@ class BaseEnvironment:
 
         return loaded
 
-    def add_dir(self, dir_type: DataType, dir_path: str) -> bool:
+    def add_dir(self, dir_type: DataType, dir_path: str,
+                rel_path: str = ".") -> bool:
         """ Add a directory to be loaded for a given data type. """
 
         dir_list = self.directories[dir_type]
+
+        # convert directory into an absolute path
+        dir_path = dir_path.replace("/", os.sep)
+        dir_path = dir_path.replace("\\", os.sep)
+        if not os.path.isabs(dir_path):
+            dir_path = os.path.join(rel_path, dir_path)
+            dir_path = os.path.abspath(dir_path)
 
         for dir_data in dir_list:
             if dir_path == dir_data["path"]:
@@ -97,7 +106,8 @@ class BaseEnvironment:
         LOG.info("added '%s' to '%s'", dir_path, dir_type.value)
         return True
 
-    def add_dirs(self, dir_type: DataType, dir_paths: List[str]) -> int:
+    def add_dirs(self, dir_type: DataType, dir_paths: List[str],
+                 rel_path: str = ".", require_all: bool = True) -> int:
         """
         Add multiple directories for a given data type, return the number of
         directories added.
@@ -105,6 +115,12 @@ class BaseEnvironment:
 
         dirs_added = 0
         for dir_path in dir_paths:
-            if self.add_dir(dir_type, dir_path):
+            if self.add_dir(dir_type, dir_path, rel_path):
                 dirs_added = dirs_added + 1
+
+        if require_all and dirs_added != len(dir_paths):
+            LOG.error("only loaded %d / %d directories, marking invalid",
+                      dirs_added, len(dir_paths))
+            self.valid = False
+
         return dirs_added
