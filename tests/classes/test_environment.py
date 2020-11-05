@@ -62,3 +62,10 @@ def test_load_manifest():
     # make sure configs loaded correctly
     assert "yaml2" in cfg_data and "json2" in cfg_data
     assert len(cfg_data["top_list"]) == 6
+
+    assert env.compile("a")
+    assert env.compile("b")
+    assert not env.compile("c")
+    assert env.render("a")
+    assert env.render("b")
+    assert not env.render("c")

@@ -24,6 +24,28 @@ LOG = logging.getLogger(__name__)
 class Environment(ConfigEnvironment, TemplateEnvironment):
     """ A wrapper for inheriting all environment-loading capabilities. """
 
+    def compile(self, target: str) -> bool:
+        """ TODO """
+
+        if self.manifest and self.valid:
+            compiles = self.manifest["data"]["compiles"]
+            for compile_data in compiles:
+                if target == compile_data["name"]:
+                    return True
+
+        return False
+
+    def render(self, target: str):
+        """ TODO """
+
+        if self.manifest and self.valid:
+            renders = self.manifest["data"]["renders"]
+            for render_data in renders:
+                if target == render_data["name"]:
+                    return True
+
+        return False
+
     def load_manifest(self, path: str = "manifest.yaml") -> bool:
         """ Attempt to load manifest data from a file. """
 

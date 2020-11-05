@@ -2,15 +2,42 @@ configs:
   type: list
   schema:
     type: "string"
+
 schemas:
   type: list
   schema:
     type: "string"
+
 templates:
   type: list
   schema:
     type: "string"
+
 variables:
   type: list
   schema:
     type: "string"
+
+compiles:
+  type: list
+  schema:
+    type: "dict"
+    schema:
+      name:
+        type: "string"
+      b:
+        type: "string"
+      c:
+        type: "string"
+
+renders:
+  type: list
+  schema:
+    type: "dict"
+    schema:
+      name:
+        type: "string"
+      b:
+        type: "string"
+      c:
+        type: "string"
