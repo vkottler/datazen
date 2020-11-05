@@ -14,7 +14,7 @@ import jinja2
 
 # internal
 from datazen.classes.environment import Environment
-from datazen.parsing import update_dict_from_stream
+from datazen.parsing import load_stream
 
 LOG = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def str_render(template: jinja2.Template, config_data_path: str) -> str:
 
     # load the configuration data from file
     with open(config_data_path) as stream:
-        config_data = update_dict_from_stream(stream, config_data_path, {})
+        config_data = load_stream(stream, config_data_path)
 
     return template.render(config_data)
 

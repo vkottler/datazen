@@ -43,6 +43,7 @@ class BaseEnvironment:
 
         self.configs_valid = False
         self.valid = True
+        self.manifest = {}
 
     def get_to_load(self, dir_type: DataType) -> List[str]:
         """

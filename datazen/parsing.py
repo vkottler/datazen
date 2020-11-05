@@ -7,7 +7,7 @@ datazen - APIs for loading raw data from files.
 import io
 import json
 import logging
-from typing import TextIO
+from typing import TextIO, List
 
 # third-party
 import jinja2
@@ -45,28 +45,51 @@ def get_yaml_data(data_file: TextIO) -> dict:
     return data
 
 
-def update_dict_from_stream(data_stream: TextIO, data_path: str,
-                            dict_to_update: dict) -> dict:
+def load_stream(data_stream: TextIO, data_path: str) -> dict:
     """
     Load arbitrary data from a text stream, update an existing dictionary.
     """
 
     # update the dictionary
     ext = get_file_ext(data_path)
+    data = {}
     if ext == "json":
-        dict_to_update.update(get_json_data(data_stream))
+        data = get_json_data(data_stream)
     elif ext == "yaml":
-        dict_to_update.update(get_yaml_data(data_stream))
+        data = get_yaml_data(data_stream)
     else:
         LOG.error("can't load data from '%s' (unknown extension '%s')",
                   data_path, ext)
 
-    if dict_to_update:
-        LOG.debug("loaded '%s' data from '%s'", ext, data_path)
-    else:
-        LOG.error("loaded no '%s' data from '%s'", ext, data_path)
+    return data
 
-    return dict_to_update
+
+def merge(dict_a: dict, dict_b: dict, path: List[str] = None) -> dict:
+    """ TODO """
+
+    if path is None:
+        path = []
+
+    for key in dict_b:
+        if key in dict_a:
+            # same leaf value
+            if dict_a[key] == dict_b[key]:
+                pass
+            elif isinstance(dict_a[key], dict) and isinstance(dict_b[key],
+                                                              dict):
+                merge(dict_a[key], dict_b[key], path + [str(key)])
+            elif isinstance(dict_a[key], list) and isinstance(dict_b[key],
+                                                              list):
+                dict_a[key].extend(dict_b[key])
+            else:
+                error_str = 'Conflict at %s' % '.'.join(path + [str(key)])
+                LOG.error(error_str)
+                LOG.error("left:  %s", dict_a[key])
+                LOG.error("right: %s", dict_b[key])
+        else:
+            dict_a[key] = dict_b[key]
+
+    return dict_a
 
 
 def load(data_path: str, variables: dict, dict_to_update: dict) -> dict:
@@ -80,4 +103,4 @@ def load(data_path: str, variables: dict, dict_to_update: dict) -> dict:
         template = jinja2.Template(config_file.read())
         output = io.StringIO(template.render(variables))
 
-    return update_dict_from_stream(output, data_path, dict_to_update)
+    return merge(dict_to_update, load_stream(output, data_path))

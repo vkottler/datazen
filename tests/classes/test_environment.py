@@ -42,8 +42,23 @@ def test_environment_from_manifest():
     env = from_manifest(manifest_path)
     assert not env.valid
 
+    # make sure we can't double-load the manifest
+    assert not env.load_manifest(manifest_path)
+
     # load an invalid manifest (bad content)
     manifest_path = get_resource(os.path.join("manifests", "invalid.yaml"),
                                  False)
     env = from_manifest(manifest_path)
     assert not env.valid
+
+
+def test_load_manifest():
+    """ Test a nominal manifest-loading scenario. """
+
+    env = from_manifest(get_resource("manifest.yaml", True))
+    cfg_data = env.load_configs()
+    assert env.load_configs()
+
+    # make sure configs loaded correctly
+    assert "yaml2" in cfg_data and "json2" in cfg_data
+    assert len(cfg_data["top_list"]) == 6

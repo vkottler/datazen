@@ -1,0 +1,10 @@
+yaml: "yaml"
+yaml2: "yaml"
+top_list:
+- "a"
+- "b"
+- "c"
+top_dict:
+  a:
+    a: "a"
+bad: "string"

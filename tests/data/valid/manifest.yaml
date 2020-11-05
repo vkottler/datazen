@@ -1,6 +1,6 @@
 configs:
 - "configs"
-schemas:
-- "schemas"
+- "configs2"
 variables:
 - "variables"
+- "variables2"
