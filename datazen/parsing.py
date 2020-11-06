@@ -65,7 +65,11 @@ def load_stream(data_stream: TextIO, data_path: str) -> dict:
 
 
 def merge(dict_a: dict, dict_b: dict, path: List[str] = None) -> dict:
-    """ TODO """
+    """
+    Combine two dictionaries recursively, prefers dict_a in a conflict. For
+    values of the same key that are lists, the lists are combined. Otherwise
+    the resulting dictionary is cleanly merged.
+    """
 
     if path is None:
         path = []

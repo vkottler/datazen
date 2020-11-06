@@ -23,6 +23,18 @@ compiles:
   schema:
     type: "dict"
     schema:
+      configs:
+        type: list
+        schema:
+          type: "string"
+      schemas:
+        type: list
+        schema:
+          type: "string"
+      variables:
+        type: list
+        schema:
+          type: "string"
       name:
         type: "string"
       b:
@@ -35,6 +47,10 @@ renders:
   schema:
     type: "dict"
     schema:
+      templates:
+        type: list
+        schema:
+          type: "string"
       name:
         type: "string"
       b:
