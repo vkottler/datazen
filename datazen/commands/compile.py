@@ -5,37 +5,15 @@ datazen - A command implementation for compiling configuration data and
 """
 
 # built-in
-import json
 import logging
 from typing import List
-
-# third-party
-from ruamel import yaml
 
 # internal
 from datazen.classes.environment import Environment
 from datazen.parsing import get_file_ext
+from datazen.compile import str_compile
 
 LOG = logging.getLogger(__name__)
-
-
-def str_compile(configs: dict, data_type: str) -> str:
-    """
-    Serialize dictionary data into the String-form of a specific,
-    serializeable type.
-    """
-
-    # serialize the data
-    if data_type == "json":
-        result = json.dumps(configs, indent=4)
-    elif data_type == "yaml":
-        raw_result = yaml.dump(configs)
-        result = raw_result if raw_result else ""
-    else:
-        LOG.error("can't serialize '%s' data (unknown type)", data_type)
-        return ""
-
-    return result
 
 
 def cmd_compile(config_dirs: List[str], schema_dirs: List[str],

@@ -79,18 +79,25 @@ class BaseEnvironment:
 
         return loaded
 
+    @staticmethod
+    def resolve_dir(data: str, rel_base: str = "") -> str:
+        """
+        Turn directory data into an absolute path, optionally from a relative
+        base.
+        """
+
+        data = data.replace("/", os.sep)
+        data = data.replace("\\", os.sep)
+        if not os.path.isabs(data) and rel_base:
+            data = os.path.join(rel_base, data)
+        return os.path.abspath(data)
+
     def add_dir(self, dir_type: DataType, dir_path: str,
                 rel_path: str = ".") -> bool:
         """ Add a directory to be loaded for a given data type. """
 
         dir_list = self.directories[dir_type]
-
-        # convert directory into an absolute path
-        dir_path = dir_path.replace("/", os.sep)
-        dir_path = dir_path.replace("\\", os.sep)
-        if not os.path.isabs(dir_path):
-            dir_path = os.path.join(rel_path, dir_path)
-            dir_path = os.path.abspath(dir_path)
+        dir_path = self.resolve_dir(dir_path, rel_path)
 
         for dir_data in dir_list:
             if dir_path == dir_data["path"]:

@@ -8,6 +8,8 @@ variables:
 compiles:
 - name: "a"
 - name: "b"
+  output_type: "json"
+  output_directory: "b_out"
 
 renders:
 - name: "a"

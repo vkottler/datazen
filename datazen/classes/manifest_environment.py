@@ -19,12 +19,24 @@ from datazen.parsing import load_stream
 from datazen.paths import get_package_data
 
 LOG = logging.getLogger(__name__)
+DEFAULT_DIR = "build"
 
 
 class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
     """
     A wrapper for the manifest-loading implementations of an environment.
     """
+
+    def set_output_dir(self, data: dict, rel_path: str) -> None:
+        """ Set the 'output_dir' key correctly on a dictionary. """
+
+        # turn the output directory into a valid path
+        if "output_dir" not in data:
+            data["output_dir"] = DEFAULT_DIR
+        out_dir = self.resolve_dir(data["output_dir"], rel_path)
+        os.makedirs(out_dir, exist_ok=True)
+        LOG.info("using output directory to '%s'", out_dir)
+        data["output_dir"] = out_dir
 
     def load_manifest(self, path: str = "manifest.yaml") -> bool:
         """ Attempt to load manifest data from a file. """
@@ -36,6 +48,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             return False
 
         self.manifest["path"] = os.path.abspath(path)
+        self.manifest["dir"] = os.path.dirname(self.manifest["path"])
         self.manifest["data"] = load_raw(self.manifest["path"], {}, {})
 
         # enforce the manifest schema
@@ -45,19 +58,10 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             self.valid = False
             return self.valid
 
-        # resolve the default output directory
-        if "output_directory" not in self.manifest["data"]:
-            default_dir = os.path.dirname(self.manifest["path"])
-            self.manifest["data"]["output_directory"] = default_dir
-
-        # create the output directory, if necessary
-        LOG.info("using output directory '%s'",
-                 self.manifest["data"]["output_directory"])
-        os.makedirs(self.manifest["data"]["output_directory"], exist_ok=True)
-
         # add directories parsed from the schema, paths in the manifest are
         # relative to the directory the manifest is located
-        rel_path = os.path.dirname(self.manifest["path"])
+        rel_path = self.manifest["dir"]
+        self.set_output_dir(self.manifest["data"], rel_path)
 
         key_handles = {
             "configs": self.add_config_dirs,
