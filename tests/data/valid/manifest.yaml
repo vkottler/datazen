@@ -7,16 +7,8 @@ variables:
 
 compiles:
 - name: "a"
-  b: "a"
-  c: "a"
 - name: "b"
-  b: "b"
-  c: "b"
 
 renders:
 - name: "a"
-  b: "a"
-  c: "a"
 - name: "b"
-  b: "b"
-  c: "b"

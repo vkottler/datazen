@@ -15,6 +15,11 @@ LOG = logging.getLogger(__name__)
 class Environment(ManifestEnvironment):
     """ A wrapper for inheriting all environment-loading capabilities. """
 
+    def valid_compile(self, compile_entry: dict) -> bool:
+        """ Perform the compilation specified by the entry. """
+
+        return True
+
     def compile(self, target: str) -> bool:
         """ Execute a named 'compile' target from the manifest. """
 
@@ -22,9 +27,14 @@ class Environment(ManifestEnvironment):
             compiles = self.manifest["data"]["compiles"]
             for compile_data in compiles:
                 if target == compile_data["name"]:
-                    return True
+                    return self.valid_compile(compile_data)
 
         return False
+
+    def valid_render(self, render_entry: dict) -> bool:
+        """ Perform the render specified by the entry. """
+
+        return True
 
     def render(self, target: str) -> bool:
         """ Execute a named 'render' target from the manifest. """
@@ -33,7 +43,7 @@ class Environment(ManifestEnvironment):
             renders = self.manifest["data"]["renders"]
             for render_data in renders:
                 if target == render_data["name"]:
-                    return True
+                    return self.valid_render(render_data)
 
         return False
 

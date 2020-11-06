@@ -1,3 +1,6 @@
+output_directory:
+  type: "string"
+
 configs:
   type: list
   schema:
@@ -37,9 +40,7 @@ compiles:
           type: "string"
       name:
         type: "string"
-      b:
-        type: "string"
-      c:
+      output_directory:
         type: "string"
 
 renders:
@@ -53,7 +54,5 @@ renders:
           type: "string"
       name:
         type: "string"
-      b:
-        type: "string"
-      c:
+      output_directory:
         type: "string"

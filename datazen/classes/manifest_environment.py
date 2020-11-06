@@ -45,6 +45,16 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             self.valid = False
             return self.valid
 
+        # resolve the default output directory
+        if "output_directory" not in self.manifest["data"]:
+            default_dir = os.path.dirname(self.manifest["path"])
+            self.manifest["data"]["output_directory"] = default_dir
+
+        # create the output directory, if necessary
+        LOG.info("using output directory '%s'",
+                 self.manifest["data"]["output_directory"])
+        os.makedirs(self.manifest["data"]["output_directory"], exist_ok=True)
+
         # add directories parsed from the schema, paths in the manifest are
         # relative to the directory the manifest is located
         rel_path = os.path.dirname(self.manifest["path"])
