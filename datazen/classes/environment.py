@@ -7,6 +7,7 @@ datazen - A centralized store for runtime data.
 from copy import deepcopy
 import os
 import logging
+from typing import Tuple
 
 # internal
 from datazen.classes.manifest_environment import ManifestEnvironment
@@ -18,19 +19,10 @@ LOG = logging.getLogger(__name__)
 class Environment(ManifestEnvironment):
     """ A wrapper for inheriting all environment-loading capabilities. """
 
-    def valid_compile(self, output_dir: str, entry: dict) -> bool:
+    def valid_compile(self, entry: dict) -> bool:
         """ Perform the compilation specified by the entry. """
 
-        # determine the output type
-        output_type = "yaml"
-        if "output_type" in entry:
-            output_type = entry["output_type"]
-
-        # resolve dependencies
-
-        # write the output
-        filename = "{}.{}".format(entry["name"], output_type)
-        path = os.path.join(output_dir, filename)
+        path, output_type = get_compile_output(entry)
         mode = "a" if "append" in entry and entry["append"] else "w"
         with open(path, mode) as out_file:
             out_file.write(str_compile(self.load_configs(), output_type))
@@ -64,7 +56,7 @@ class Environment(ManifestEnvironment):
                         "compiles": new_env.valid_compile,
                         "renders": new_env.valid_render,
                     }
-                    return handles[key_name](data["output_dir"], data)
+                    return handles[key_name](data)
 
         return False
 
@@ -73,11 +65,10 @@ class Environment(ManifestEnvironment):
 
         return self.handle_task("compiles", target)
 
-    def valid_render(self, output_dir: str, render_entry: dict) -> bool:
+    def valid_render(self, render_entry: dict) -> bool:
         """ Perform the render specified by the entry. """
 
         LOG.info(self.manifest["path"])
-        LOG.info(output_dir)
         LOG.info(render_entry)
 
         # resolve dependencies
@@ -115,3 +106,20 @@ def clone(env: Environment) -> Environment:
     new_env.manifest = deepcopy(env.manifest)
 
     return new_env
+
+
+def get_compile_output(entry: dict,
+                       default_type: str = "yaml") -> Tuple[str, str]:
+    """
+    Determine the output path and type of a compile target, from the target's
+    data.
+    """
+
+    # determine the output type
+    output_type = default_type
+    if "output_type" in entry:
+        output_type = entry["output_type"]
+
+    # write the output
+    filename = "{}.{}".format(entry["name"], output_type)
+    return os.path.join(entry["output_dir"], filename), output_type
