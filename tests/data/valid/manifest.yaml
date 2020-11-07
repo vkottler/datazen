@@ -1,3 +1,5 @@
+output_dir: "datazen-out-test"
+
 configs:
 - "configs"
 - "configs2"
@@ -9,7 +11,7 @@ compiles:
 - name: "a"
 - name: "b"
   output_type: "json"
-  output_directory: "b_out"
+  output_dir: "b_out"
 
 renders:
 - name: "a"

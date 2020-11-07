@@ -4,6 +4,7 @@ datazen - A centralized store for runtime data.
 """
 
 # built-in
+from copy import deepcopy
 import os
 import logging
 
@@ -42,21 +43,27 @@ class Environment(ManifestEnvironment):
         directories and setting the correct output directory.
         """
 
-        handles = {
-            "compiles": self.valid_compile,
-            "renders": self.valid_render,
-        }
-
         if self.manifest and self.valid:
             entries = self.manifest["data"][key_name]
             for data in entries:
                 if target == data["name"]:
+                    # clone the existing environment so that we can potentially
+                    # load new directories and not merge the new data or
+                    # results to the original, upstream environment
+                    new_env = clone(self)
+                    manifest_data = new_env.manifest["data"]
 
                     # resolve the output directory
-                    self.set_output_dir(data, self.manifest["dir"])
+                    new_env.set_output_dir(data, new_env.manifest["dir"],
+                                           manifest_data["output_dir"])
 
                     # load additional data directories if specified
+                    new_env.load_dirs(data, new_env.manifest["dir"])
 
+                    handles = {
+                        "compiles": new_env.valid_compile,
+                        "renders": new_env.valid_render,
+                    }
                     return handles[key_name](data["output_dir"], data)
 
         return False
@@ -93,3 +100,18 @@ def from_manifest(manifest_path: str) -> Environment:
         LOG.error("couldn't load manifest at '%s'", manifest_path)
 
     return env
+
+
+def clone(env: Environment) -> Environment:
+    """ Create a clone (deep copy) of an existing Environment. """
+
+    new_env = Environment()
+
+    # all we need to do is copy all of the attributes
+    new_env.directories = deepcopy(env.directories)
+    new_env.data = deepcopy(env.data)
+    new_env.configs_valid = env.configs_valid
+    new_env.valid = env.valid
+    new_env.manifest = deepcopy(env.manifest)
+
+    return new_env

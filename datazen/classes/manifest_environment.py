@@ -27,16 +27,50 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
     A wrapper for the manifest-loading implementations of an environment.
     """
 
-    def set_output_dir(self, data: dict, rel_path: str) -> None:
+    def set_output_dir(self, data: dict, rel_path: str,
+                       default: str = DEFAULT_DIR) -> None:
         """ Set the 'output_dir' key correctly on a dictionary. """
 
-        # turn the output directory into a valid path
-        if "output_dir" not in data:
-            data["output_dir"] = DEFAULT_DIR
-        out_dir = self.resolve_dir(data["output_dir"], rel_path)
+        out_dir = self.get_output_dir(data, rel_path, default)
         os.makedirs(out_dir, exist_ok=True)
-        LOG.info("using output directory to '%s'", out_dir)
         data["output_dir"] = out_dir
+        LOG.info("using output directory to '%s'", out_dir)
+
+    def get_output_dir(self, data: dict, rel_path: str,
+                       default: str = DEFAULT_DIR) -> str:
+        """
+        Get the resolved output directory based on a dictionary containing
+        target data.
+        """
+
+        # turn the output directory into a valid path
+        out_dir = default
+        if "output_dir" in data:
+            out_dir = data["output_dir"]
+        return self.resolve_dir(out_dir, rel_path)
+
+    def load_dirs(self, data: dict, rel_path: str) -> None:
+        """
+        Looks for keys matching types of directories that can be loaded
+        into an environment and tries to load them.
+        """
+
+        key_handles = {
+            "configs": self.add_config_dirs,
+            "schemas": self.add_schema_dirs,
+            "templates": self.add_template_dirs,
+            "variables": self.add_variable_dirs,
+        }
+        for key in key_handles:
+            if key in data:
+                key_handles[key](data[key], rel_path)
+            # if a directory list isn't provided, and the directory of the
+            # same name of the key is present in the manifest directory,
+            # load it
+            elif os.path.isdir(os.path.join(rel_path, key)):
+                key_handles[key]([key], rel_path)
+            else:
+                LOG.info("not loading any '%s'", key)
 
     def load_manifest(self, path: str = "manifest.yaml") -> bool:
         """ Attempt to load manifest data from a file. """
@@ -63,22 +97,8 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         rel_path = self.manifest["dir"]
         self.set_output_dir(self.manifest["data"], rel_path)
 
-        key_handles = {
-            "configs": self.add_config_dirs,
-            "schemas": self.add_schema_dirs,
-            "templates": self.add_template_dirs,
-            "variables": self.add_variable_dirs,
-        }
-        for key in key_handles:
-            if key in self.manifest["data"]:
-                key_handles[key](self.manifest["data"][key], rel_path)
-            # if a directory list isn't provided, and the directory of the
-            # same name of the key is present in the manifest directory,
-            # load it
-            elif os.path.isdir(os.path.join(rel_path, key)):
-                key_handles[key]([key], rel_path)
-            else:
-                LOG.info("not loading any '%s'", key)
+        # load the data directories
+        self.load_dirs(self.manifest["data"], rel_path)
 
         return self.valid
 

@@ -1,4 +1,4 @@
-output_directory:
+output_dir:
   type: "string"
 
 configs:
@@ -42,7 +42,7 @@ compiles:
         type: "string"
       output_type:
         type: "string"
-      output_directory:
+      output_dir:
         type: "string"
       append:
         type: "boolean"
@@ -58,5 +58,5 @@ renders:
           type: "string"
       name:
         type: "string"
-      output_directory:
+      output_dir:
         type: "string"
