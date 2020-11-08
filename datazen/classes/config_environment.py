@@ -6,7 +6,8 @@ datazen - A child class for adding configuration-data loading capabilities to
 
 # built-in
 import logging
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
+from typing import Optional as Opt
 
 # internal
 from datazen.classes.base_environment import DataType
@@ -15,7 +16,6 @@ from datazen.classes.schema_environment import SchemaEnvironment
 from datazen.configs import load as load_configs
 
 LOG = logging.getLogger(__name__)
-LOADTYPE = Tuple[Optional[List[str]], Optional[Dict[str, str]]]
 
 
 class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
@@ -24,9 +24,12 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
     loading to function.
     """
 
-    def load_configs(self, config_loads: LOADTYPE = (None, None),
-                     variable_loads: LOADTYPE = (None, None),
-                     schema_loads: LOADTYPE = (None, None)) -> dict:
+    def load_configs(
+        self,
+        cfg_loads: Tuple[Opt[List[str]], Opt[Dict[str, str]]] = (None, None),
+        var_loads: Tuple[Opt[List[str]], Opt[Dict[str, str]]] = (None, None),
+        sch_loads: Tuple[Opt[List[str]], Opt[Dict[str, str]]] = (None, None)
+    ) -> dict:
         """
         Load configuration data, resolve any un-loaded configuration
         directories.
@@ -41,14 +44,14 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
         # load new data
         config_data = self.data[data_type]
         if to_load:
-            vdata = self.load_variables(variable_loads[0], variable_loads[1])
-            config_data.update(load_configs(to_load, vdata, config_loads[0],
-                                            config_loads[1]))
+            vdata = self.load_variables(var_loads[0], var_loads[1])
+            config_data.update(load_configs(to_load, vdata, cfg_loads[0],
+                                            cfg_loads[1]))
             self.update_load_state(data_type, to_load)
 
         # enforce schemas
-        if not self.enforce_schemas(config_data, True, schema_loads[0],
-                                    schema_loads[1]):
+        if not self.enforce_schemas(config_data, True, sch_loads[0],
+                                    sch_loads[1]):
             LOG.error("schema validation failed, returning an empty dict")
             return {}
 
