@@ -6,11 +6,13 @@ datazen - APIs for loading data from directory trees.
 # built-in
 import logging
 import os
+from typing import Dict, List, Tuple
 
 # internal
 from datazen.paths import get_path_list, advance_dict_by_path
 from datazen.paths import get_file_name
 from datazen.parsing import load as load_raw_resolve
+from datazen.parsing import get_file_hash
 
 LOG = logging.getLogger(__name__)
 GLOBAL_KEY = "global"
@@ -51,11 +53,19 @@ def meld_and_resolve(full_path: str, existing_data: dict, variables: dict,
     return loaded
 
 
-def load_dir(path: str, existing_data: dict, variables: dict = None) -> dict:
+def load_dir(path: str, existing_data: dict, variables: dict = None,
+             loaded_list: List[str] = None,
+             hashes: Dict[str, str] = None) -> dict:
     """ Load a directory tree into a dictionary, optionally meld. """
 
     if variables is None:
         variables = {}
+
+    if loaded_list is None:
+        loaded_list = []
+
+    if hashes is None:
+        hashes = {}
 
     root_abs = os.path.abspath(path)
     for root, _, files in os.walk(path):
@@ -74,12 +84,42 @@ def load_dir(path: str, existing_data: dict, variables: dict = None) -> dict:
             msg = "can't add 'global' data to '%s', key was already found"
             LOG.info(msg, root)
 
-        # load (or meld) data
-        for name in files:
-            meld_and_resolve(os.path.join(root, name), iter_data,
-                             variable_data, added_globals)
+        # extend the provided list of files that were newly loaded, or at
+        # least have new content
+        loaded_list.extend(load_files(files, root, (iter_data, variable_data,
+                                                    added_globals), hashes))
 
         if added_globals:
             del variable_data[GLOBAL_KEY]
 
     return existing_data
+
+
+def load_files(file_paths: List[str], root: str,
+               meld_data: Tuple[dict, dict, bool],
+               hashes: Dict[str, str]) -> List[str]:
+    """
+    Load files into a dictionary and return a list of the files that are
+    new or had hash mismatches.
+    """
+
+    new_or_changed = []
+
+    # load (or meld) data
+    for name in file_paths:
+        full_path = os.path.join(root, name)
+
+        str_hash = get_file_hash(full_path)
+
+        # don't list files as new-or-changed that we load that have a
+        # matching hash
+        new = True
+        if full_path in hashes and str_hash == hashes[full_path]:
+            new = False
+        hashes[full_path] = str_hash
+
+        if meld_and_resolve(full_path, meld_data[0], meld_data[1],
+                            meld_data[2]) and new:
+            new_or_changed.append(full_path)
+
+    return new_or_changed

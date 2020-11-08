@@ -4,6 +4,7 @@ datazen - APIs for loading raw data from files.
 """
 
 # built-in
+import hashlib
 import io
 import json
 import logging
@@ -111,7 +112,15 @@ def load(data_path: str, variables: dict,
     # read the raw file and interpret it as a template, resolve 'variables'
     with open(data_path) as config_file:
         template = jinja2.Template(config_file.read())
-        output = io.StringIO(template.render(variables))
+        str_output = template.render(variables)
 
-    new_data, loaded = load_stream(output, data_path)
+    new_data, loaded = load_stream(io.StringIO(str_output), data_path)
     return merge(dict_to_update, new_data), loaded
+
+
+def get_file_hash(path: str) -> str:
+    """ Get the MD5 of a file by path. """
+
+    with open(path) as data:
+        contents = bytes(data.read(), "utf-8")
+    return hashlib.md5(contents).hexdigest()

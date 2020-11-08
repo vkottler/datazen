@@ -13,11 +13,12 @@ from datazen.load import load_dir
 LOG = logging.getLogger(__name__)
 
 
-def load(directories: List[str]) -> dict:
+def load(directories: List[str],
+         loaded_list: List[str] = None) -> dict:
     """ Load variable data from a list of directories. """
 
     result: dict = {}
     for directory in directories:
         LOG.info("loading variables from '%s'", directory)
-        load_dir(directory, result)
+        load_dir(directory, result, {}, loaded_list)
     return result

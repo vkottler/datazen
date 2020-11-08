@@ -17,7 +17,8 @@ from datazen.classes.valid_dict import ValidDict
 LOG = logging.getLogger(__name__)
 
 
-def load(directories: List[str], require_all: bool = True) -> dict:
+def load(directories: List[str], require_all: bool = True,
+         loaded_list: List[str] = None) -> dict:
     """ Load schemas from a list of directories. """
 
     result: dict = {}
@@ -25,7 +26,7 @@ def load(directories: List[str], require_all: bool = True) -> dict:
     # load raw data
     for directory in directories:
         LOG.info("loading schemas from '%s'", directory)
-        load_dir(directory, result)
+        load_dir(directory, result, {}, loaded_list)
 
     # interpret all top-level keys as schemas
     schemas = {}
