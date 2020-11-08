@@ -6,8 +6,7 @@ datazen - A child class for adding configuration-data loading capabilities to
 
 # built-in
 import logging
-from typing import Dict, List, Tuple
-from typing import Optional as Opt
+from typing import Dict, List, Tuple, Union
 
 # internal
 from datazen.classes.base_environment import DataType
@@ -17,6 +16,11 @@ from datazen.configs import load as load_configs
 
 LOG = logging.getLogger(__name__)
 
+# note: 'Optional' isn't used here because in Python 3.9 it's throwing:
+#           Value 'Optional' is unsubscriptable (unsubscriptable-object)
+#       example: https://github.com/vkottler/datazen/actions/runs/352756940
+LOADTYPE = Tuple[Union[List[str], None], Union[Dict[str, str], None]]
+
 
 class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
     """
@@ -24,12 +28,9 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
     loading to function.
     """
 
-    def load_configs(
-        self,
-        cfg_loads: Tuple[Opt[List[str]], Opt[Dict[str, str]]] = (None, None),
-        var_loads: Tuple[Opt[List[str]], Opt[Dict[str, str]]] = (None, None),
-        sch_loads: Tuple[Opt[List[str]], Opt[Dict[str, str]]] = (None, None)
-    ) -> dict:
+    def load_configs(self, cfg_loads: LOADTYPE = (None, None),
+                     var_loads: LOADTYPE = (None, None),
+                     sch_loads: LOADTYPE = (None, None)) -> dict:
         """
         Load configuration data, resolve any un-loaded configuration
         directories.
