@@ -24,7 +24,7 @@ def str_render(template: jinja2.Template, config_data_path: str) -> str:
 
     # load the configuration data from file
     with open(config_data_path) as stream:
-        config_data = load_stream(stream, config_data_path)
+        config_data = load_stream(stream, config_data_path)[0]
 
     return template.render(config_data)
 

@@ -5,13 +5,11 @@ datazen - A centralized store for runtime data.
 
 # built-in
 from copy import deepcopy
-import os
 import logging
-from typing import Tuple
 
 # internal
 from datazen.classes.manifest_environment import ManifestEnvironment
-from datazen.compile import str_compile
+from datazen.compile import str_compile, get_compile_output
 
 LOG = logging.getLogger(__name__)
 
@@ -23,6 +21,10 @@ class Environment(ManifestEnvironment):
         """ Perform the compilation specified by the entry. """
 
         path, output_type = get_compile_output(entry)
+
+        # check if this actually needs to be done, if not, short-circuit
+        # and return true
+
         mode = "a" if "append" in entry and entry["append"] else "w"
         with open(path, mode) as out_file:
             out_file.write(str_compile(self.load_configs(), output_type))
@@ -106,20 +108,3 @@ def clone(env: Environment) -> Environment:
     new_env.manifest = deepcopy(env.manifest)
 
     return new_env
-
-
-def get_compile_output(entry: dict,
-                       default_type: str = "yaml") -> Tuple[str, str]:
-    """
-    Determine the output path and type of a compile target, from the target's
-    data.
-    """
-
-    # determine the output type
-    output_type = default_type
-    if "output_type" in entry:
-        output_type = entry["output_type"]
-
-    # write the output
-    filename = "{}.{}".format(entry["name"], output_type)
-    return os.path.join(entry["output_dir"], filename), output_type

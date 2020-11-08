@@ -83,7 +83,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
 
         self.manifest["path"] = os.path.abspath(path)
         self.manifest["dir"] = os.path.dirname(self.manifest["path"])
-        self.manifest["data"] = load_raw(self.manifest["path"], {}, {})
+        self.manifest["data"], _ = load_raw(self.manifest["path"], {}, {})
 
         # enforce the manifest schema
         schema = get_manifest_schema(False)
@@ -108,5 +108,5 @@ def get_manifest_schema(require_all: bool = True) -> Validator:
 
     rel_path = os.path.join("schemas", "manifest.yaml")
     schema_str = get_package_data(rel_path)
-    return Validator(load_stream(StringIO(schema_str), rel_path),
+    return Validator(load_stream(StringIO(schema_str), rel_path)[0],
                      require_all=require_all)

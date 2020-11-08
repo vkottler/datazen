@@ -7,7 +7,7 @@ datazen - APIs for loading raw data from files.
 import io
 import json
 import logging
-from typing import TextIO, List
+from typing import TextIO, List, Tuple
 
 # third-party
 import jinja2
@@ -19,49 +19,54 @@ from datazen.paths import get_file_ext
 LOG = logging.getLogger(__name__)
 
 
-def get_json_data(data_file: TextIO) -> dict:
+def get_json_data(data_file: TextIO) -> Tuple[dict, bool]:
     """ Load JSON data from a text stream. """
 
     data = {}
+    loaded = True
     try:
         data = json.load(data_file)
         if not data:
             data = {}
     except json.decoder.JSONDecodeError as exc:
+        loaded = False
         LOG.error("json-load error: %s", exc)
-    return data
+    return data, loaded
 
 
-def get_yaml_data(data_file: TextIO) -> dict:
+def get_yaml_data(data_file: TextIO) -> Tuple[dict, bool]:
     """ Load YAML data from a text stream. """
 
     data = {}
+    loaded = True
     try:
         data = yaml.safe_load(data_file)
         if not data:
             data = {}
     except (yaml.scanner.ScannerError, yaml.parser.ParserError) as exc:
+        loaded = False
         LOG.error("yaml-load error: %s", exc)
-    return data
+    return data, loaded
 
 
-def load_stream(data_stream: TextIO, data_path: str) -> dict:
+def load_stream(data_stream: TextIO, data_path: str) -> Tuple[dict, bool]:
     """
     Load arbitrary data from a text stream, update an existing dictionary.
     """
 
     # update the dictionary
     ext = get_file_ext(data_path)
-    data = {}
+    data: dict = {}
+    result = False
     if ext == "json":
-        data = get_json_data(data_stream)
+        data, result = get_json_data(data_stream)
     elif ext == "yaml":
-        data = get_yaml_data(data_stream)
+        data, result = get_yaml_data(data_stream)
     else:
         LOG.error("can't load data from '%s' (unknown extension '%s')",
                   data_path, ext)
 
-    return data
+    return data, result
 
 
 def merge(dict_a: dict, dict_b: dict, path: List[str] = None) -> dict:
@@ -96,7 +101,8 @@ def merge(dict_a: dict, dict_b: dict, path: List[str] = None) -> dict:
     return dict_a
 
 
-def load(data_path: str, variables: dict, dict_to_update: dict) -> dict:
+def load(data_path: str, variables: dict,
+         dict_to_update: dict) -> Tuple[dict, bool]:
     """
     Load raw file data and meld it into an existing dictionary. Update
     the result as if it's a template using the provided variables.
@@ -107,4 +113,5 @@ def load(data_path: str, variables: dict, dict_to_update: dict) -> dict:
         template = jinja2.Template(config_file.read())
         output = io.StringIO(template.render(variables))
 
-    return merge(dict_to_update, load_stream(output, data_path))
+    new_data, loaded = load_stream(output, data_path)
+    return merge(dict_to_update, new_data), loaded

@@ -17,7 +17,7 @@ GLOBAL_KEY = "global"
 
 
 def meld_and_resolve(full_path: str, existing_data: dict, variables: dict,
-                     globals_added: bool = False) -> None:
+                     globals_added: bool = False) -> bool:
     """
     Meld dictionary data from a file into an existing dictionary, assume
     existing data is a template and attempt to resolve variables.
@@ -43,10 +43,12 @@ def meld_and_resolve(full_path: str, existing_data: dict, variables: dict,
             variables[GLOBAL_KEY] = variables_root[GLOBAL_KEY]
             global_add_success = True
 
-    load_raw_resolve(full_path, variables, data_dict)
+    _, loaded = load_raw_resolve(full_path, variables, data_dict)
 
     if global_add_success:
         del variables[GLOBAL_KEY]
+
+    return loaded
 
 
 def load_dir(path: str, existing_data: dict, variables: dict = None) -> dict:
