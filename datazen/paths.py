@@ -8,6 +8,9 @@ import os
 import pkgutil
 from typing import List
 
+# internal
+from datazen import PKG_NAME
+
 
 def get_file_name(full_path: str) -> str:
     """ From a full path to a file, get just the name of the file. """
@@ -53,6 +56,6 @@ def get_package_data(relative_path: str) -> str:
     """ Load a file from this package's data directory. """
 
     rel_path = os.path.join("data", relative_path)
-    schema_raw = pkgutil.get_data("datazen", rel_path)
+    schema_raw = pkgutil.get_data(PKG_NAME, rel_path)
     schema_bytes = schema_raw if schema_raw else bytes()
     return schema_bytes.decode("utf-8")

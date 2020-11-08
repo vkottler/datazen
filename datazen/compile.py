@@ -12,6 +12,9 @@ from typing import Tuple
 # third-party
 from ruamel import yaml
 
+# internal
+from datazen import DEFAULT_TYPE
+
 LOG = logging.getLogger(__name__)
 
 
@@ -35,7 +38,7 @@ def str_compile(configs: dict, data_type: str) -> str:
 
 
 def get_compile_output(entry: dict,
-                       default_type: str = "yaml") -> Tuple[str, str]:
+                       default_type: str = DEFAULT_TYPE) -> Tuple[str, str]:
     """
     Determine the output path and type of a compile target, from the target's
     data.

@@ -8,13 +8,13 @@ from copy import deepcopy
 import logging
 
 # internal
-from datazen.classes.manifest_environment import ManifestEnvironment
+from datazen.classes.manifest_cache_environment import ManifestCacheEnvironment
 from datazen.compile import str_compile, get_compile_output
 
 LOG = logging.getLogger(__name__)
 
 
-class Environment(ManifestEnvironment):
+class Environment(ManifestCacheEnvironment):
     """ A wrapper for inheriting all environment-loading capabilities. """
 
     def valid_compile(self, entry: dict) -> bool:
@@ -89,7 +89,7 @@ def from_manifest(manifest_path: str) -> Environment:
     env = Environment()
 
     # load the manifest
-    if not env.load_manifest(manifest_path):
+    if not env.load_manifest_with_cache(manifest_path):
         LOG.error("couldn't load manifest at '%s'", manifest_path)
 
     return env

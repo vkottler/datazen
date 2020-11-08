@@ -1,6 +1,9 @@
 output_dir:
   type: "string"
 
+cache_dir:
+  type: "string"
+
 configs:
   type: list
   schema:

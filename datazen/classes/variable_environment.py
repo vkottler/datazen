@@ -5,7 +5,7 @@ datazen - A child class for adding variable-data loading capabilities to the
 """
 
 # built-in
-from typing import List
+from typing import List, Dict
 
 # internal
 from datazen.classes.base_environment import BaseEnvironment, DataType
@@ -18,7 +18,8 @@ class VariableEnvironment(BaseEnvironment):
     environment capability to function.
     """
 
-    def load_variables(self) -> dict:
+    def load_variables(self, loaded_list: List[str] = None,
+                       hashes: Dict[str, str] = None) -> dict:
         """ Load variable data, resolve any un-loaded variable directories. """
 
         # determine directories that need to be loaded
@@ -28,7 +29,7 @@ class VariableEnvironment(BaseEnvironment):
         # load new data
         variable_data = self.data[data_type]
         if to_load:
-            variable_data.update(load_variables(to_load))
+            variable_data.update(load_variables(to_load, loaded_list, hashes))
             self.update_load_state(data_type, to_load)
 
         return variable_data

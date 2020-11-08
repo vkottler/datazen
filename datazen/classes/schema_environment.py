@@ -5,7 +5,7 @@ datazen - A child class for adding schema-data loading capabilities to the
 """
 
 # built-in
-from typing import List
+from typing import List, Dict
 
 # internal
 from datazen.classes.base_environment import BaseEnvironment, DataType
@@ -19,7 +19,9 @@ class SchemaEnvironment(BaseEnvironment):
     environment capability to function.
     """
 
-    def load_schemas(self, require_all: bool = True) -> dict:
+    def load_schemas(self, require_all: bool = True,
+                     loaded_list: List[str] = None,
+                     hashes: Dict[str, str] = None) -> dict:
         """ Load schema data, resolve any un-loaded schema directories. """
 
         # determine directories that need to be loaded
@@ -29,17 +31,21 @@ class SchemaEnvironment(BaseEnvironment):
         # load new data
         schema_data = self.data[data_type]
         if to_load:
-            schema_data.update(load_schemas(to_load, require_all))
+            schema_data.update(load_schemas(to_load, require_all, loaded_list,
+                                            hashes))
 
         return schema_data
 
-    def enforce_schemas(self, data: dict, require_all: bool = True) -> bool:
+    def enforce_schemas(self, data: dict, require_all: bool = True,
+                        loaded_list: List[str] = None,
+                        hashes: Dict[str, str] = None) -> bool:
         """
         Perform schema-validation on provided data and return the boolean
         result.
         """
 
-        return validate(self.load_schemas(require_all), data)
+        return validate(self.load_schemas(require_all, loaded_list, hashes),
+                        data)
 
     def add_schema_dirs(self, dir_paths: List[str],
                         rel_path: str = ".") -> int:

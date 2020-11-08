@@ -17,9 +17,9 @@ from datazen.classes.template_environment import TemplateEnvironment
 from datazen.parsing import load as load_raw
 from datazen.parsing import load_stream
 from datazen.paths import get_package_data
+from datazen import DEFAULT_DIR
 
 LOG = logging.getLogger(__name__)
-DEFAULT_DIR = "datazen-out"
 
 
 class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):

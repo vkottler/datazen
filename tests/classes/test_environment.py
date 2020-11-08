@@ -43,7 +43,7 @@ def test_environment_from_manifest():
     assert not env.valid
 
     # make sure we can't double-load the manifest
-    assert not env.load_manifest(manifest_path)
+    assert not env.load_manifest_with_cache(manifest_path)
 
     # load an invalid manifest (bad content)
     manifest_path = get_resource(os.path.join("manifests", "invalid.yaml"),

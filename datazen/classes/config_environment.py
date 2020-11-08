@@ -6,7 +6,7 @@ datazen - A child class for adding configuration-data loading capabilities to
 
 # built-in
 import logging
-from typing import List
+from typing import Dict, List, Tuple, Optional
 
 # internal
 from datazen.classes.base_environment import DataType
@@ -15,6 +15,7 @@ from datazen.classes.schema_environment import SchemaEnvironment
 from datazen.configs import load as load_configs
 
 LOG = logging.getLogger(__name__)
+LOADTYPE = Tuple[Optional[List[str]], Optional[Dict[str, str]]]
 
 
 class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
@@ -23,7 +24,9 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
     loading to function.
     """
 
-    def load_configs(self) -> dict:
+    def load_configs(self, config_loads: LOADTYPE = (None, None),
+                     variable_loads: LOADTYPE = (None, None),
+                     schema_loads: LOADTYPE = (None, None)) -> dict:
         """
         Load configuration data, resolve any un-loaded configuration
         directories.
@@ -38,11 +41,14 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
         # load new data
         config_data = self.data[data_type]
         if to_load:
-            config_data.update(load_configs(to_load, self.load_variables()))
+            vdata = self.load_variables(variable_loads[0], variable_loads[1])
+            config_data.update(load_configs(to_load, vdata, config_loads[0],
+                                            config_loads[1]))
             self.update_load_state(data_type, to_load)
 
         # enforce schemas
-        if not self.enforce_schemas(config_data):
+        if not self.enforce_schemas(config_data, True, schema_loads[0],
+                                    schema_loads[1]):
             LOG.error("schema validation failed, returning an empty dict")
             return {}
 

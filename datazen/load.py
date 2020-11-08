@@ -95,6 +95,15 @@ def load_dir(path: str, existing_data: dict, variables: dict = None,
     return existing_data
 
 
+def load_dir_only(path: str) -> dict:
+    """
+    A convenient wrapper for loading just directory data from a path without
+    worrying about melding data, resolving variables, enforcing schemas, etc.
+    """
+
+    return load_dir(path, {}, None, None, None)
+
+
 def load_files(file_paths: List[str], root: str,
                meld_data: Tuple[dict, dict, bool],
                hashes: Dict[str, str]) -> List[str]:
