@@ -108,6 +108,7 @@ def load_files(file_paths: List[str], root: str,
     # load (or meld) data
     for name in file_paths:
         full_path = os.path.join(root, name)
+        assert os.path.isabs(full_path)
 
         str_hash = get_file_hash(full_path)
 

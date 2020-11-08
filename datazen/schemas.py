@@ -18,7 +18,7 @@ LOG = logging.getLogger(__name__)
 
 
 def load(directories: List[str], require_all: bool = True,
-         loaded_list: List[str] = None) -> dict:
+         loaded_list: List[str] = None, hashes: Dict[str, str] = None) -> dict:
     """ Load schemas from a list of directories. """
 
     result: dict = {}
@@ -26,7 +26,7 @@ def load(directories: List[str], require_all: bool = True,
     # load raw data
     for directory in directories:
         LOG.info("loading schemas from '%s'", directory)
-        load_dir(directory, result, {}, loaded_list)
+        load_dir(directory, result, {}, loaded_list, hashes)
 
     # interpret all top-level keys as schemas
     schemas = {}
