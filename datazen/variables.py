@@ -20,5 +20,5 @@ def load(directories: List[str],
     result: dict = {}
     for directory in directories:
         LOG.info("loading variables from '%s'", directory)
-        load_dir(directory, result, {}, loaded_list, hashes)
+        load_dir(directory, result, None, loaded_list, hashes)
     return result

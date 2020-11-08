@@ -26,7 +26,7 @@ def load(directories: List[str], require_all: bool = True,
     # load raw data
     for directory in directories:
         LOG.info("loading schemas from '%s'", directory)
-        load_dir(directory, result, {}, loaded_list, hashes)
+        load_dir(directory, result, None, loaded_list, hashes)
 
     # interpret all top-level keys as schemas
     schemas = {}
