@@ -16,11 +16,12 @@ $(VENV_DIR):
 	python$(PYTHON_VERSION) -m venv $(VENV_DIR)
 	$(PYTHON_BIN)/pip install --upgrade pip
 
-$(BUILD_DIR)/req-%.txt: $($(PROJ)_DIR)/%.txt | $(BUILD_DIR) $(VENV_DIR)
+$(BUILD_DIR)/$(VENV_NAME)/req-%.txt: $($(PROJ)_DIR)/%.txt | $(BUILD_DIR) $(VENV_DIR)
 	$(PYTHON_BIN)/pip install -r $<
+	@mkdir -p $(dir $@)
 	@date > $@
 
-$(BUILD_DIR)/$(VENV_NAME).txt: $(BUILD_DIR)/req-requirements.txt $(BUILD_DIR)/req-dev_requirements.txt
+$(BUILD_DIR)/$(VENV_NAME).txt: $(BUILD_DIR)/$(VENV_NAME)/req-requirements.txt $(BUILD_DIR)/$(VENV_NAME)/req-dev_requirements.txt
 	@date > $@
 
 venv: $(BUILD_DIR)/$(VENV_NAME).txt
