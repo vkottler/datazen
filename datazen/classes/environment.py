@@ -8,6 +8,8 @@ from copy import deepcopy
 import logging
 
 # internal
+from datazen.classes.environment_namespace import clone as clone_namespace
+from datazen.classes.manifest_environment import set_output_dir
 from datazen.classes.manifest_cache_environment import ManifestCacheEnvironment
 from datazen.compile import str_compile, get_compile_output
 
@@ -38,7 +40,7 @@ class Environment(ManifestCacheEnvironment):
         directories and setting the correct output directory.
         """
 
-        if self.manifest and self.valid:
+        if self.manifest and self.get_valid():
             entries = self.manifest["data"][key_name]
             for data in entries:
                 if target == data["name"]:
@@ -49,8 +51,8 @@ class Environment(ManifestCacheEnvironment):
                     manifest_data = new_env.manifest["data"]
 
                     # resolve the output directory
-                    new_env.set_output_dir(data, new_env.manifest["dir"],
-                                           manifest_data["output_dir"])
+                    set_output_dir(data, new_env.manifest["dir"],
+                                   manifest_data["output_dir"])
 
                     # load additional data directories if specified
                     new_env.load_dirs(data, new_env.manifest["dir"])
@@ -109,11 +111,13 @@ def clone(env: Environment) -> Environment:
 
     new_env = Environment()
 
-    # all we need to do is copy all of the attributes
-    new_env.directories = deepcopy(env.directories)
-    new_env.data = deepcopy(env.data)
-    new_env.configs_valid = env.configs_valid
-    new_env.valid = env.valid
+    # clone all of the namespaces
+    for name, data in env.namespaces.items():
+        new_env.namespaces[name] = clone_namespace(data)
+
+    # set individual members
     new_env.manifest = deepcopy(env.manifest)
+    new_env.cache_loaded = env.cache_loaded
+    new_env.initial_cache = deepcopy(env.initial_cache)
 
     return new_env

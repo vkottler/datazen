@@ -26,12 +26,12 @@ class EnvironmentMock:
         manifest_path = get_resource(os.path.join("manifests", "test.yaml"),
                                      True)
         self.valid = from_manifest(manifest_path)
-        assert self.valid.valid
+        assert self.valid.get_valid()
 
         manifest_path = get_resource(os.path.join("manifests", "valid.yaml"),
                                      False)
         self.invalid = from_manifest(manifest_path)
-        assert self.invalid.valid
+        assert self.invalid.get_valid()
 
     def get_configs(self, valid: bool = True) -> dict:
         """ Attempt to load one of the sets of configuration data. """

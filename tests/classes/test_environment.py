@@ -40,7 +40,7 @@ def test_environment_from_manifest():
     # load an invalid manifest (bad schema)
     manifest_path = get_resource(os.path.join("manifests", "test.yaml"), False)
     env = from_manifest(manifest_path)
-    assert not env.valid
+    assert not env.get_valid()
 
     # make sure we can't double-load the manifest
     assert not env.load_manifest_with_cache(manifest_path)
@@ -49,7 +49,7 @@ def test_environment_from_manifest():
     manifest_path = get_resource(os.path.join("manifests", "invalid.yaml"),
                                  False)
     env = from_manifest(manifest_path)
-    assert not env.valid
+    assert not env.get_valid()
 
 
 def test_load_manifest():

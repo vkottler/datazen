@@ -59,3 +59,16 @@ def get_package_data(relative_path: str) -> str:
     schema_raw = pkgutil.get_data(PKG_NAME, rel_path)
     schema_bytes = schema_raw if schema_raw else bytes()
     return schema_bytes.decode("utf-8")
+
+
+def resolve_dir(data: str, rel_base: str = "") -> str:
+    """
+    Turn directory data into an absolute path, optionally from a relative
+    base.
+    """
+
+    data = data.replace("/", os.sep)
+    data = data.replace("\\", os.sep)
+    if not os.path.isabs(data) and rel_base:
+        data = os.path.join(rel_base, data)
+    return os.path.abspath(data)

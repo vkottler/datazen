@@ -29,7 +29,7 @@ class TemplateEnvironment(BaseEnvironment):
         to_load = self.get_to_load(data_type)
 
         # load new templates
-        template_data = self.data[data_type]
+        template_data = self.get_data(data_type)
         if to_load:
             template_data.update(load_templates(to_load))
 

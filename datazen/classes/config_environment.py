@@ -29,6 +29,12 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
     loading to function.
     """
 
+    def __init__(self):
+        """ Extend the environment with a notion of configs being valid. """
+
+        super().__init__()
+        self.configs_valid = False
+
     def load_configs(self, cfg_loads: LOADTYPE = (None, None),
                      var_loads: LOADTYPE = (None, None),
                      sch_loads: LOADTYPE = (None, None)) -> dict:
@@ -44,7 +50,7 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
         to_load = self.get_to_load(data_type)
 
         # load new data
-        config_data = self.data[data_type]
+        config_data = self.get_data(data_type)
         if to_load:
             vdata = self.load_variables(var_loads[0], var_loads[1])
             config_data.update(load_configs(to_load, vdata, cfg_loads[0],

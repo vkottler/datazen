@@ -29,7 +29,7 @@ class SchemaEnvironment(BaseEnvironment):
         to_load = self.get_to_load(data_type)
 
         # load new data
-        schema_data = self.data[data_type]
+        schema_data = self.get_data(data_type)
         if to_load:
             schema_data.update(load_schemas(to_load, require_all, loaded_list,
                                             hashes))

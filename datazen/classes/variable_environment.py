@@ -27,7 +27,7 @@ class VariableEnvironment(BaseEnvironment):
         to_load = self.get_to_load(data_type)
 
         # load new data
-        variable_data = self.data[data_type]
+        variable_data = self.get_data(data_type)
         if to_load:
             variable_data.update(load_variables(to_load, loaded_list, hashes))
             self.update_load_state(data_type, to_load)

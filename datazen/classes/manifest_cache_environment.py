@@ -4,6 +4,7 @@ datazen - A class for adding caching to the manifest-loading environment.
 """
 
 # built-in
+from copy import deepcopy
 import logging
 import os
 import shutil
@@ -35,6 +36,13 @@ def manifest_cache_dir(path: str, manifest: dict) -> str:
 class ManifestCacheEnvironment(ManifestEnvironment):
     """ A wrapper for the cache functionality for an environment. """
 
+    def __init__(self):
+        """ Extend the environment with a notion of the cache being loaded. """
+
+        super().__init__()
+        self.cache_loaded = False
+        self.initial_cache = {}
+
     def load_manifest_with_cache(self, path: str = DEFAULT_MANIFEST) -> bool:
         """
         Load a manifest and its cache, or set up a new cache if one doesn't
@@ -49,6 +57,11 @@ class ManifestCacheEnvironment(ManifestEnvironment):
                                                             self.manifest)
             os.makedirs(self.manifest["cache_dir"], exist_ok=True)
             self.manifest["cache"] = load_dir_only(self.manifest["cache_dir"])
+
+            # save a copy of the initial cache, so that we can use it to
+            # determine if state has changed when evaluating targets
+            self.initial_cache = deepcopy(self.manifest["cache"])
+
             self.cache_loaded = True
 
         return result and self.cache_loaded

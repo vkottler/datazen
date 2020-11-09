@@ -16,10 +16,34 @@ from datazen.classes.config_environment import ConfigEnvironment
 from datazen.classes.template_environment import TemplateEnvironment
 from datazen.parsing import load as load_raw
 from datazen.parsing import load_stream
-from datazen.paths import get_package_data
+from datazen.paths import get_package_data, resolve_dir
 from datazen import DEFAULT_DIR
 
 LOG = logging.getLogger(__name__)
+
+
+def get_output_dir(data: dict, rel_path: str,
+                   default: str = DEFAULT_DIR) -> str:
+    """
+    Get the resolved output directory based on a dictionary containing
+    target data.
+    """
+
+    # turn the output directory into a valid path
+    out_dir = default
+    if "output_dir" in data:
+        out_dir = data["output_dir"]
+    return resolve_dir(out_dir, rel_path)
+
+
+def set_output_dir(data: dict, rel_path: str,
+                   default: str = DEFAULT_DIR) -> None:
+    """ Set the 'output_dir' key correctly on a dictionary. """
+
+    out_dir = get_output_dir(data, rel_path, default)
+    os.makedirs(out_dir, exist_ok=True)
+    data["output_dir"] = out_dir
+    LOG.info("using output directory to '%s'", out_dir)
 
 
 class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
@@ -27,27 +51,11 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
     A wrapper for the manifest-loading implementations of an environment.
     """
 
-    def set_output_dir(self, data: dict, rel_path: str,
-                       default: str = DEFAULT_DIR) -> None:
-        """ Set the 'output_dir' key correctly on a dictionary. """
+    def __init__(self):
+        """ Add a manifest dictionary to the environment. """
 
-        out_dir = self.get_output_dir(data, rel_path, default)
-        os.makedirs(out_dir, exist_ok=True)
-        data["output_dir"] = out_dir
-        LOG.info("using output directory to '%s'", out_dir)
-
-    def get_output_dir(self, data: dict, rel_path: str,
-                       default: str = DEFAULT_DIR) -> str:
-        """
-        Get the resolved output directory based on a dictionary containing
-        target data.
-        """
-
-        # turn the output directory into a valid path
-        out_dir = default
-        if "output_dir" in data:
-            out_dir = data["output_dir"]
-        return self.resolve_dir(out_dir, rel_path)
+        super().__init__()
+        self.manifest = {}
 
     def load_dirs(self, data: dict, rel_path: str) -> None:
         """
@@ -89,18 +97,18 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         schema = get_manifest_schema(False)
         if not schema.validate(self.manifest["data"]):
             LOG.error("invalid manifest: %s", schema.errors)
-            self.valid = False
-            return self.valid
+            self.set_valid(False)
+            return self.get_valid()
 
         # add directories parsed from the schema, paths in the manifest are
         # relative to the directory the manifest is located
         rel_path = self.manifest["dir"]
-        self.set_output_dir(self.manifest["data"], rel_path)
+        set_output_dir(self.manifest["data"], rel_path)
 
         # load the data directories
         self.load_dirs(self.manifest["data"], rel_path)
 
-        return self.valid
+        return self.get_valid()
 
 
 def get_manifest_schema(require_all: bool = True) -> Validator:
