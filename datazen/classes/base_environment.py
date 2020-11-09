@@ -60,6 +60,18 @@ class BaseEnvironment:
                 to_load.append(dir_inst["path"])
         return to_load
 
+    def unload(self, dir_type: DataType) -> None:
+        """ Mark all directories for a given type as un-loaded. """
+
+        for dir_inst in self.directories[dir_type]:
+            dir_inst["loaded"] = False
+
+    def unload_all(self) -> None:
+        """ Mark all directories as unloaded. """
+
+        for key in self.data:
+            self.unload(key)
+
     def update_load_state(self, dir_type: DataType, to_load: List[str]) -> int:
         """
         Update the load states of directories in 'to_load' for a given

@@ -27,7 +27,8 @@ class Environment(ManifestCacheEnvironment):
 
         mode = "a" if "append" in entry and entry["append"] else "w"
         with open(path, mode) as out_file:
-            out_file.write(str_compile(self.load_configs(), output_type))
+            out_file.write(str_compile(self.cached_load_configs(),
+                                       output_type))
 
         return True
 
@@ -58,7 +59,15 @@ class Environment(ManifestCacheEnvironment):
                         "compiles": new_env.valid_compile,
                         "renders": new_env.valid_render,
                     }
-                    return handles[key_name](data)
+
+                    result = handles[key_name](data)
+
+                    # write-through to the cache when we complete an operation,
+                    # if it succeeded
+                    if result:
+                        self.write_cache()
+
+                    return result
 
         return False
 

@@ -9,13 +9,13 @@ import os
 from typing import Dict, List, Tuple
 
 # internal
+from datazen import GLOBAL_KEY
 from datazen.paths import get_path_list, advance_dict_by_path
 from datazen.paths import get_file_name
 from datazen.parsing import load as load_raw_resolve
 from datazen.parsing import get_file_hash
 
 LOG = logging.getLogger(__name__)
-GLOBAL_KEY = "global"
 
 
 def meld_and_resolve(full_path: str, existing_data: dict, variables: dict,

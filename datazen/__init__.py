@@ -7,3 +7,5 @@ PKG_NAME = "datazen"
 DEFAULT_TYPE = "yaml"
 DEFAULT_MANIFEST = "manifest.{}".format(DEFAULT_TYPE)
 DEFAULT_DIR = "{}-out".format(PKG_NAME)
+CACHE_SUFFIX = "_cache"
+GLOBAL_KEY = "global"

@@ -56,12 +56,24 @@ def test_load_manifest():
     """ Test a nominal manifest-loading scenario. """
 
     env = from_manifest(get_resource("manifest.yaml", True))
-    cfg_data = env.load_configs()
-    assert env.load_configs()
+    cfg_data1 = env.cached_load_configs()
+    assert cfg_data1
+    assert env.cached_load_configs()
+    env.write_cache()
+
+    assert env.cached_enforce_schemas(cfg_data1)
+
+    # clean the cache
+    env.clean_cache()
+
+    cfg_data2 = env.cached_load_configs()
+    assert cfg_data2
+    assert cfg_data2 == cfg_data1
+    env.write_cache()
 
     # make sure configs loaded correctly
-    assert "yaml2" in cfg_data and "json2" in cfg_data
-    assert len(cfg_data["top_list"]) == 6
+    assert "yaml2" in cfg_data2 and "json2" in cfg_data2
+    assert len(cfg_data2["top_list"]) == 6
 
     assert env.compile("a")
     assert env.compile("b")
@@ -69,3 +81,7 @@ def test_load_manifest():
     assert env.render("a")
     assert env.render("b")
     assert not env.render("c")
+
+    # clean the cache so that we don't commit it to the repository, it's not
+    # worth the cost of using relative paths over absolute paths
+    env.clean_cache()

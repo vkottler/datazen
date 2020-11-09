@@ -37,14 +37,14 @@ class EnvironmentMock:
         """ Attempt to load one of the sets of configuration data. """
 
         env = self.valid if valid else self.invalid
-        return env.load_configs()
+        return env.cached_load_configs()
 
     def get_schemas(self, valid: bool = True,
                     require_all: bool = True) -> dict:
         """ Attempt to load one of the sets of schemas. """
 
         env = self.valid if valid else self.invalid
-        return env.load_schemas(require_all)
+        return env.cached_load_schemas(require_all)
 
     def get_templates(self, valid: bool = True) -> Dict[str, jinja2.Template]:
         """ Attempt to load one of the sets of templates. """
@@ -56,4 +56,4 @@ class EnvironmentMock:
         """ Attempt to load one of the sets of variables. """
 
         env = self.valid if valid else self.invalid
-        return env.load_variables()
+        return env.cached_load_variables()
