@@ -17,7 +17,7 @@ from datazen.classes.template_environment import TemplateEnvironment
 from datazen.parsing import load as load_raw
 from datazen.parsing import load_stream
 from datazen.paths import get_package_data, resolve_dir
-from datazen import DEFAULT_DIR
+from datazen import DEFAULT_DIR, ROOT_NAMESPACE
 
 LOG = logging.getLogger(__name__)
 
@@ -57,7 +57,8 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         super().__init__()
         self.manifest = {}
 
-    def load_dirs(self, data: dict, rel_path: str) -> None:
+    def load_dirs(self, data: dict, rel_path: str,
+                  namespace: str = ROOT_NAMESPACE) -> None:
         """
         Looks for keys matching types of directories that can be loaded
         into an environment and tries to load them.
@@ -71,12 +72,12 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         }
         for key in key_handles:
             if key in data:
-                key_handles[key](data[key], rel_path)
+                key_handles[key](data[key], rel_path, namespace)
             # if a directory list isn't provided, and the directory of the
             # same name of the key is present in the manifest directory,
             # load it
             elif os.path.isdir(os.path.join(rel_path, key)):
-                key_handles[key]([key], rel_path)
+                key_handles[key]([key], rel_path, namespace)
             else:
                 LOG.info("not loading any '%s'", key)
 

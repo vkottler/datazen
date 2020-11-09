@@ -6,21 +6,17 @@ datazen - A child class for adding configuration-data loading capabilities to
 
 # built-in
 import logging
-from typing import Dict, List, Tuple
-from typing import Optional as Opt
+from typing import List
 
 # internal
-from datazen.classes.base_environment import DataType
+from datazen import ROOT_NAMESPACE
+from datazen.enums import DataType
+from datazen.classes.base_environment import LOADTYPE
 from datazen.classes.variable_environment import VariableEnvironment
 from datazen.classes.schema_environment import SchemaEnvironment
 from datazen.configs import load as load_configs
 
 LOG = logging.getLogger(__name__)
-
-# python3.9 regression: https://github.com/PyCQA/pylint/issues/3882
-# pylint: disable=unsubscriptable-object
-LOADTYPE = Tuple[Opt[List[str]], Opt[Dict[str, str]]]
-# pylint: enable=unsubscriptable-object
 
 
 class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
@@ -37,7 +33,8 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
 
     def load_configs(self, cfg_loads: LOADTYPE = (None, None),
                      var_loads: LOADTYPE = (None, None),
-                     sch_loads: LOADTYPE = (None, None)) -> dict:
+                     sch_loads: LOADTYPE = (None, None),
+                     name: str = ROOT_NAMESPACE) -> dict:
         """
         Load configuration data, resolve any un-loaded configuration
         directories.
@@ -47,30 +44,29 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
 
         # determine directories that need to be loaded
         data_type = DataType.CONFIG
-        to_load = self.get_to_load(data_type)
+        to_load = self.get_to_load(data_type, name)
 
         # load new data
-        config_data = self.get_data(data_type)
+        config_data = self.get_data(data_type, name)
         if to_load:
-            vdata = self.load_variables(var_loads[0], var_loads[1])
+            vdata = self.load_variables(var_loads, name)
             config_data.update(load_configs(to_load, vdata, cfg_loads[0],
                                             cfg_loads[1]))
-            self.update_load_state(data_type, to_load)
+            self.update_load_state(data_type, to_load, name)
 
         # enforce schemas
-        if not self.enforce_schemas(config_data, True, sch_loads[0],
-                                    sch_loads[1]):
+        if not self.enforce_schemas(config_data, True, sch_loads, name):
             LOG.error("schema validation failed, returning an empty dict")
             return {}
 
         self.configs_valid = True
         return config_data
 
-    def add_config_dirs(self, dir_paths: List[str],
-                        rel_path: str = ".") -> int:
+    def add_config_dirs(self, dir_paths: List[str], rel_path: str = ".",
+                        name: str = ROOT_NAMESPACE) -> int:
         """
         Add configuration-data directories, return the number of directories
         added.
         """
 
-        return self.add_dirs(DataType.CONFIG, dir_paths, rel_path)
+        return self.add_dirs(DataType.CONFIG, dir_paths, rel_path, name)

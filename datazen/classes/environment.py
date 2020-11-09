@@ -4,11 +4,9 @@ datazen - A centralized store for runtime data.
 """
 
 # built-in
-from copy import deepcopy
 import logging
 
 # internal
-from datazen.classes.environment_namespace import clone as clone_namespace
 from datazen.classes.manifest_environment import set_output_dir
 from datazen.classes.manifest_cache_environment import ManifestCacheEnvironment
 from datazen.compile import str_compile, get_compile_output
@@ -44,22 +42,27 @@ class Environment(ManifestCacheEnvironment):
             entries = self.manifest["data"][key_name]
             for data in entries:
                 if target == data["name"]:
-                    # clone the existing environment so that we can potentially
-                    # load new directories and not merge the new data or
-                    # results to the original, upstream environment
-                    new_env = clone(self)
-                    manifest_data = new_env.manifest["data"]
+                    # add a unique namespace for this target if it loads
+                    # any new data as to not load any of this data upstream,
+                    # but still cache it (edge cases here?)
+                    #
+                    # don't make a new namespace if we don't load
+                    # new data
+                    namespace = "{}_{}".format(key_name, target)
+                    self.add_namespace(namespace)
+
+                    manifest_data = self.manifest["data"]
 
                     # resolve the output directory
-                    set_output_dir(data, new_env.manifest["dir"],
+                    set_output_dir(data, self.manifest["dir"],
                                    manifest_data["output_dir"])
 
                     # load additional data directories if specified
-                    new_env.load_dirs(data, new_env.manifest["dir"])
+                    self.load_dirs(data, self.manifest["dir"], namespace)
 
                     handles = {
-                        "compiles": new_env.valid_compile,
-                        "renders": new_env.valid_render,
+                        "compiles": self.valid_compile,
+                        "renders": self.valid_render,
                     }
 
                     result = handles[key_name](data)
@@ -104,20 +107,3 @@ def from_manifest(manifest_path: str) -> Environment:
         LOG.error("couldn't load manifest at '%s'", manifest_path)
 
     return env
-
-
-def clone(env: Environment) -> Environment:
-    """ Create a clone (deep copy) of an existing Environment. """
-
-    new_env = Environment()
-
-    # clone all of the namespaces
-    for name, data in env.namespaces.items():
-        new_env.namespaces[name] = clone_namespace(data)
-
-    # set individual members
-    new_env.manifest = deepcopy(env.manifest)
-    new_env.cache_loaded = env.cache_loaded
-    new_env.initial_cache = deepcopy(env.initial_cache)
-
-    return new_env

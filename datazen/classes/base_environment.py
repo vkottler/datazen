@@ -5,12 +5,18 @@ datazen - A base class to be extended for runtime data loading and storing.
 
 # built-in
 import logging
-from typing import List
+from typing import Dict, List, Tuple
+from typing import Optional as Opt
 
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
-from datazen.classes.environment_namespace import EnvironmentNamespace
+from datazen.classes.environment_namespace import EnvironmentNamespace, clone
+
+# python3.9 regression: https://github.com/PyCQA/pylint/issues/3882
+# pylint: disable=unsubscriptable-object
+LOADTYPE = Tuple[Opt[List[str]], Opt[Dict[str, str]]]
+# pylint: enable=unsubscriptable-object
 
 LOG = logging.getLogger(__name__)
 
@@ -26,6 +32,13 @@ class BaseEnvironment:
 
         self.namespaces = {}
         self.namespaces[default_ns] = EnvironmentNamespace()
+
+    def add_namespace(self, name: str, clone_root: bool = True) -> None:
+        """ Add a new namespace, optionally clone from the existing root. """
+
+        self.namespaces[name] = EnvironmentNamespace()
+        if clone_root:
+            clone(self.namespaces[ROOT_NAMESPACE], self.namespaces[name])
 
     def get_valid(self, name: str = ROOT_NAMESPACE) -> bool:
         """ Get the 'valid' flag for a namespace. """

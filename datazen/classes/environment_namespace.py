@@ -126,14 +126,13 @@ class EnvironmentNamespace:
         return dirs_added
 
 
-def clone(env: EnvironmentNamespace) -> EnvironmentNamespace:
+def clone(env: EnvironmentNamespace,
+          update: EnvironmentNamespace) -> EnvironmentNamespace:
     """ Create a clone (deep copy) of an existing Environment. """
 
-    new_env = EnvironmentNamespace()
-
     # all we need to do is copy all of the attributes
-    new_env.directories = deepcopy(env.directories)
-    new_env.data = deepcopy(env.data)
-    new_env.valid = env.valid
+    update.directories = deepcopy(env.directories)
+    update.data = deepcopy(env.data)
+    update.valid = env.valid
 
-    return new_env
+    return update

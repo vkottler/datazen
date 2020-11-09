@@ -11,7 +11,9 @@ from typing import Dict, List
 import jinja2
 
 # internal
-from datazen.classes.base_environment import BaseEnvironment, DataType
+from datazen import ROOT_NAMESPACE
+from datazen.enums import DataType
+from datazen.classes.base_environment import BaseEnvironment
 from datazen.templates import load as load_templates
 
 
@@ -35,10 +37,10 @@ class TemplateEnvironment(BaseEnvironment):
 
         return template_data
 
-    def add_template_dirs(self, dir_paths: List[str],
-                          rel_path: str = ".") -> int:
+    def add_template_dirs(self, dir_paths: List[str], rel_path: str = ".",
+                          name: str = ROOT_NAMESPACE) -> int:
         """
         Add template directories, return the number of directories added.
         """
 
-        return self.add_dirs(DataType.TEMPLATE, dir_paths, rel_path)
+        return self.add_dirs(DataType.TEMPLATE, dir_paths, rel_path, name)

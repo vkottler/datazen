@@ -14,7 +14,9 @@ from typing import Dict, List, Tuple
 from datazen.classes.manifest_environment import ManifestEnvironment
 from datazen.paths import get_file_name
 from datazen.load import load_dir_only
-from datazen import DEFAULT_MANIFEST, DEFAULT_TYPE, CACHE_SUFFIX
+from datazen import (
+    DEFAULT_MANIFEST, DEFAULT_TYPE, CACHE_SUFFIX, ROOT_NAMESPACE
+)
 from datazen.compile import str_compile
 
 LOG = logging.getLogger(__name__)
@@ -120,29 +122,29 @@ class ManifestCacheEnvironment(ManifestEnvironment):
 
         return (self.get_loaded(name), self.get_hashes(name))
 
-    def cached_load_variables(self) -> dict:
+    def cached_load_variables(self, name: str = ROOT_NAMESPACE) -> dict:
         """ Load variables, proxied through the cache. """
 
-        var_data = self.get_cache_data("variables")
-        return self.load_variables(var_data[0], var_data[1])
+        return self.load_variables(self.get_cache_data("variables"), name)
 
-    def cached_load_schemas(self, require_all: bool = True) -> dict:
+    def cached_load_schemas(self, require_all: bool = True,
+                            name: str = ROOT_NAMESPACE) -> dict:
         """ Load schemas, proxied through the cache. """
 
-        schema_data = self.get_cache_data("schemas")
-        return self.load_schemas(require_all, schema_data[0], schema_data[1])
+        return self.load_schemas(require_all, self.get_cache_data("schemas"),
+                                 name)
 
     def cached_enforce_schemas(self, data: dict,
-                               require_all: bool = True) -> bool:
+                               require_all: bool = True,
+                               name: str = ROOT_NAMESPACE) -> bool:
         """ Enforce schemas, proxied through the cache. """
 
-        schema_data = self.get_cache_data("schemas")
-        return self.enforce_schemas(data, require_all, schema_data[0],
-                                    schema_data[1])
+        return self.enforce_schemas(data, require_all,
+                                    self.get_cache_data("schemas"), name)
 
-    def cached_load_configs(self) -> dict:
+    def cached_load_configs(self, name: str = ROOT_NAMESPACE) -> dict:
         """ Load configs, proxied through the cache. """
 
         return self.load_configs(self.get_cache_data("configs"),
                                  self.get_cache_data("variables"),
-                                 self.get_cache_data("schemas"))
+                                 self.get_cache_data("schemas"), name)
