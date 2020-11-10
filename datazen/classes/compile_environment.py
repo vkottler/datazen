@@ -10,6 +10,7 @@ import os
 # internal
 from datazen.classes.manifest_cache_environment import ManifestCacheEnvironment
 from datazen.compile import str_compile, get_compile_output
+from datazen.paths import advance_dict_by_path
 
 LOG = logging.getLogger(__name__)
 
@@ -24,6 +25,10 @@ class CompileEnvironment(ManifestCacheEnvironment):
 
         # load configs early to update cache
         data = self.cached_load_configs(namespace)
+
+        # advance the dict if it was requested
+        if "index_path" in entry:
+            data = advance_dict_by_path(entry["index_path"].split("."), data)
 
         # make sure this compilation needs to be performed
         compile_deps = ["configs", "variables", "schemas"]

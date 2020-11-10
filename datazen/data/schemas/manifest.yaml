@@ -47,6 +47,8 @@ compiles:
         type: "string"
       output_dir:
         type: "string"
+      index_path:
+        type: "string"
       append:
         type: "boolean"
 

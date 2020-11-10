@@ -14,6 +14,10 @@ compiles:
 - name: "b"
   output_type: "json"
   output_dir: "b_out"
+- name: "c"
+  index_path: "a.a"
+- name: "e"
+  index_path: "a"
 
 renders:
 - name: "a"
