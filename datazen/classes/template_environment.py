@@ -38,9 +38,11 @@ class TemplateEnvironment(BaseEnvironment):
         return template_data
 
     def add_template_dirs(self, dir_paths: List[str], rel_path: str = ".",
-                          name: str = ROOT_NAMESPACE) -> int:
+                          name: str = ROOT_NAMESPACE,
+                          allow_dup: bool = False) -> int:
         """
         Add template directories, return the number of directories added.
         """
 
-        return self.add_dirs(DataType.TEMPLATE, dir_paths, rel_path, name)
+        return self.add_dirs(DataType.TEMPLATE, dir_paths, rel_path, name,
+                             allow_dup)

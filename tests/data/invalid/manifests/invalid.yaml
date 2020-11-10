@@ -4,3 +4,6 @@ schemas:
 - "schemas"
 variables:
 - "variables"
+
+compiles:
+- name: "a"

@@ -50,6 +50,7 @@ def test_environment_from_manifest():
                                  False)
     env = from_manifest(manifest_path)
     assert not env.get_valid()
+    assert not env.compile("a")
 
 
 def test_load_manifest():
@@ -75,6 +76,7 @@ def test_load_manifest():
     assert "yaml2" in cfg_data2 and "json2" in cfg_data2
     assert len(cfg_data2["top_list"]) == 6
 
+    assert env.compile("a")
     assert env.compile("a")
     assert env.compile("b")
     assert not env.compile("c")

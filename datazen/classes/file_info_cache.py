@@ -74,7 +74,7 @@ class FileInfoCache:
             for key, val in self.data.items():
                 key_path = os.path.join(self.cache_dir,
                                         "{}.{}".format(key, DEFAULT_TYPE))
-                key_data = str_compile(val, DEFAULT_TYPE)
+                key_data = str_compile(dict(val), DEFAULT_TYPE)
                 with open(key_path, "w") as key_file:
                     key_file.write(key_data)
             LOG.info("wrote cache to '%s'", self.cache_dir)

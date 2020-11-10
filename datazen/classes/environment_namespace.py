@@ -85,7 +85,7 @@ class EnvironmentNamespace:
         return loaded
 
     def add_dir(self, dir_type: DataType, dir_path: str,
-                rel_path: str = ".") -> bool:
+                rel_path: str = ".", allow_dup: bool = False) -> bool:
         """ Add a directory to be loaded for a given data type. """
 
         dir_list = self.directories[dir_type]
@@ -93,9 +93,10 @@ class EnvironmentNamespace:
 
         for dir_data in dir_list:
             if dir_path == dir_data["path"]:
-                LOG.error("not adding duplicate directory '%s' to '%s'",
-                          dir_path, dir_type.value)
-                return False
+                log_fn = LOG.debug if allow_dup else LOG.error
+                log_fn("not adding duplicate directory '%s' to '%s'", dir_path,
+                       dir_type.value)
+                return allow_dup
 
         if not os.path.isdir(dir_path):
             LOG.error("'%s' isn't a directory, not adding to '%s'", dir_path,
@@ -107,7 +108,7 @@ class EnvironmentNamespace:
         return True
 
     def add_dirs(self, dir_type: DataType, dir_paths: List[str],
-                 rel_path: str = ".") -> int:
+                 rel_path: str = ".", allow_dup: bool = False) -> int:
         """
         Add multiple directories for a given data type, return the number of
         directories added.
@@ -115,7 +116,7 @@ class EnvironmentNamespace:
 
         dirs_added = 0
         for dir_path in dir_paths:
-            if self.add_dir(dir_type, dir_path, rel_path):
+            if self.add_dir(dir_type, dir_path, rel_path, allow_dup):
                 dirs_added = dirs_added + 1
 
         if dirs_added != len(dir_paths):

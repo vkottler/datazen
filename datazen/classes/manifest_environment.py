@@ -58,7 +58,8 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         self.manifest = {}
 
     def load_dirs(self, data: dict, rel_path: str,
-                  namespace: str = ROOT_NAMESPACE) -> None:
+                  namespace: str = ROOT_NAMESPACE,
+                  allow_dup: bool = False) -> None:
         """
         Looks for keys matching types of directories that can be loaded
         into an environment and tries to load them.
@@ -72,12 +73,12 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         }
         for key in key_handles:
             if key in data:
-                key_handles[key](data[key], rel_path, namespace)
+                key_handles[key](data[key], rel_path, namespace, allow_dup)
             # if a directory list isn't provided, and the directory of the
             # same name of the key is present in the manifest directory,
             # load it
             elif os.path.isdir(os.path.join(rel_path, key)):
-                key_handles[key]([key], rel_path, namespace)
+                key_handles[key]([key], rel_path, namespace, allow_dup)
             else:
                 LOG.info("not loading any '%s'", key)
 

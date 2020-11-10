@@ -63,10 +63,12 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
         return config_data
 
     def add_config_dirs(self, dir_paths: List[str], rel_path: str = ".",
-                        name: str = ROOT_NAMESPACE) -> int:
+                        name: str = ROOT_NAMESPACE,
+                        allow_dup: bool = False) -> int:
         """
         Add configuration-data directories, return the number of directories
         added.
         """
 
-        return self.add_dirs(DataType.CONFIG, dir_paths, rel_path, name)
+        return self.add_dirs(DataType.CONFIG, dir_paths, rel_path, name,
+                             allow_dup)

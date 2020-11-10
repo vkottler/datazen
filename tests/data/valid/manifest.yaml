@@ -9,6 +9,8 @@ variables:
 
 compiles:
 - name: "a"
+  configs:
+  - "configs3"
 - name: "b"
   output_type: "json"
   output_dir: "b_out"

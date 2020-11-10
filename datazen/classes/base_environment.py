@@ -37,7 +37,7 @@ class BaseEnvironment:
         """ Add a new namespace, optionally clone from the existing root. """
 
         self.namespaces[name] = EnvironmentNamespace()
-        if clone_root:
+        if clone_root and name != ROOT_NAMESPACE:
             clone(self.namespaces[ROOT_NAMESPACE], self.namespaces[name])
 
     def get_valid(self, name: str = ROOT_NAMESPACE) -> bool:
@@ -73,13 +73,17 @@ class BaseEnvironment:
         return self.namespaces[name].update_load_state(dir_type, to_load)
 
     def add_dir(self, dir_type: DataType, dir_path: str,
-                rel_path: str = ".", name: str = ROOT_NAMESPACE) -> bool:
+                rel_path: str = ".", name: str = ROOT_NAMESPACE,
+                allow_dup: bool = False) -> bool:
         """ Proxy for add_dir for a namespace. """
 
-        return self.namespaces[name].add_dir(dir_type, dir_path, rel_path)
+        return self.namespaces[name].add_dir(dir_type, dir_path, rel_path,
+                                             allow_dup)
 
     def add_dirs(self, dir_type: DataType, dir_paths: List[str],
-                 rel_path: str = ".", name: str = ROOT_NAMESPACE) -> int:
+                 rel_path: str = ".", name: str = ROOT_NAMESPACE,
+                 allow_dup: bool = False) -> int:
         """ Proxy for add_dirs for a namespace. """
 
-        return self.namespaces[name].add_dirs(dir_type, dir_paths, rel_path)
+        return self.namespaces[name].add_dirs(dir_type, dir_paths, rel_path,
+                                              allow_dup)
