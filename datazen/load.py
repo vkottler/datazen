@@ -4,6 +4,7 @@ datazen - APIs for loading data from directory trees.
 """
 
 # built-in
+from collections import defaultdict
 import logging
 import os
 from typing import Dict, List, Tuple
@@ -101,7 +102,7 @@ def load_dir_only(path: str) -> dict:
     worrying about melding data, resolving variables, enforcing schemas, etc.
     """
 
-    return load_dir(path, {}, None, None, None)
+    return load_dir(path, defaultdict(dict), None, None, None)
 
 
 def load_files(file_paths: List[str], root: str,

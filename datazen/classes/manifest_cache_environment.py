@@ -4,20 +4,17 @@ datazen - A class for adding caching to the manifest-loading environment.
 """
 
 # built-in
-from copy import deepcopy
 import logging
 import os
-import shutil
-from typing import Dict, List, Tuple
 
 # internal
 from datazen.classes.manifest_environment import ManifestEnvironment
 from datazen.paths import get_file_name
-from datazen.load import load_dir_only
 from datazen import (
-    DEFAULT_MANIFEST, DEFAULT_TYPE, CACHE_SUFFIX, ROOT_NAMESPACE
+    DEFAULT_MANIFEST, CACHE_SUFFIX, ROOT_NAMESPACE
 )
-from datazen.compile import str_compile
+from datazen.classes.file_info_cache import FileInfoCache
+from datazen.classes.file_info_cache import copy as copy_cache
 
 LOG = logging.getLogger(__name__)
 
@@ -42,8 +39,8 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         """ Extend the environment with a notion of the cache being loaded. """
 
         super().__init__()
-        self.cache_loaded = False
-        self.initial_cache = {}
+        self.cache = None
+        self.initial_cache = None
 
     def load_manifest_with_cache(self, path: str = DEFAULT_MANIFEST) -> bool:
         """
@@ -55,83 +52,37 @@ class ManifestCacheEnvironment(ManifestEnvironment):
 
         # if we successfully loaded this manifest, try to load its cache
         if result:
-            self.manifest["cache_dir"] = manifest_cache_dir(path,
-                                                            self.manifest)
-            os.makedirs(self.manifest["cache_dir"], exist_ok=True)
-            self.manifest["cache"] = load_dir_only(self.manifest["cache_dir"])
+            self.cache = FileInfoCache(manifest_cache_dir(path, self.manifest))
 
             # save a copy of the initial cache, so that we can use it to
             # determine if state has changed when evaluating targets
-            self.initial_cache = deepcopy(self.manifest["cache"])
+            self.initial_cache = copy_cache(self.cache)
 
-            self.cache_loaded = True
-
-        return result and self.cache_loaded
+        return result and self.cache is not None
 
     def clean_cache(self) -> None:
         """ Remove cached data from the file-system. """
 
-        if "cache_dir" in self.manifest:
-            self.unload_all()
-            self.manifest["cache"] = {}
-            shutil.rmtree(self.manifest["cache_dir"])
-            os.makedirs(self.manifest["cache_dir"])
-            LOG.info("cleaning cache at '%s'", )
+        self.unload_all()
+        if self.cache is not None:
+            self.cache.clean()
 
     def write_cache(self) -> None:
         """ Commit cached data to the file-system. """
 
-        if self.cache_loaded:
-            for key, val in self.manifest["cache"].items():
-                key_path = os.path.join(self.manifest["cache_dir"],
-                                        "{}.{}".format(key, DEFAULT_TYPE))
-                key_data = str_compile(val, DEFAULT_TYPE)
-                with open(key_path, "w") as key_file:
-                    key_file.write(key_data)
-
-    def get_hashes(self, sub_dir: str) -> Dict[str, str]:
-        """ Get the cached, dictionary of file hashes for a certain key. """
-
-        cache = self.manifest["cache"]
-
-        if "hashes" not in cache:
-            cache["hashes"] = {}
-        hashes = cache["hashes"]
-
-        if sub_dir not in hashes:
-            hashes[sub_dir] = {}
-
-        return hashes[sub_dir]
-
-    def get_loaded(self, sub_dir: str) -> List[str]:
-        """ Get the cached, list of loaded files for a certain key. """
-
-        cache = self.manifest["cache"]
-
-        if "loaded" not in cache:
-            cache["loaded"] = {}
-        loaded = cache["loaded"]
-
-        if sub_dir not in loaded:
-            loaded[sub_dir] = []
-
-        return loaded[sub_dir]
-
-    def get_cache_data(self, name: str) -> Tuple[List[str], Dict[str, str]]:
-        """ Get the tuple version of cached data. """
-
-        return (self.get_loaded(name), self.get_hashes(name))
+        if self.cache is not None:
+            self.cache.write()
 
     def cached_load_variables(self, name: str = ROOT_NAMESPACE) -> dict:
         """ Load variables, proxied through the cache. """
 
-        return self.load_variables(self.get_cache_data("variables"), name)
+        return self.load_variables(self.cache.get_data("variables"), name)
 
     def cached_load_schemas(self, require_all: bool = True,
                             name: str = ROOT_NAMESPACE) -> dict:
         """ Load schemas, proxied through the cache. """
 
-        return self.load_schemas(require_all, self.get_cache_data("schemas"),
+        return self.load_schemas(require_all, self.cache.get_data("schemas"),
                                  name)
 
     def cached_enforce_schemas(self, data: dict,
@@ -140,11 +91,11 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         """ Enforce schemas, proxied through the cache. """
 
         return self.enforce_schemas(data, require_all,
-                                    self.get_cache_data("schemas"), name)
+                                    self.cache.get_data("schemas"), name)
 
     def cached_load_configs(self, name: str = ROOT_NAMESPACE) -> dict:
         """ Load configs, proxied through the cache. """
 
-        return self.load_configs(self.get_cache_data("configs"),
-                                 self.get_cache_data("variables"),
-                                 self.get_cache_data("schemas"), name)
+        return self.load_configs(self.cache.get_data("configs"),
+                                 self.cache.get_data("variables"),
+                                 self.cache.get_data("schemas"), name)

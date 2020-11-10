@@ -42,10 +42,10 @@ view:
 host-coverage:
 	cd $($(PROJ)_DIR)/htmlcov && python -m http.server 8080
 
-all: lint sa test
+all: lint sa test todo
 
 todo:
-	cd $($(PROJ)_DIR) && ack -i todo $(PROJ) tests
+	-cd $($(PROJ)_DIR) && ack -i todo $(PROJ) tests
 
 clean:
 	find -iname '*.pyc' -delete
