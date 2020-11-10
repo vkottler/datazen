@@ -90,3 +90,26 @@ def copy(cache: FileInfoCache) -> FileInfoCache:
     new_cache.data = deepcopy(cache.data)
 
     return new_cache
+
+
+def cmp_loaded_count(cache_a: FileInfoCache, cache_b: FileInfoCache,
+                     name: str) -> int:
+    """
+    Compute the total difference in file counts (for a named group)
+    between two caches.
+    """
+
+    return abs(len(cache_a.get_loaded(name)) - len(cache_b.get_loaded(name)))
+
+
+def cmp_total_loaded(cache_a: FileInfoCache, cache_b: FileInfoCache,
+                     known_types: List[str]) -> int:
+    """
+    Compute the total difference in file counts for a provided set of named
+    groups.
+    """
+
+    result = 0
+    for known in known_types:
+        result += cmp_loaded_count(cache_a, cache_b, known)
+    return result

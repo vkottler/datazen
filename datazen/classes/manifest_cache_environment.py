@@ -6,6 +6,7 @@ datazen - A class for adding caching to the manifest-loading environment.
 # built-in
 import logging
 import os
+from typing import List
 
 # internal
 from datazen.classes.manifest_environment import ManifestEnvironment
@@ -13,7 +14,7 @@ from datazen.paths import get_file_name
 from datazen import (
     DEFAULT_MANIFEST, CACHE_SUFFIX, ROOT_NAMESPACE
 )
-from datazen.classes.file_info_cache import FileInfoCache
+from datazen.classes.file_info_cache import FileInfoCache, cmp_total_loaded
 from datazen.classes.file_info_cache import copy as copy_cache
 
 LOG = logging.getLogger(__name__)
@@ -72,6 +73,20 @@ class ManifestCacheEnvironment(ManifestEnvironment):
 
         if self.cache is not None:
             self.cache.write()
+
+    def restore_cache(self) -> None:
+        """ Return the cache to its initially-loaded state. """
+
+        if self.cache is not None:
+            self.cache = copy_cache(self.initial_cache)
+
+    def get_new_loaded(self, types: List[str]) -> int:
+        """
+        Compute the number of new files loaded (since the initial load)
+        for a set of types;
+        """
+
+        return cmp_total_loaded(self.cache, self.initial_cache, types)
 
     def cached_load_variables(self, name: str = ROOT_NAMESPACE) -> dict:
         """ Load variables, proxied through the cache. """

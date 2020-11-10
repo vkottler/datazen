@@ -5,6 +5,7 @@ datazen - A centralized store for runtime data.
 
 # built-in
 import logging
+import os
 
 # internal
 from datazen.classes.manifest_environment import set_output_dir
@@ -17,19 +18,24 @@ LOG = logging.getLogger(__name__)
 class Environment(ManifestCacheEnvironment):
     """ A wrapper for inheriting all environment-loading capabilities. """
 
-    def valid_compile(self, entry: dict) -> bool:
+    def valid_compile(self, entry: dict, namespace: str) -> bool:
         """ Perform the compilation specified by the entry. """
 
         path, output_type = get_compile_output(entry)
 
-        # check if this actually needs to be done, if not, short-circuit
-        # and return true
+        # load configs early to update cache
+        data = self.cached_load_configs(namespace)
+
+        # make sure this compilation needs to be performed
+        compile_deps = ["configs", "variables", "schemas"]
+        if os.path.isfile(path) and self.get_new_loaded(compile_deps) == 0:
+            LOG.debug("compile '%s' satisfied, skipping", entry["name"])
+            return True
 
         mode = "a" if "append" in entry and entry["append"] else "w"
         with open(path, mode) as out_file:
-            out_file.write(str_compile(self.cached_load_configs(),
-                                       output_type))
-
+            out_file.write(str_compile(data, output_type))
+            LOG.info("compiled '%s' data to '%s'", output_type, path)
         return True
 
     def handle_task(self, key_name: str, target: str) -> bool:
@@ -65,12 +71,13 @@ class Environment(ManifestCacheEnvironment):
                         "renders": self.valid_render,
                     }
 
-                    result = handles[key_name](data)
+                    result = handles[key_name](data, namespace)
 
                     # write-through to the cache when we complete an operation,
                     # if it succeeded
                     if result:
                         self.write_cache()
+                        self.restore_cache()
 
                     return result
 
@@ -81,11 +88,12 @@ class Environment(ManifestCacheEnvironment):
 
         return self.handle_task("compiles", target)
 
-    def valid_render(self, render_entry: dict) -> bool:
+    def valid_render(self, render_entry: dict, namespace: str) -> bool:
         """ Perform the render specified by the entry. """
 
         LOG.info(self.manifest["path"])
         LOG.info(render_entry)
+        LOG.info(namespace)
 
         # resolve dependencies
 
