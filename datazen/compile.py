@@ -26,7 +26,7 @@ def str_compile(configs: dict, data_type: str) -> str:
 
     # serialize the data
     if data_type == "json":
-        result = json.dumps(configs, indent=4)
+        result = json.dumps(configs, indent=4, sort_keys=True)
     elif data_type == "yaml":
         raw_result = yaml.dump(configs)
         result = raw_result if raw_result else ""
