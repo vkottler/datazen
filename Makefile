@@ -40,7 +40,7 @@ view:
 	@$(BROWSER) htmlcov/index.html
 
 host-coverage:
-	cd $($(PROJ)_DIR)/htmlcov && python -m http.server 8080
+	cd $($(PROJ)_DIR)/htmlcov && python$(PYTHON_VERSION) -m http.server 8080
 
 all: lint sa test todo
 

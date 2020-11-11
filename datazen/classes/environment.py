@@ -10,17 +10,12 @@ from typing import List, Tuple
 
 # internal
 from datazen import ROOT_NAMESPACE
+from datazen.classes.base_environment import get_dep_slug
 from datazen.classes.manifest_environment import set_output_dir
 from datazen.classes.compile_environment import CompileEnvironment
 from datazen.classes.render_environment import RenderEnvironment
 
 LOG = logging.getLogger(__name__)
-
-
-def get_dep_slug(operation: str, name: str) -> str:
-    """ Build a key-slug for an operation's target. """
-
-    return "{}-{}".format(operation, name)
 
 
 class Environment(CompileEnvironment, RenderEnvironment):
@@ -31,32 +26,6 @@ class Environment(CompileEnvironment, RenderEnvironment):
 
         super().__init__()
         self.visited = defaultdict(bool)
-
-    def get_namespace(self, key_name: str, target: str,
-                      target_data: dict) -> str:
-        """
-        Determine the namespace that a target should use, in general they
-        all should be unique unless they don't load anything new.
-        """
-
-        load_deps = {
-            "compiles": ["configs", "schemas", "variables"],
-            "renders": ["templates"],
-        }
-
-        # add a unique namespace for this target if it loads
-        # any new data as to not load any of this data upstream,
-        # but still cache it (edge cases here?)
-        load_dep_list = load_deps[key_name]
-        for load_dep in load_dep_list:
-            if load_dep in target_data:
-                namespace = get_dep_slug(key_name, target)
-                self.add_namespace(namespace)
-                return namespace
-
-        # don't make a new namespace if we don't load
-        # new data
-        return ROOT_NAMESPACE
 
     def is_resolved(self, operation: str, target: str) -> bool:
         """
@@ -128,12 +97,13 @@ class Environment(CompileEnvironment, RenderEnvironment):
 
                 # write-through to the cache when we complete an operation,
                 # if it succeeded
-                if handles[key_name](data, namespace):
+                result = handles[key_name](data, namespace)
+                if result:
                     self.resolve(key_name, target)
                     self.write_cache()
                     if namespace != ROOT_NAMESPACE:
                         self.restore_cache()
-                return True
+                return result
 
         return False
 

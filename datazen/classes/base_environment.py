@@ -21,6 +21,12 @@ LOADTYPE = Tuple[Opt[List[str]], Opt[Dict[str, str]]]
 LOG = logging.getLogger(__name__)
 
 
+def get_dep_slug(operation: str, name: str) -> str:
+    """ Build a key-slug for an operation's target. """
+
+    return "{}-{}".format(operation, name)
+
+
 class BaseEnvironment:
     """ The base class for environment loading-and-storing management. """
 
@@ -87,3 +93,29 @@ class BaseEnvironment:
 
         return self.namespaces[name].add_dirs(dir_type, dir_paths, rel_path,
                                               allow_dup)
+
+    def get_namespace(self, key_name: str, target: str,
+                      target_data: dict) -> str:
+        """
+        Determine the namespace that a target should use, in general they
+        all should be unique unless they don't load anything new.
+        """
+
+        load_deps = {
+            "compiles": ["configs", "schemas", "variables"],
+            "renders": ["templates"],
+        }
+
+        # add a unique namespace for this target if it loads
+        # any new data as to not load any of this data upstream,
+        # but still cache it (edge cases here?)
+        load_dep_list = load_deps[key_name]
+        for load_dep in load_dep_list:
+            if load_dep in target_data:
+                namespace = get_dep_slug(key_name, target)
+                self.add_namespace(namespace)
+                return namespace
+
+        # don't make a new namespace if we don't load
+        # new data
+        return ROOT_NAMESPACE
