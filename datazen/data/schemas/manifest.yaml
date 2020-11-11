@@ -41,6 +41,10 @@ compiles:
         type: list
         schema:
           type: "string"
+      dependencies:
+        type: list
+        schema:
+          type: "string"
       name:
         type: "string"
       output_type:
@@ -58,6 +62,10 @@ renders:
     type: "dict"
     schema:
       templates:
+        type: list
+        schema:
+          type: "string"
+      dependencies:
         type: list
         schema:
           type: "string"

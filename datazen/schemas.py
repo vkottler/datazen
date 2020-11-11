@@ -4,7 +4,6 @@ datazen - Top-level APIs for loading and interacting with schema definitions.
 """
 
 # built-in
-import logging
 from typing import List, Dict
 
 # third-party
@@ -13,8 +12,6 @@ from cerberus import Validator  # type: ignore
 # internal
 from datazen.load import load_dir
 from datazen.classes.valid_dict import ValidDict
-
-LOG = logging.getLogger(__name__)
 
 
 def load(directories: List[str], require_all: bool = True,
@@ -25,7 +22,6 @@ def load(directories: List[str], require_all: bool = True,
 
     # load raw data
     for directory in directories:
-        LOG.info("loading schemas from '%s'", directory)
         load_dir(directory, result, None, loaded_list, hashes)
 
     # interpret all top-level keys as schemas

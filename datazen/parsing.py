@@ -67,6 +67,9 @@ def load_stream(data_stream: TextIO, data_path: str) -> Tuple[dict, bool]:
         LOG.error("can't load data from '%s' (unknown extension '%s')",
                   data_path, ext)
 
+    if not result:
+        LOG.error("failed to load '%s'", data_path)
+
     return data, result
 
 

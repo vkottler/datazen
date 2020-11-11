@@ -76,15 +76,17 @@ def test_load_manifest():
     assert "yaml2" in cfg_data2 and "json2" in cfg_data2
     assert len(cfg_data2["top_list"]) == 6
 
+    assert env.render("a")
+    assert env.render("b")
+    assert not env.render("c")
+    assert not env.render("d")
+
     assert env.compile("a")
     assert env.compile("a")
     assert env.compile("b")
     assert env.compile("c")
     assert not env.compile("d")
     assert env.compile("e")
-    assert env.render("a")
-    assert env.render("b")
-    assert not env.render("c")
 
     # clean the cache so that we don't commit it to the repository, it's not
     # worth the cost of using relative paths over absolute paths

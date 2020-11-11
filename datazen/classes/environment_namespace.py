@@ -93,7 +93,9 @@ class EnvironmentNamespace:
 
         for dir_data in dir_list:
             if dir_path == dir_data["path"]:
-                log_fn = LOG.debug if allow_dup else LOG.error
+                def noop(*_, **__):
+                    pass
+                log_fn = noop if allow_dup else noop
                 log_fn("not adding duplicate directory '%s' to '%s'", dir_path,
                        dir_type.value)
                 return allow_dup

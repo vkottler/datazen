@@ -18,7 +18,22 @@ compiles:
   index_path: "a.a"
 - name: "e"
   index_path: "a"
+  dependencies:
+  - "a"
+  - "b"
+  - "c"
 
 renders:
 - name: "a"
+  dependencies:
+  - "a"
+  - "b"
+  - "c"
 - name: "b"
+  dependencies:
+  - "a"
+  - "b"
+  - "c"
+- name: "d"
+  dependencies:
+  - "x"

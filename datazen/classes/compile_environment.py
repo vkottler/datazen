@@ -4,6 +4,7 @@ datazen - An environment extension that exposes compilation capabilities.
 """
 
 # built-in
+from collections import defaultdict
 import logging
 import os
 
@@ -17,6 +18,14 @@ LOG = logging.getLogger(__name__)
 
 class CompileEnvironment(ManifestCacheEnvironment):
     """ Leverages a cache-equipped environment to perform compilations. """
+
+    def __init__(self):
+        """
+        Add compiled data to a dictionary whenever a compilation is performed.
+        """
+
+        super().__init__()
+        self.compile_data = defaultdict(dict)
 
     def valid_compile(self, entry: dict, namespace: str) -> bool:
         """ Perform the compilation specified by the entry. """
@@ -40,4 +49,6 @@ class CompileEnvironment(ManifestCacheEnvironment):
         with open(path, mode) as out_file:
             out_file.write(str_compile(data, output_type))
             LOG.info("compiled '%s' data to '%s'", output_type, path)
+
+        self.compile_data[entry["name"]] = data
         return True
