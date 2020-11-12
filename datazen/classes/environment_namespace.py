@@ -75,8 +75,8 @@ class EnvironmentNamespace:
 
         for dir_inst in dir_data:
             if dir_inst["path"] in to_load:
-                LOG.info("loaded '%s' as '%s'", dir_inst["path"],
-                         dir_type.value)
+                LOG.debug("loaded '%s' as '%s'", dir_inst["path"],
+                          dir_type.value)
                 dir_inst["loaded"] = True
                 loaded = loaded + 1
 
@@ -106,7 +106,7 @@ class EnvironmentNamespace:
             return False
 
         dir_list.append({"path": dir_path, "loaded": False})
-        LOG.info("added '%s' to '%s'", dir_path, dir_type.value)
+        LOG.debug("added '%s' to '%s'", dir_path, dir_type.value)
         return True
 
     def add_dirs(self, dir_type: DataType, dir_paths: List[str],

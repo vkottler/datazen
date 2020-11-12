@@ -5,7 +5,6 @@ datazen - An environment extension that exposes compilation capabilities.
 
 # built-in
 import logging
-import os
 from typing import List, Tuple
 
 # internal
@@ -49,9 +48,9 @@ class CompileEnvironment(TaskEnvironment):
         self.task_data["compiles"][entry["name"]] = data
 
         # make sure this compilation needs to be performed
-        compile_deps = ["configs", "variables", "schemas"]
-        if (not self.manifest_changed and os.path.isfile(path) and
-                not deps_changed and self.get_new_loaded(compile_deps) == 0):
+        if self.already_satisfied(entry["name"], path,
+                                  ["configs", "variables", "schemas"],
+                                  deps_changed):
             LOG.debug("compile '%s' satisfied, skipping", entry["name"])
             return True, False
 

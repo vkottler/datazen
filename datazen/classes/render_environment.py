@@ -42,9 +42,8 @@ class RenderEnvironment(TaskEnvironment):
             return False, False
 
         # determine if we need to perform this render
-        render_deps = ["templates"]
-        if (not self.manifest_changed and os.path.isfile(path) and
-                not deps_changed and self.get_new_loaded(render_deps) == 0):
+        if self.already_satisfied(entry["name"], path, ["templates"],
+                                  deps_changed):
             LOG.debug("render '%s' satisfied, skipping", entry["name"])
             return True, False
 

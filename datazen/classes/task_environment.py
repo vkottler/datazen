@@ -7,6 +7,7 @@ datazen - A class for exposing the capability to run concrete tasks against
 # built-in
 from collections import defaultdict
 import logging
+import os
 from typing import List, Tuple
 
 # internal
@@ -79,6 +80,28 @@ class TaskEnvironment(ManifestCacheEnvironment):
                 dep_data.update(self.task_data[dep_tup[0]][dep_tup[1]])
 
         return dep_data
+
+    def already_satisfied(self, target: str, output_path: str,
+                          load_deps: List[str],
+                          deps_changed: List[str] = None) -> bool:
+        """
+        Check if a target is already satisfied, if not debug-log some
+        information about why not.
+        """
+
+        is_file = os.path.isfile(output_path)
+        newly_loaded = self.get_new_loaded(load_deps)
+        result = (not self.manifest_changed and is_file and not deps_changed
+                  and newly_loaded == 0)
+
+        # log less-obvious dependency-resolution hits
+        if is_file:
+            if deps_changed:
+                LOG.debug("%s: %s updates detected", target, deps_changed)
+            if newly_loaded != 0:
+                LOG.debug("%s: %d file updates detected", target, newly_loaded)
+
+        return result
 
     def handle_task(
         self,
