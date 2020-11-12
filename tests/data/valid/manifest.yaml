@@ -29,6 +29,9 @@ compiles:
   - "a"
   - "b"
   - "c"
+- name: "g"
+  dependencies:
+  - "noop-test"
 
 renders:
 - name: "a"

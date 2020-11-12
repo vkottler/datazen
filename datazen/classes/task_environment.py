@@ -73,7 +73,9 @@ class TaskEnvironment(ManifestCacheEnvironment):
         # flatten all of the tasks' data into a single dict
         for dep in dep_list:
             dep_tup = dep_slug_unwrap(dep, self.default)
-            dep_data.update(self.task_data[dep_tup[0]][dep_tup[1]])
+            curr_data = self.task_data[dep_tup[0]][dep_tup[1]]
+            if isinstance(curr_data, dict):
+                dep_data.update(self.task_data[dep_tup[0]][dep_tup[1]])
 
         return dep_data
 
@@ -83,6 +85,11 @@ class TaskEnvironment(ManifestCacheEnvironment):
         Handle the setup for manifest tasks, such as loading additional data
         directories and setting the correct output directory.
         """
+
+        # fall back on default behavior if the manifest doesn't even have
+        # an entry for this key
+        if key_name not in self.manifest["data"]:
+            return self.handles[key_name]({"name": ""}, ROOT_NAMESPACE, {})
 
         if task_stack is None:
             task_stack = []

@@ -88,6 +88,7 @@ def test_load_manifest():
     assert not env.compile("d")
     assert env.compile("e")
     assert env.compile("f")
+    assert not env.compile("g")
 
     # clean the cache so that we don't commit it to the repository, it's not
     # worth the cost of using relative paths over absolute paths
