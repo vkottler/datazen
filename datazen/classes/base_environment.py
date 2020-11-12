@@ -36,7 +36,8 @@ def dep_slug_unwrap(slug: str, default_op: str) -> Tuple[str, str]:
 
     result = (default_op, slug)
     if SLUG_DELIM in slug:
-        result = tuple(slug.split(SLUG_DELIM))
+        split = slug.split(SLUG_DELIM, 1)
+        result = (split[0], split[1])
     return result
 
 

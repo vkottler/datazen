@@ -9,14 +9,14 @@ import logging
 import os
 
 # internal
-from datazen.classes.manifest_cache_environment import ManifestCacheEnvironment
+from datazen.classes.task_environment import TaskEnvironment
 from datazen.compile import str_compile, get_compile_output
 from datazen.paths import advance_dict_by_path
 
 LOG = logging.getLogger(__name__)
 
 
-class CompileEnvironment(ManifestCacheEnvironment):
+class CompileEnvironment(TaskEnvironment):
     """ Leverages a cache-equipped environment to perform compilations. """
 
     def __init__(self):
@@ -26,14 +26,20 @@ class CompileEnvironment(ManifestCacheEnvironment):
 
         super().__init__()
         self.compile_data = defaultdict(dict)
+        self.handles["compiles"] = self.valid_compile
 
-    def valid_compile(self, entry: dict, namespace: str) -> bool:
+    def valid_compile(self, entry: dict, namespace: str,
+                      dep_data: dict = None) -> bool:
         """ Perform the compilation specified by the entry. """
 
         path, output_type = get_compile_output(entry)
 
         # load configs early to update cache
         data = self.cached_load_configs(namespace)
+
+        # update this dict with the dependency data
+        if dep_data is not None:
+            data.update(dep_data)
 
         # advance the dict if it was requested
         if "index_path" in entry:
