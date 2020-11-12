@@ -1,1 +1,4 @@
 yaml3: "yaml"
+yaml3_dict:
+  a: "a"
+  b: "b"

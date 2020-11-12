@@ -57,7 +57,8 @@ class ManifestCacheEnvironment(ManifestEnvironment):
 
             # correctly set the state of whether or not this manifest
             # has changed
-            self.manifest_changed = self.cache.check_hit(ROOT_NAMESPACE, path)
+            self.manifest_changed = not self.cache.check_hit(ROOT_NAMESPACE,
+                                                             path)
 
             # save a copy of the initial cache, so that we can use it to
             # determine if state has changed when evaluating targets
