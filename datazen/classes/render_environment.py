@@ -5,6 +5,7 @@ datazen - An environment extension that exposes rendering capabilities.
 
 # built-in
 import logging
+import os
 from typing import List, Tuple
 
 # internal
@@ -22,15 +23,39 @@ class RenderEnvironment(TaskEnvironment):
         super().__init__()
         self.handles["renders"] = self.valid_render
 
-    def valid_render(self, render_entry: dict, namespace: str,
+    def valid_render(self, entry: dict, namespace: str,
                      dep_data: dict = None,
                      deps_changed: List[str] = None) -> Tuple[bool, bool]:
         """ Perform the render specified by the entry. """
 
-        LOG.info(self.manifest["path"])
-        LOG.info(render_entry)
-        LOG.info(namespace)
-        LOG.info(dep_data)
-        LOG.info(deps_changed)
+        # determine the output that will be produced
+        path = entry["name"]
+        if "output_path" in entry:
+            path = entry["output_path"]
+        path = os.path.join(entry["output_dir"], path)
+
+        # load templates
+        templates = self.cached_load_templates(namespace)
+
+        if entry["name"] not in templates:
+            LOG.error("no template for key '%s' found", entry["name"])
+            return False, False
+
+        # determine if we need to perform this render
+        render_deps = ["templates"]
+        if (not self.manifest_changed and os.path.isfile(path) and
+                not deps_changed and self.get_new_loaded(render_deps) == 0):
+            LOG.debug("render '%s' satisfied, skipping", entry["name"])
+            return True, False
+
+        # render the template
+        with open(path, "w") as render_out:
+            render_str = templates[entry["name"]].render(dep_data)
+            render_out.write(render_str)
+
+            # save the output into a dict for consistency
+            self.task_data["renders"][entry["name"]] = render_str
+
+        LOG.info("(%s) rendered '%s'", entry["name"], path)
 
         return True, True

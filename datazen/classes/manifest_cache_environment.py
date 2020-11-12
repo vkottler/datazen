@@ -6,7 +6,10 @@ datazen - A class for adding caching to the manifest-loading environment.
 # built-in
 import logging
 import os
-from typing import List
+from typing import List, Dict
+
+# third-party
+import jinja2
 
 # internal
 from datazen.classes.manifest_environment import ManifestEnvironment
@@ -16,6 +19,7 @@ from datazen import (
 )
 from datazen.classes.file_info_cache import FileInfoCache, cmp_total_loaded
 from datazen.classes.file_info_cache import copy as copy_cache
+from datazen.classes.file_info_cache import meld as meld_cache
 
 LOG = logging.getLogger(__name__)
 
@@ -41,6 +45,7 @@ class ManifestCacheEnvironment(ManifestEnvironment):
 
         super().__init__()
         self.cache = None
+        self.aggregate_cache = None
         self.initial_cache = None
         self.manifest_changed = True
 
@@ -54,6 +59,7 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         # if we successfully loaded this manifest, try to load its cache
         if result:
             self.cache = FileInfoCache(manifest_cache_dir(path, self.manifest))
+            self.aggregate_cache = copy_cache(self.cache)
 
             # correctly set the state of whether or not this manifest
             # has changed
@@ -63,26 +69,31 @@ class ManifestCacheEnvironment(ManifestEnvironment):
             # save a copy of the initial cache, so that we can use it to
             # determine if state has changed when evaluating targets
             self.initial_cache = copy_cache(self.cache)
+            LOG.debug("cache-environment loaded from '%s'", path)
 
         return result and self.cache is not None
 
     def clean_cache(self) -> None:
         """ Remove cached data from the file-system. """
 
-        self.unload_all()
+        for name in self.namespaces:
+            self.unload_all(name)
         if self.cache is not None:
             self.cache.clean()
+        self.manifest_changed = True
 
     def write_cache(self) -> None:
         """ Commit cached data to the file-system. """
 
         if self.cache is not None:
-            self.cache.write()
+            meld_cache(self.aggregate_cache, self.cache)
+            self.aggregate_cache.write()
 
     def restore_cache(self) -> None:
         """ Return the cache to its initially-loaded state. """
 
         if self.cache is not None:
+            meld_cache(self.aggregate_cache, self.cache)
             self.cache = copy_cache(self.initial_cache)
 
     def get_new_loaded(self, types: List[str]) -> int:
@@ -119,3 +130,11 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         return self.load_configs(self.cache.get_data("configs"),
                                  self.cache.get_data("variables"),
                                  self.cache.get_data("schemas"), name)
+
+    def cached_load_templates(
+        self,
+        name: str = ROOT_NAMESPACE
+    ) -> Dict[str, jinja2.Template]:
+        """ Load templates, proxied through the cache. """
+
+        return self.load_templates(self.cache.get_data("templates"), name)

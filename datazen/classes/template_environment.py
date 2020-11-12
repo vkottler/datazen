@@ -13,7 +13,7 @@ import jinja2
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
-from datazen.classes.base_environment import BaseEnvironment
+from datazen.classes.base_environment import BaseEnvironment, LOADTYPE
 from datazen.templates import load as load_templates
 
 
@@ -23,17 +23,23 @@ class TemplateEnvironment(BaseEnvironment):
     capability to function.
     """
 
-    def load_templates(self) -> Dict[str, jinja2.Template]:
+    def load_templates(
+        self,
+        template_loads: LOADTYPE = (None, None),
+        name: str = ROOT_NAMESPACE
+    ) -> Dict[str, jinja2.Template]:
         """ Load templates, resolve any un-loaded template directories. """
 
         # determine directories that need to be loaded
         data_type = DataType.TEMPLATE
-        to_load = self.get_to_load(data_type)
+        to_load = self.get_to_load(data_type, name)
 
         # load new templates
-        template_data = self.get_data(data_type)
+        template_data = self.get_data(data_type, name)
         if to_load:
-            template_data.update(load_templates(to_load))
+            template_data.update(load_templates(to_load, template_loads[0],
+                                                template_loads[1]))
+            self.update_load_state(data_type, to_load, name)
 
         return template_data
 

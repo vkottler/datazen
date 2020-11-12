@@ -53,10 +53,50 @@ def test_environment_from_manifest():
     assert env.compile("a") == (False, False)
 
 
+def test_operations():
+    """ Test some 'compile' and 'render' scenarios. """
+
+    manifest = get_resource("manifest.yaml", True)
+    env = from_manifest(manifest)
+    env.clean_cache()
+    env = from_manifest(manifest)
+
+    assert env.manifest_changed
+
+    assert env.render("a") == (True, True)
+
+    # here 'b' render is already satisfied, because a compile depended on it
+    assert env.render("b") == (True, False)
+
+    assert env.render("c") == (False, False)
+    assert env.render("d") == (False, False)
+
+    assert env.compile("a") == (True, False)
+    assert env.compile("a") == (True, False)
+    assert env.compile("b") == (True, False)
+    assert env.compile("c") == (True, False)
+    assert env.compile("d") == (False, False)
+    assert env.compile("f") == (True, True)
+    assert env.compile("g") == (False, False)
+
+    env = from_manifest(manifest)
+    assert not env.manifest_changed
+    assert env.compile("e") == (True, False)
+    assert env.render("e") == (False, False)
+
+    # clean the cache so that we don't commit it to the repository, it's not
+    # worth the cost of using relative paths over absolute paths
+    env.clean_cache()
+
+
 def test_load_manifest():
     """ Test a nominal manifest-loading scenario. """
 
-    env = from_manifest(get_resource("manifest.yaml", True))
+    manifest = get_resource("manifest.yaml", True)
+    env = from_manifest(manifest)
+    env.clean_cache()
+    env = from_manifest(manifest)
+
     cfg_data1 = env.cached_load_configs()
     assert cfg_data1
     assert env.cached_load_configs()
@@ -75,25 +115,6 @@ def test_load_manifest():
     # make sure configs loaded correctly
     assert "yaml2" in cfg_data2 and "json2" in cfg_data2
     assert len(cfg_data2["top_list"]) == 6
-
-    assert env.render("a") == (True, True)
-
-    # here 'b' render is already satisfied, because a compile depended on it
-    assert env.render("b") == (True, False)
-
-    assert env.render("c") == (False, False)
-    assert env.render("d") == (False, False)
-
-    assert env.compile("a") == (True, False)
-    assert env.compile("a") == (True, False)
-    assert env.compile("b") == (True, False)
-    assert env.compile("c") == (True, False)
-    assert env.compile("d") == (False, False)
-    assert env.compile("f") == (True, True)
-    assert env.compile("g") == (False, False)
-
-    env.manifest_changed = False
-    assert env.compile("e") == (True, False)
 
     # clean the cache so that we don't commit it to the repository, it's not
     # worth the cost of using relative paths over absolute paths

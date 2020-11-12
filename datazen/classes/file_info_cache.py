@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 
 # internal
 from datazen import DEFAULT_TYPE
-from datazen.parsing import get_file_hash
+from datazen.parsing import get_file_hash, merge
 from datazen.load import load_dir_only
 from datazen.compile import str_compile
 
@@ -27,7 +27,7 @@ class FileInfoCache:
     def __init__(self, cache_dir: str = None):
         """ Construct an empty cache or optionally load from a directory. """
 
-        self.data: dict = DATA_DEFAULT
+        self.data: dict = deepcopy(DATA_DEFAULT)
         self.cache_dir: str = ""
         if cache_dir is not None:
             self.load(cache_dir)
@@ -80,7 +80,7 @@ class FileInfoCache:
     def clean(self) -> None:
         """ Remove cached data from the file-system. """
 
-        self.data = DATA_DEFAULT
+        self.data = deepcopy(DATA_DEFAULT)
         if self.cache_dir != "":
             shutil.rmtree(self.cache_dir)
             os.makedirs(self.cache_dir, exist_ok=True)
@@ -109,6 +109,12 @@ def copy(cache: FileInfoCache) -> FileInfoCache:
     new_cache.data = deepcopy(cache.data)
 
     return new_cache
+
+
+def meld(cache_a: FileInfoCache, cache_b: FileInfoCache) -> None:
+    """ Promote all updates from cache_b into cache_a. """
+
+    merge(cache_a.data, cache_b.data)
 
 
 def cmp_loaded_count(cache_a: FileInfoCache, cache_b: FileInfoCache,

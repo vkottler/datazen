@@ -73,3 +73,5 @@ renders:
         type: "string"
       output_dir:
         type: "string"
+      output_path:
+        type: "string"

@@ -43,6 +43,12 @@ renders:
   dependencies:
   - "a"
   - "b"
+  output_path: "b_cool"
 - name: "d"
   dependencies:
   - "x"
+- name: "e"
+  dependencies:
+  - "a"
+  - "b"
+  - "c"
