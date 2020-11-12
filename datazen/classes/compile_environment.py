@@ -4,7 +4,6 @@ datazen - An environment extension that exposes compilation capabilities.
 """
 
 # built-in
-from collections import defaultdict
 import logging
 import os
 
@@ -25,7 +24,6 @@ class CompileEnvironment(TaskEnvironment):
         """
 
         super().__init__()
-        self.compile_data = defaultdict(dict)
         self.handles["compiles"] = self.valid_compile
 
     def valid_compile(self, entry: dict, namespace: str,
@@ -47,7 +45,8 @@ class CompileEnvironment(TaskEnvironment):
 
         # make sure this compilation needs to be performed
         compile_deps = ["configs", "variables", "schemas"]
-        if os.path.isfile(path) and self.get_new_loaded(compile_deps) == 0:
+        if (not self.manifest_changed and os.path.isfile(path) and
+                self.get_new_loaded(compile_deps) == 0):
             LOG.debug("compile '%s' satisfied, skipping", entry["name"])
             return True
 
@@ -56,5 +55,5 @@ class CompileEnvironment(TaskEnvironment):
             out_file.write(str_compile(data, output_type))
             LOG.info("compiled '%s' data to '%s'", output_type, path)
 
-        self.compile_data[entry["name"]] = data
+        self.task_data["compiles"][entry["name"]] = data
         return True

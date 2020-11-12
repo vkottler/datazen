@@ -42,18 +42,22 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         super().__init__()
         self.cache = None
         self.initial_cache = None
+        self.manifest_changed = True
 
     def load_manifest_with_cache(self, path: str = DEFAULT_MANIFEST) -> bool:
         """
         Load a manifest and its cache, or set up a new cache if one doesn't
         exist.
         """
-
         result = self.load_manifest(path)
 
         # if we successfully loaded this manifest, try to load its cache
         if result:
             self.cache = FileInfoCache(manifest_cache_dir(path, self.manifest))
+
+            # correctly set the state of whether or not this manifest
+            # has changed
+            self.manifest_changed = self.cache.check_hit(ROOT_NAMESPACE, path)
 
             # save a copy of the initial cache, so that we can use it to
             # determine if state has changed when evaluating targets

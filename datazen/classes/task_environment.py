@@ -38,6 +38,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         self.visited = defaultdict(bool)
         self.default = "noop"
         self.handles = defaultdict(lambda: self.valid_noop)
+        self.task_data = defaultdict(lambda: defaultdict(dict))
 
     def is_resolved(self, operation: str, target: str) -> bool:
         """
@@ -61,6 +62,21 @@ class TaskEnvironment(ManifestCacheEnvironment):
                                                            dep_tup[1]):
                 task_stack.append(dep_tup)
 
+    def get_dep_data(self, dep_list: List[str]) -> dict:
+        """
+        From a list of dependencies, create a dictionary with any task data
+        they've saved.
+        """
+
+        dep_data = {}
+
+        # flatten all of the tasks' data into a single dict
+        for dep in dep_list:
+            dep_tup = dep_slug_unwrap(dep, self.default)
+            dep_data.update(self.task_data[dep_tup[0]][dep_tup[1]])
+
+        return dep_data
+
     def handle_task(self, key_name: str, target: str,
                     task_stack: List[Tuple[str, str]] = None) -> bool:
         """
@@ -80,15 +96,19 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
                 LOG.info("executing '%s'", get_dep_slug(key_name, target))
 
-                # push dependencies first
+                # push dependencies
+                dep_data = {}
                 if "dependencies" in data:
                     self.push_deps(data["dependencies"], task_stack, target)
 
-                # resolve dependencies first
-                while task_stack:
-                    task = task_stack.pop()
-                    if not self.handle_task(task[0], task[1], task_stack):
-                        return False
+                    # resolve dependencies
+                    while task_stack:
+                        task = task_stack.pop()
+                        if not self.handle_task(task[0], task[1], task_stack):
+                            return False
+
+                    # provide dependency data as "flattened"
+                    dep_data = self.get_dep_data(data["dependencies"])
 
                 # resolve the output directory
                 set_output_dir(data, self.manifest["dir"],
@@ -105,7 +125,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
                 # write-through to the cache when we complete an operation,
                 # if it succeeded
-                result = self.handles[key_name](data, namespace, None)
+                result = self.handles[key_name](data, namespace, dep_data)
                 if result:
                     self.resolve(key_name, target)
                     self.write_cache()

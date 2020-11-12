@@ -24,6 +24,11 @@ compiles:
   - "compiles-a"
   - "b"
   - "compiles-c"
+- name: "f"
+  dependencies:
+  - "a"
+  - "b"
+  - "c"
 
 renders:
 - name: "a"

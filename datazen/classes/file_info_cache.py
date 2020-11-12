@@ -13,6 +13,7 @@ from typing import Dict, List, Tuple
 
 # internal
 from datazen import DEFAULT_TYPE
+from datazen.parsing import get_file_hash
 from datazen.load import load_dir_only
 from datazen.compile import str_compile
 
@@ -47,6 +48,24 @@ class FileInfoCache:
         """ Get the cached, dictionary of file hashes for a certain key. """
 
         return self.data["hashes"][sub_dir]
+
+    def check_hit(self, sub_dir: str, path: str,
+                  also_cache: bool = True) -> bool:
+        """
+        Determine if a given file already exists with its current hash in the
+        cache, if not return False and optionally add it to the cache. """
+
+        file_hash = get_file_hash(path)
+        abs_path = os.path.abspath(path)
+        hashes = self.get_hashes(sub_dir)
+        if abs_path in hashes and hashes[abs_path] == file_hash:
+            return True
+
+        if also_cache:
+            hashes[abs_path] = file_hash
+            self.get_loaded(sub_dir).append(file_hash)
+
+        return False
 
     def get_loaded(self, sub_dir: str) -> List[str]:
         """ Get the cached, list of loaded files for a certain key. """

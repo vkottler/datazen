@@ -16,7 +16,7 @@ class RenderEnvironment(TaskEnvironment):
     """ Leverages a cache-equipped environment to render templates. """
 
     def __init__(self):
-        """ TODO """
+        """ Add the 'renders' handle. """
 
         super().__init__()
         self.handles["renders"] = self.valid_render
