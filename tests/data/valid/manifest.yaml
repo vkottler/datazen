@@ -15,13 +15,15 @@ compiles:
   output_type: "json"
   output_dir: "b_out"
 - name: "c"
+  dependencies:
+  - "renders-b"
   index_path: "a.a"
 - name: "e"
   index_path: "a"
   dependencies:
-  - "a"
+  - "compiles-a"
   - "b"
-  - "c"
+  - "compiles-c"
 
 renders:
 - name: "a"
@@ -33,7 +35,6 @@ renders:
   dependencies:
   - "a"
   - "b"
-  - "c"
 - name: "d"
   dependencies:
   - "x"

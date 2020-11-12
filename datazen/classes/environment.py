@@ -10,7 +10,7 @@ from typing import List, Tuple
 
 # internal
 from datazen import ROOT_NAMESPACE
-from datazen.classes.base_environment import get_dep_slug
+from datazen.classes.base_environment import get_dep_slug, dep_slug_unwrap
 from datazen.classes.manifest_environment import set_output_dir
 from datazen.classes.compile_environment import CompileEnvironment
 from datazen.classes.render_environment import RenderEnvironment
@@ -47,8 +47,10 @@ class Environment(CompileEnvironment, RenderEnvironment):
         """
 
         for dep in dep_dict:
-            if dep != curr_target and not self.is_resolved("compiles", dep):
-                task_stack.append(("compiles", dep))
+            dep_tup = dep_slug_unwrap(dep, "compiles")
+            if dep != curr_target and not self.is_resolved(dep_tup[0],
+                                                           dep_tup[1]):
+                task_stack.append(dep_tup)
 
     def handle_task(self, key_name: str, target: str,
                     task_stack: List[Tuple[str, str]] = None) -> bool:
