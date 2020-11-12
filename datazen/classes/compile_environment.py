@@ -6,6 +6,7 @@ datazen - An environment extension that exposes compilation capabilities.
 # built-in
 import logging
 import os
+from typing import List, Tuple
 
 # internal
 from datazen.classes.task_environment import TaskEnvironment
@@ -27,7 +28,8 @@ class CompileEnvironment(TaskEnvironment):
         self.handles["compiles"] = self.valid_compile
 
     def valid_compile(self, entry: dict, namespace: str,
-                      dep_data: dict = None) -> bool:
+                      dep_data: dict = None,
+                      deps_changed: List[str] = None) -> Tuple[bool, bool]:
         """ Perform the compilation specified by the entry. """
 
         path, output_type = get_compile_output(entry)
@@ -43,17 +45,19 @@ class CompileEnvironment(TaskEnvironment):
         if "index_path" in entry:
             data = advance_dict_by_path(entry["index_path"].split("."), data)
 
+        # set task-data early, in case we don't need to re-compile
+        self.task_data["compiles"][entry["name"]] = data
+
         # make sure this compilation needs to be performed
         compile_deps = ["configs", "variables", "schemas"]
         if (not self.manifest_changed and os.path.isfile(path) and
-                self.get_new_loaded(compile_deps) == 0):
+                not deps_changed and self.get_new_loaded(compile_deps) == 0):
             LOG.debug("compile '%s' satisfied, skipping", entry["name"])
-            return True
+            return True, False
 
         mode = "a" if "append" in entry and entry["append"] else "w"
         with open(path, mode) as out_file:
             out_file.write(str_compile(data, output_type))
             LOG.info("compiled '%s' data to '%s'", output_type, path)
 
-        self.task_data["compiles"][entry["name"]] = data
-        return True
+        return True, True

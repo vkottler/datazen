@@ -50,7 +50,7 @@ def test_environment_from_manifest():
                                  False)
     env = from_manifest(manifest_path)
     assert not env.get_valid()
-    assert not env.compile("a")
+    assert env.compile("a") == (False, False)
 
 
 def test_load_manifest():
@@ -76,19 +76,24 @@ def test_load_manifest():
     assert "yaml2" in cfg_data2 and "json2" in cfg_data2
     assert len(cfg_data2["top_list"]) == 6
 
-    assert env.render("a")
-    assert env.render("b")
-    assert not env.render("c")
-    assert not env.render("d")
+    assert env.render("a") == (True, True)
 
-    assert env.compile("a")
-    assert env.compile("a")
-    assert env.compile("b")
-    assert env.compile("c")
-    assert not env.compile("d")
-    assert env.compile("e")
-    assert env.compile("f")
-    assert not env.compile("g")
+    # here 'b' render is already satisfied, because a compile depended on it
+    assert env.render("b") == (True, False)
+
+    assert env.render("c") == (False, False)
+    assert env.render("d") == (False, False)
+
+    assert env.compile("a") == (True, False)
+    assert env.compile("a") == (True, False)
+    assert env.compile("b") == (True, False)
+    assert env.compile("c") == (True, False)
+    assert env.compile("d") == (False, False)
+    assert env.compile("f") == (True, True)
+    assert env.compile("g") == (False, False)
+
+    env.manifest_changed = False
+    assert env.compile("e") == (True, False)
 
     # clean the cache so that we don't commit it to the repository, it's not
     # worth the cost of using relative paths over absolute paths

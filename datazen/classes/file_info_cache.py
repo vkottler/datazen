@@ -63,7 +63,7 @@ class FileInfoCache:
 
         if also_cache:
             hashes[abs_path] = file_hash
-            self.get_loaded(sub_dir).append(file_hash)
+            self.get_loaded(sub_dir).append(abs_path)
 
         return False
 

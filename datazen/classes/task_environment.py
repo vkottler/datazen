@@ -24,12 +24,13 @@ class TaskEnvironment(ManifestCacheEnvironment):
     and tracking whether or not updates are required.
     """
 
-    def valid_noop(self, entry: dict, namespace: str, _: dict = None) -> bool:
+    def valid_noop(self, entry: dict, namespace: str,
+                   _: dict = None, __: List[str] = None) -> Tuple[bool, bool]:
         """ Default handle for a potentially-unregistered operation. """
 
         LOG.error("('%s') '%s' no handler found (default: '%s')",
                   namespace, entry["name"], self.default)
-        return False
+        return False, False
 
     def __init__(self):
         """ Add a notion of 'visited' targets to the environment data. """
@@ -79,8 +80,12 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         return dep_data
 
-    def handle_task(self, key_name: str, target: str,
-                    task_stack: List[Tuple[str, str]] = None) -> bool:
+    def handle_task(
+        self,
+        key_name: str,
+        target: str,
+        task_stack: List[Tuple[str, str]] = None
+    ) -> Tuple[bool, bool]:
         """
         Handle the setup for manifest tasks, such as loading additional data
         directories and setting the correct output directory.
@@ -89,7 +94,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         # fall back on default behavior if the manifest doesn't even have
         # an entry for this key
         if key_name not in self.manifest["data"]:
-            return self.handles[key_name]({"name": ""}, ROOT_NAMESPACE, {})
+            return self.handles[key_name]({"name": ""}, ROOT_NAMESPACE)
 
         if task_stack is None:
             task_stack = []
@@ -99,20 +104,28 @@ class TaskEnvironment(ManifestCacheEnvironment):
             if target == data["name"]:
                 # skip targets we know we've resolved
                 if self.is_resolved(key_name, target):
-                    return True
+                    return True, False
 
                 LOG.info("executing '%s'", get_dep_slug(key_name, target))
 
                 # push dependencies
                 dep_data = {}
+                deps_changed = []
                 if "dependencies" in data:
                     self.push_deps(data["dependencies"], task_stack, target)
 
                     # resolve dependencies
                     while task_stack:
                         task = task_stack.pop()
-                        if not self.handle_task(task[0], task[1], task_stack):
-                            return False
+                        result = self.handle_task(task[0], task[1], task_stack)
+
+                        # if a dependency failed, propagate it up
+                        if not result[0]:
+                            return False, False
+                        # otherwise if a dependency was updated (performed),
+                        # capture it in a list
+                        if result[1]:
+                            deps_changed.append(get_dep_slug(task[0], task[1]))
 
                     # provide dependency data as "flattened"
                     dep_data = self.get_dep_data(data["dependencies"])
@@ -128,16 +141,17 @@ class TaskEnvironment(ManifestCacheEnvironment):
                 # make sure this namespace is valid
                 if not self.get_valid(namespace):
                     LOG.info("namespace '%s' is invalid!", namespace)
-                    return False
+                    return False, False
 
                 # write-through to the cache when we complete an operation,
                 # if it succeeded
-                result = self.handles[key_name](data, namespace, dep_data)
-                if result:
+                result = self.handles[key_name](data, namespace, dep_data,
+                                                deps_changed)
+                if result[0]:
                     self.resolve(key_name, target)
                     self.write_cache()
                     if namespace != ROOT_NAMESPACE:
                         self.restore_cache()
                 return result
 
-        return False
+        return False, False

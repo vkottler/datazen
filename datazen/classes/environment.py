@@ -6,6 +6,7 @@ datazen - A centralized store for runtime data.
 # built-in
 from collections import defaultdict
 import logging
+from typing import Tuple
 
 # internal
 from datazen.classes.compile_environment import CompileEnvironment
@@ -24,12 +25,12 @@ class Environment(CompileEnvironment, RenderEnvironment):
         self.visited = defaultdict(bool)
         self.default = "compiles"
 
-    def compile(self, target: str) -> bool:
+    def compile(self, target: str) -> Tuple[bool, bool]:
         """ Execute a named 'compile' target from the manifest. """
 
         return self.handle_task("compiles", target)
 
-    def render(self, target: str) -> bool:
+    def render(self, target: str) -> Tuple[bool, bool]:
         """ Execute a named 'render' target from the manifest. """
 
         return self.handle_task("renders", target)
