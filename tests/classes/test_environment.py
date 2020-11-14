@@ -84,6 +84,11 @@ def test_operations():
     assert env.compile("e") == (True, False)
     assert env.render("e") == (False, False)
 
+    # test default goals
+    assert env.execute() == (True, False)
+    del env.manifest["data"]["default_target"]
+    assert env.execute() == (True, False)
+
     # clean the cache so that we don't commit it to the repository, it's not
     # worth the cost of using relative paths over absolute paths
     env.clean_cache()

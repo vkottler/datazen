@@ -7,6 +7,8 @@ variables:
 - "variables"
 - "variables2"
 
+default_target: "renders-b"
+
 compiles:
 - name: "a"
   configs:

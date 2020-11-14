@@ -24,6 +24,9 @@ variables:
   schema:
     type: "string"
 
+default_target:
+  type: "string"
+
 compiles:
   type: list
   schema:

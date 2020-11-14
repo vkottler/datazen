@@ -9,6 +9,7 @@ import logging
 from typing import Tuple
 
 # internal
+from datazen.classes.base_environment import dep_slug_unwrap
 from datazen.classes.compile_environment import CompileEnvironment
 from datazen.classes.render_environment import RenderEnvironment
 
@@ -24,6 +25,21 @@ class Environment(CompileEnvironment, RenderEnvironment):
         super().__init__()
         self.visited = defaultdict(bool)
         self.default = "compiles"
+
+    def execute(self, target: str = "") -> Tuple[bool, bool]:
+        """ Execute an arbitrary target. """
+
+        # resolve a default target if one wasn't provided
+        if not target:
+            if "default_target" in self.manifest["data"]:
+                target = self.manifest["data"]["default_target"]
+                LOG.info("using default target '%s'", target)
+            elif self.manifest["data"][self.default]:
+                target = self.manifest["data"][self.default][0]["name"]
+                LOG.info("resolving first target '%s'", target)
+
+        slug = dep_slug_unwrap(target, self.default)
+        return self.handle_task(slug[0], slug[1])
 
     def compile(self, target: str) -> Tuple[bool, bool]:
         """ Execute a named 'compile' target from the manifest. """
