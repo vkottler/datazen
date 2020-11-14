@@ -54,3 +54,9 @@ renders:
   - "a"
   - "b"
   - "c"
+
+groups:
+- name: "test"
+  dependencies:
+  - "renders-a"
+  - "renders-b"

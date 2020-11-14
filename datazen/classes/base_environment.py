@@ -4,6 +4,7 @@ datazen - A base class to be extended for runtime data loading and storing.
 """
 
 # built-in
+from collections import defaultdict
 import logging
 from typing import Dict, List, Tuple
 from typing import Optional as Opt
@@ -115,10 +116,9 @@ class BaseEnvironment:
         all should be unique unless they don't load anything new.
         """
 
-        load_deps = {
-            "compiles": ["configs", "schemas", "variables"],
-            "renders": ["templates"],
-        }
+        load_deps = defaultdict(list)
+        load_deps["compiles"] = ["configs", "schemas", "variables"]
+        load_deps["renders"] = ["templates"]
 
         # add a unique namespace for this target if it loads
         # any new data as to not load any of this data upstream,

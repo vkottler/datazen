@@ -23,8 +23,7 @@ class RenderEnvironment(TaskEnvironment):
         super().__init__()
         self.handles["renders"] = self.valid_render
 
-    def valid_render(self, entry: dict, namespace: str,
-                     dep_data: dict = None,
+    def valid_render(self, entry: dict, namespace: str, dep_data: dict = None,
                      deps_changed: List[str] = None) -> Tuple[bool, bool]:
         """ Perform the render specified by the entry. """
 

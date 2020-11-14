@@ -11,12 +11,13 @@ from typing import Tuple
 # internal
 from datazen.classes.base_environment import dep_slug_unwrap
 from datazen.classes.compile_environment import CompileEnvironment
+from datazen.classes.group_environment import GroupEnvironment
 from datazen.classes.render_environment import RenderEnvironment
 
 LOG = logging.getLogger(__name__)
 
 
-class Environment(CompileEnvironment, RenderEnvironment):
+class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment):
     """ A wrapper for inheriting all environment-loading capabilities. """
 
     def __init__(self):

@@ -1,80 +1,92 @@
 output_dir:
-  type: "string"
+  type: string
 
 cache_dir:
-  type: "string"
+  type: string
 
 configs:
   type: list
   schema:
-    type: "string"
+    type: string
 
 schemas:
   type: list
   schema:
-    type: "string"
+    type: string
 
 templates:
   type: list
   schema:
-    type: "string"
+    type: string
 
 variables:
   type: list
   schema:
-    type: "string"
+    type: string
 
 default_target:
-  type: "string"
+  type: string
 
 compiles:
   type: list
   schema:
-    type: "dict"
+    type: dict
     schema:
       configs:
         type: list
         schema:
-          type: "string"
+          type: string
       schemas:
         type: list
         schema:
-          type: "string"
+          type: string
       variables:
         type: list
         schema:
-          type: "string"
+          type: string
       dependencies:
         type: list
         schema:
-          type: "string"
+          type: string
       name:
-        type: "string"
+        type: string
       output_type:
-        type: "string"
+        type: string
       output_dir:
-        type: "string"
+        type: string
       index_path:
-        type: "string"
+        type: string
       append:
-        type: "boolean"
+        type: boolean
 
 renders:
   type: list
   schema:
-    type: "dict"
+    type: dict
     schema:
       templates:
         type: list
         schema:
-          type: "string"
+          type: string
       dependencies:
         type: list
         schema:
-          type: "string"
+          type: string
       name:
-        type: "string"
+        type: string
       output_dir:
-        type: "string"
+        type: string
       output_path:
-        type: "string"
+        type: string
+
+groups:
+  type: list
+  schema:
+    type: dict
+    schema:
+      name:
+        type: string
+      dependencies:
+        type: list
+        schema:
+          type: string
