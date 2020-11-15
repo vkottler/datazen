@@ -12,7 +12,7 @@ import jinja2
 
 # internal
 from datazen.paths import get_file_name, get_file_ext
-from datazen.parsing import get_file_hash
+from datazen.parsing import set_file_hash
 
 
 def update_cache_primitives(dir_path: str, loaded_list: List[str],
@@ -25,10 +25,8 @@ def update_cache_primitives(dir_path: str, loaded_list: List[str],
     for path in os.listdir(dir_path):
         fpath = os.path.abspath(os.path.join(dir_path, path))
         if os.path.isfile(fpath):
-            str_hash = get_file_hash(fpath)
-            if fpath not in hashes or hashes[fpath]["hash"] != str_hash:
+            if set_file_hash(hashes, fpath):
                 loaded_list.append(fpath)
-            hashes[fpath]["hash"] = str_hash
 
 
 def load(template_dirs: List[str], loaded_list: List[str] = None,

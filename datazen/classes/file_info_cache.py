@@ -12,7 +12,7 @@ import shutil
 from typing import Dict, List, Tuple
 
 # internal
-from datazen.parsing import get_file_hash, merge
+from datazen.parsing import set_file_hash, merge
 from datazen.load import load_dir_only
 from datazen.compile import str_compile
 
@@ -56,17 +56,12 @@ class FileInfoCache:
         Determine if a given file already exists with its current hash in the
         cache, if not return False and optionally add it to the cache. """
 
-        file_hash = get_file_hash(path)
         abs_path = os.path.abspath(path)
-        hashes = self.get_hashes(sub_dir)
-        if abs_path in hashes and hashes[abs_path]["hash"] == file_hash:
-            return True
-
-        if also_cache:
-            hashes[abs_path]["hash"] = file_hash
+        is_new = set_file_hash(self.get_hashes(sub_dir), abs_path)
+        if also_cache and is_new:
             self.get_loaded(sub_dir).append(abs_path)
 
-        return False
+        return not is_new
 
     def get_loaded(self, sub_dir: str) -> List[str]:
         """ Get the cached, list of loaded files for a certain key. """

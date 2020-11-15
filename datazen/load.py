@@ -14,7 +14,7 @@ from datazen import GLOBAL_KEY
 from datazen.paths import get_path_list, advance_dict_by_path
 from datazen.paths import get_file_name
 from datazen.parsing import load as load_raw_resolve
-from datazen.parsing import get_file_hash
+from datazen.parsing import set_file_hash
 
 LOG = logging.getLogger(__name__)
 
@@ -119,18 +119,8 @@ def load_files(file_paths: List[str], root: str,
     for name in file_paths:
         full_path = os.path.join(root, name)
         assert os.path.isabs(full_path)
-
-        str_hash = get_file_hash(full_path)
-
-        # don't list files as new-or-changed that we load that have a
-        # matching hash
-        new = True
-        if full_path in hashes and str_hash == hashes[full_path]["hash"]:
-            new = False
-        hashes[full_path]["hash"] = str_hash
-
         if meld_and_resolve(full_path, meld_data[0], meld_data[1],
-                            meld_data[2]) and new:
+                            meld_data[2]) and set_file_hash(hashes, full_path):
             new_or_changed.append(full_path)
 
     return new_or_changed

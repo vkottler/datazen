@@ -9,6 +9,7 @@ import io
 import json
 import logging
 from typing import TextIO, List, Tuple
+import time
 
 # third-party
 import jinja2
@@ -94,6 +95,9 @@ def merge(dict_a: dict, dict_b: dict, path: List[str] = None) -> dict:
             elif isinstance(dict_a[key], list) and isinstance(dict_b[key],
                                                               list):
                 dict_a[key].extend(dict_b[key])
+            elif (isinstance(dict_a[key], float) and
+                  isinstance(dict_b[key], float)):
+                dict_a[key] = dict_b[key]
             else:
                 error_str = 'Conflict at %s' % '.'.join(path + [str(key)])
                 LOG.error(error_str)
@@ -127,3 +131,17 @@ def get_file_hash(path: str) -> str:
     with open(path) as data:
         contents = bytes(data.read(), "utf-8")
     return hashlib.md5(contents).hexdigest()
+
+
+def set_file_hash(hashes: dict, path: str) -> bool:
+    """ Evaluate a hash dictionary and update it on a miss. """
+
+    str_hash = get_file_hash(path)
+    result = True
+    if path in hashes and str_hash == hashes[path]["hash"]:
+        result = False
+    else:
+        hashes[path]["hash"] = str_hash
+        hashes[path]["time"] = time.time()
+
+    return result
