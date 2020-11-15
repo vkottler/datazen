@@ -16,23 +16,23 @@ from datazen.parsing import get_file_hash
 
 
 def update_cache_primitives(dir_path: str, loaded_list: List[str],
-                            hashes: Dict[str, str]) -> None:
+                            hashes: Dict[str, dict]) -> None:
     """
     From a directory path, update the 'loaded_list' and 'hashes' primitives
     that belong to an upstream cache.
     """
 
     for path in os.listdir(dir_path):
-        file_path = os.path.abspath(os.path.join(dir_path, path))
-        if os.path.isfile(file_path):
-            str_hash = get_file_hash(file_path)
-            if file_path not in hashes or hashes[file_path] != str_hash:
-                loaded_list.append(file_path)
-            hashes[file_path] = str_hash
+        fpath = os.path.abspath(os.path.join(dir_path, path))
+        if os.path.isfile(fpath):
+            str_hash = get_file_hash(fpath)
+            if fpath not in hashes or hashes[fpath]["hash"] != str_hash:
+                loaded_list.append(fpath)
+            hashes[fpath]["hash"] = str_hash
 
 
 def load(template_dirs: List[str], loaded_list: List[str] = None,
-         hashes: Dict[str, str] = None) -> Dict[str, jinja2.Template]:
+         hashes: Dict[str, dict] = None) -> Dict[str, jinja2.Template]:
     """
     Load jinja2 templates from a list of directories where templates can be
     found.

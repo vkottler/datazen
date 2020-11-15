@@ -12,13 +12,14 @@ import shutil
 from typing import Dict, List, Tuple
 
 # internal
-from datazen import DEFAULT_TYPE
 from datazen.parsing import get_file_hash, merge
 from datazen.load import load_dir_only
 from datazen.compile import str_compile
 
 LOG = logging.getLogger(__name__)
-DATA_DEFAULT = {"hashes": defaultdict(dict), "loaded": defaultdict(list)}
+
+DATA_DEFAULT = {"hashes": defaultdict(lambda: defaultdict(dict)),
+                "loaded": defaultdict(list)}
 
 
 class FileInfoCache:
@@ -44,7 +45,7 @@ class FileInfoCache:
         self.data["hashes"].update(new_data["hashes"])
         self.data["loaded"].update(new_data["loaded"])
 
-    def get_hashes(self, sub_dir: str) -> Dict[str, str]:
+    def get_hashes(self, sub_dir: str) -> Dict[str, dict]:
         """ Get the cached, dictionary of file hashes for a certain key. """
 
         return self.data["hashes"][sub_dir]
@@ -58,11 +59,11 @@ class FileInfoCache:
         file_hash = get_file_hash(path)
         abs_path = os.path.abspath(path)
         hashes = self.get_hashes(sub_dir)
-        if abs_path in hashes and hashes[abs_path] == file_hash:
+        if abs_path in hashes and hashes[abs_path]["hash"] == file_hash:
             return True
 
         if also_cache:
-            hashes[abs_path] = file_hash
+            hashes[abs_path]["hash"] = file_hash
             self.get_loaded(sub_dir).append(abs_path)
 
         return False
@@ -72,7 +73,7 @@ class FileInfoCache:
 
         return self.data["loaded"][sub_dir]
 
-    def get_data(self, name: str) -> Tuple[List[str], Dict[str, str]]:
+    def get_data(self, name: str) -> Tuple[List[str], Dict[str, dict]]:
         """ Get the tuple version of cached data. """
 
         return (self.get_loaded(name), self.get_hashes(name))
@@ -86,16 +87,15 @@ class FileInfoCache:
             os.makedirs(self.cache_dir, exist_ok=True)
             LOG.info("cleaning cache at '%s'", self.cache_dir)
 
-    def write(self) -> None:
+    def write(self, out_type: str = "json") -> None:
         """ Commit cached data to the file-system. """
 
         if self.cache_dir != "":
             for key, val in self.data.items():
                 key_path = os.path.join(self.cache_dir,
-                                        "{}.{}".format(key, DEFAULT_TYPE))
-                key_data = str_compile(dict(val), DEFAULT_TYPE)
+                                        "{}.{}".format(key, out_type))
                 with open(key_path, "w") as key_file:
-                    key_file.write(key_data)
+                    key_file.write(str_compile(val, out_type))
             LOG.info("wrote cache to '%s'", self.cache_dir)
 
 

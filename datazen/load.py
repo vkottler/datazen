@@ -56,7 +56,7 @@ def meld_and_resolve(full_path: str, existing_data: dict, variables: dict,
 
 def load_dir(path: str, existing_data: dict, variables: dict = None,
              loaded_list: List[str] = None,
-             hashes: Dict[str, str] = None) -> dict:
+             hashes: Dict[str, dict] = None) -> dict:
     """ Load a directory tree into a dictionary, optionally meld. """
 
     if variables is None:
@@ -66,7 +66,7 @@ def load_dir(path: str, existing_data: dict, variables: dict = None,
         loaded_list = []
 
     if hashes is None:
-        hashes = {}
+        hashes = defaultdict(dict)
 
     root_abs = os.path.abspath(path)
     for root, _, files in os.walk(path):
@@ -107,7 +107,7 @@ def load_dir_only(path: str) -> dict:
 
 def load_files(file_paths: List[str], root: str,
                meld_data: Tuple[dict, dict, bool],
-               hashes: Dict[str, str]) -> List[str]:
+               hashes: Dict[str, dict]) -> List[str]:
     """
     Load files into a dictionary and return a list of the files that are
     new or had hash mismatches.
@@ -125,9 +125,9 @@ def load_files(file_paths: List[str], root: str,
         # don't list files as new-or-changed that we load that have a
         # matching hash
         new = True
-        if full_path in hashes and str_hash == hashes[full_path]:
+        if full_path in hashes and str_hash == hashes[full_path]["hash"]:
             new = False
-        hashes[full_path] = str_hash
+        hashes[full_path]["hash"] = str_hash
 
         if meld_and_resolve(full_path, meld_data[0], meld_data[1],
                             meld_data[2]) and new:

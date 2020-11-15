@@ -15,7 +15,8 @@ from datazen.classes.valid_dict import ValidDict
 
 
 def load(directories: List[str], require_all: bool = True,
-         loaded_list: List[str] = None, hashes: Dict[str, str] = None) -> dict:
+         loaded_list: List[str] = None,
+         hashes: Dict[str, dict] = None) -> dict:
     """ Load schemas from a list of directories. """
 
     result: dict = {}

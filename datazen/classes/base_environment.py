@@ -16,7 +16,7 @@ from datazen.classes.environment_namespace import EnvironmentNamespace, clone
 
 # python3.9 regression: https://github.com/PyCQA/pylint/issues/3882
 # pylint: disable=unsubscriptable-object
-LOADTYPE = Tuple[Opt[List[str]], Opt[Dict[str, str]]]
+LOADTYPE = Tuple[Opt[List[str]], Opt[Dict[str, dict]]]
 # pylint: enable=unsubscriptable-object
 
 LOG = logging.getLogger(__name__)

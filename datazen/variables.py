@@ -11,7 +11,8 @@ from datazen.load import load_dir
 
 
 def load(directories: List[str],
-         loaded_list: List[str] = None, hashes: Dict[str, str] = None) -> dict:
+         loaded_list: List[str] = None,
+         hashes: Dict[str, dict] = None) -> dict:
     """ Load variable data from a list of directories. """
 
     result: dict = {}
