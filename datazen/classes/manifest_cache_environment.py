@@ -89,6 +89,11 @@ class ManifestCacheEnvironment(ManifestEnvironment):
             meld_cache(self.aggregate_cache, self.cache)
             self.aggregate_cache.write()
 
+    def describe_cache(self) -> None:
+        """ Describe the [initial] cache for debugging purposes. """
+
+        self.initial_cache.describe()
+
     def restore_cache(self) -> None:
         """ Return the cache to its initially-loaded state. """
 

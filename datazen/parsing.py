@@ -133,14 +133,14 @@ def get_file_hash(path: str) -> str:
     return hashlib.md5(contents).hexdigest()
 
 
-def set_file_hash(hashes: dict, path: str) -> bool:
+def set_file_hash(hashes: dict, path: str, set_new: bool = True) -> bool:
     """ Evaluate a hash dictionary and update it on a miss. """
 
     str_hash = get_file_hash(path)
     result = True
     if path in hashes and str_hash == hashes[path]["hash"]:
         result = False
-    else:
+    elif set_new:
         hashes[path]["hash"] = str_hash
         hashes[path]["time"] = time.time()
 

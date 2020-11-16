@@ -9,6 +9,7 @@ from collections import defaultdict
 import logging
 import os
 import shutil
+import time
 from typing import Dict, List, Tuple
 
 # internal
@@ -57,7 +58,7 @@ class FileInfoCache:
         cache, if not return False and optionally add it to the cache. """
 
         abs_path = os.path.abspath(path)
-        is_new = set_file_hash(self.get_hashes(sub_dir), abs_path)
+        is_new = set_file_hash(self.get_hashes(sub_dir), abs_path, also_cache)
         if also_cache and is_new:
             self.get_loaded(sub_dir).append(abs_path)
 
@@ -67,6 +68,30 @@ class FileInfoCache:
         """ Get the cached, list of loaded files for a certain key. """
 
         return self.data["loaded"][sub_dir]
+
+    def describe(self) -> None:
+        """ Describe this cache's contents for debugging purposes. """
+
+        curr_dir = os.getcwd()
+        for hash_set, hash_data in self.data["hashes"].items():
+            misses = []
+            total = 0
+            for filename, hash_item in hash_data.items():
+                total += 1
+                if curr_dir in filename:
+                    filename = filename[len(curr_dir) + 1:]
+                if not self.check_hit(hash_set, filename, False):
+                    misses.append((filename, hash_item))
+                else:
+                    LOG.debug("%s (%s) matched", filename,
+                              time_str(hash_item["time"]))
+
+            # log all misses / updates
+            for miss in misses:
+                LOG.info("%s (%s) updated", miss[0], time_str(miss[1]["time"]))
+
+            # log a summary
+            LOG.info("%s: %d/%d match", hash_set, total - len(misses), total)
 
     def get_data(self, name: str) -> Tuple[List[str], Dict[str, dict]]:
         """ Get the tuple version of cached data. """
@@ -110,6 +135,12 @@ def meld(cache_a: FileInfoCache, cache_b: FileInfoCache) -> None:
     """ Promote all updates from cache_b into cache_a. """
 
     merge(cache_a.data, cache_b.data)
+
+
+def time_str(time_s: float) -> str:
+    """ Concert a timestamp to a String. """
+
+    return time.strftime("%c", time.localtime(time_s))
 
 
 def cmp_loaded_count(cache_a: FileInfoCache, cache_b: FileInfoCache,

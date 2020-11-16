@@ -38,6 +38,8 @@ def main(argv: List[str] = None) -> int:
                               "'%(default)s')"))
     parser.add_argument("-c", "--clean", action="store_true",
                         help="clean the manifest's cache and exit")
+    parser.add_argument("-d", "--describe", action="store_true",
+                        help="describe the manifest's cache and exit")
     parser.add_argument("-C", "--dir", default=os.getcwd(), dest="dir",
                         help=("execute from a specific directory (default: " +
                               "'%(default)s')"))
@@ -64,6 +66,8 @@ def main(argv: List[str] = None) -> int:
         # clean, if requested
         if args.clean:
             env.clean_cache()
+        elif args.describe:
+            env.describe_cache()
         else:
             # execute targets
             for target in args.targets:
