@@ -9,3 +9,4 @@ __pycache__
 *.pyc
 dist
 htmlcov
+.upload.env

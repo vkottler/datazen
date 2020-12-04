@@ -9,6 +9,8 @@ VENV_NAME      := venv$(PYTHON_VERSION)
 VENV_DIR       := $($(PROJ)_DIR)/$(VENV_NAME)
 PYTHON_BIN     := $(VENV_DIR)/bin
 
+include $($(PROJ)_DIR)/mk/upload.mk
+
 $(BUILD_DIR):
 	@mkdir -p $@
 
@@ -35,10 +37,6 @@ sa: lint-mypy
 
 test: $(BUILD_DIR)/$(VENV_NAME).txt
 	$(PYTHON_BIN)/pytest -x --log-cli-level=10 --cov=$(PROJ) --cov-report html
-
-dist: $(BUILD_DIR)/$(VENV_NAME).txt
-	$(PYTHON_BIN)/python $($(PROJ)_DIR)/setup.py sdist
-	$(PYTHON_BIN)/python $($(PROJ)_DIR)/setup.py bdist_wheel
 
 view:
 	@$(BROWSER) htmlcov/index.html
