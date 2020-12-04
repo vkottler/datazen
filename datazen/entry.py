@@ -63,18 +63,21 @@ def main(argv: List[str] = None) -> int:
 
         env = from_manifest(args.manifest)
 
-        # clean, if requested
-        if args.clean:
-            env.clean_cache()
-        elif args.describe:
-            env.describe_cache()
+        if env.get_valid():
+            # clean, if requested
+            if args.clean:
+                env.clean_cache()
+            elif args.describe:
+                env.describe_cache()
+            else:
+                # execute targets
+                for target in args.targets:
+                    if not env.execute(target)[0]:
+                        LOG.error("target '%s' failed", target)
+                        result = 1
+                        break
         else:
-            # execute targets
-            for target in args.targets:
-                if not env.execute(target)[0]:
-                    LOG.error("target '%s' failed", target)
-                    result = 1
-                    break
+            result = 1
 
     except SystemExit as exc:
         result = 1

@@ -117,9 +117,13 @@ def load(data_path: str, variables: dict,
     """
 
     # read the raw file and interpret it as a template, resolve 'variables'
-    with open(data_path) as config_file:
-        template = jinja2.Template(config_file.read())
-        str_output = template.render(variables)
+    try:
+        with open(data_path) as config_file:
+            template = jinja2.Template(config_file.read())
+            str_output = template.render(variables)
+    except FileNotFoundError:
+        LOG.error("can't find '%s' to load file data", data_path)
+        return ({}, False)
 
     new_data, loaded = load_stream(io.StringIO(str_output), data_path)
     return merge(dict_to_update, new_data), loaded

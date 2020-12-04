@@ -1,4 +1,4 @@
-.PHONY: lint sa test clean clean-venv view all venv todo host-coverage
+.PHONY: lint sa test clean clean-venv view all venv todo host-coverage dist
 
 .DEFAULT_GOAL  := all
 PYTHON_VERSION := 3.8
@@ -17,7 +17,7 @@ $(VENV_DIR):
 	$(PYTHON_BIN)/pip install --upgrade pip
 
 $(BUILD_DIR)/$(VENV_NAME)/req-%.txt: $($(PROJ)_DIR)/%.txt | $(BUILD_DIR) $(VENV_DIR)
-	$(PYTHON_BIN)/pip install -r $<
+	$(PYTHON_BIN)/pip install --upgrade -r $<
 	@mkdir -p $(dir $@)
 	@date > $@
 
@@ -27,7 +27,7 @@ $(BUILD_DIR)/$(VENV_NAME).txt: $(BUILD_DIR)/$(VENV_NAME)/req-requirements.txt $(
 venv: $(BUILD_DIR)/$(VENV_NAME).txt
 
 lint-%: $(BUILD_DIR)/$(VENV_NAME).txt
-	$(PYTHON_BIN)/$* $(PROJ) tests
+	$(PYTHON_BIN)/$* $(PROJ) $($(PROJ)_DIR)/tests $($(PROJ)_DIR)/setup.py
 
 lint: lint-flake8 lint-pylint
 
@@ -36,13 +36,17 @@ sa: lint-mypy
 test: $(BUILD_DIR)/$(VENV_NAME).txt
 	$(PYTHON_BIN)/pytest -x --log-cli-level=10 --cov=$(PROJ) --cov-report html
 
+dist: $(BUILD_DIR)/$(VENV_NAME).txt
+	$(PYTHON_BIN)/python $($(PROJ)_DIR)/setup.py sdist
+	$(PYTHON_BIN)/python $($(PROJ)_DIR)/setup.py bdist_wheel
+
 view:
 	@$(BROWSER) htmlcov/index.html
 
 host-coverage:
 	cd $($(PROJ)_DIR)/htmlcov && python$(PYTHON_VERSION) -m http.server 8080
 
-all: lint sa test todo
+all: lint sa test dist todo
 
 todo:
 	-cd $($(PROJ)_DIR) && ack -i todo $(PROJ) tests

@@ -93,7 +93,12 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
 
         self.manifest["path"] = os.path.abspath(path)
         self.manifest["dir"] = os.path.dirname(self.manifest["path"])
-        self.manifest["data"], _ = load_raw(self.manifest["path"], {}, {})
+        self.manifest["data"], loaded = load_raw(self.manifest["path"], {}, {})
+
+        # make sure we loaded a manifest
+        if not loaded:
+            self.set_valid(False)
+            return self.get_valid()
 
         # enforce the manifest schema
         schema = get_manifest_schema(False)

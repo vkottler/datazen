@@ -35,6 +35,9 @@ jobs:
     - name: test
       run: |
         make PYTHON_VERSION=${{matrix.python-version}} test
+    - name: dist
+      run: |
+        make PYTHON_VERSION=${{matrix.python-version}} dist
     - name: coverage-artifact
       uses: actions/upload-artifact@v2
       with:

@@ -39,6 +39,9 @@ def test_entry():
     assert datazen_main(args + ["-d"]) == 0
     assert datazen_main(args + ["-c"]) == 0
 
+    # test inability to load a manifest
+    assert datazen_main(args + ["-m", "not-a-manifest"]) != 0
+
     # restore the changed file
     with open(data_file, "w") as manifest_file:
         manifest_data = manifest_file.write(manifest_data)
