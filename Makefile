@@ -22,8 +22,9 @@ test: $(PY_PREFIX)test
 view: $(PY_PREFIX)view
 host-coverage: $(PY_PREFIX)host-coverage
 dist: $(PY_PREFIX)dist
+upload: sync python-upload
 
-all: lint sa test dist todo
+all: sync lint sa test dist todo
 
 sync: $(EDITABLE_CONC)
 	$(PYTHON_BIN)/dz

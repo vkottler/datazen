@@ -13,7 +13,7 @@ import time
 from typing import Dict, List, Tuple
 
 # internal
-from datazen.parsing import set_file_hash, merge
+from datazen.parsing import set_file_hash, merge, dedup_dict_lists
 from datazen.load import load_dir_only
 from datazen.compile import str_compile
 
@@ -114,7 +114,8 @@ class FileInfoCache:
         """ Commit cached data to the file-system. """
 
         if self.cache_dir != "":
-            for key, val in self.data.items():
+            data = dedup_dict_lists(deepcopy(self.data))
+            for key, val in data.items():
                 key_path = os.path.join(self.cache_dir,
                                         "{}.{}".format(key, out_type))
                 with open(key_path, "w") as key_file:

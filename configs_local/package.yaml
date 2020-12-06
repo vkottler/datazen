@@ -1,0 +1,12 @@
+name: datazen
+version: 1.0.5
+description: "Compile and render schema-validated configuration data."
+setup_args:
+- entry_override="dz"
+init_local: |
+  DEFAULT_TYPE = "yaml"
+  DEFAULT_MANIFEST = "manifest.{}".format(DEFAULT_TYPE)
+  DEFAULT_DIR = "{}-out".format(PKG_NAME)
+  CACHE_SUFFIX = "_cache"
+  GLOBAL_KEY = "global"
+  ROOT_NAMESPACE = "__root__"

@@ -1,5 +1,13 @@
 default_target: "groups-all"
 
+configs:
+- "config/configs"
+- "configs_local"
+
+templates:
+- "config/templates"
+- "templates_local"
+
 renders:
 - name: "__init__.py"
   output_dir: "datazen"

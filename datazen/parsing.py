@@ -74,6 +74,25 @@ def load_stream(data_stream: TextIO, data_path: str) -> Tuple[dict, bool]:
     return data, result
 
 
+def dedup_dict_lists(data: dict) -> dict:
+    """
+    Finds list elements in a dictionary and removes duplicate entries, mutates
+    the original list.
+    """
+
+    for key in data:
+        if isinstance(data[key], dict):
+            dedup_dict_lists(data[key])
+        elif isinstance(data[key], list):
+            new_list = []
+            for item in data[key]:
+                if item not in new_list:
+                    new_list.append(item)
+            data[key] = new_list
+
+    return data
+
+
 def merge(dict_a: dict, dict_b: dict, path: List[str] = None,
           expect_overwrite: bool = False) -> dict:
     """

@@ -1,3 +1,6 @@
 [submodule "mk"]
 	path = mk
 	url = https://github.com/vkottler/mk.git
+[submodule "config"]
+	path = config
+	url = https://github.com/vkottler/config.git
