@@ -25,12 +25,13 @@ class TaskEnvironment(ManifestCacheEnvironment):
     and tracking whether or not updates are required.
     """
 
-    def valid_noop(self, entry: dict, namespace: str,
-                   _: dict = None, __: List[str] = None) -> Tuple[bool, bool]:
+    def valid_noop(self, entry: dict, _: str,
+                   __: dict = None,
+                   ___: List[str] = None) -> Tuple[bool, bool]:
         """ Default handle for a potentially-unregistered operation. """
 
-        LOG.error("('%s') '%s' no handler found (default: '%s')",
-                  namespace, entry["name"], self.default)
+        LOG.error("'%s' no handler found (default: '%s')", entry["name"],
+                  self.default)
         return False, False
 
     def __init__(self):

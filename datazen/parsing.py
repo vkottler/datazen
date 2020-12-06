@@ -74,7 +74,8 @@ def load_stream(data_stream: TextIO, data_path: str) -> Tuple[dict, bool]:
     return data, result
 
 
-def merge(dict_a: dict, dict_b: dict, path: List[str] = None) -> dict:
+def merge(dict_a: dict, dict_b: dict, path: List[str] = None,
+          expect_overwrite: bool = False) -> dict:
     """
     Combine two dictionaries recursively, prefers dict_a in a conflict. For
     values of the same key that are lists, the lists are combined. Otherwise
@@ -91,18 +92,23 @@ def merge(dict_a: dict, dict_b: dict, path: List[str] = None) -> dict:
                 pass
             elif isinstance(dict_a[key], dict) and isinstance(dict_b[key],
                                                               dict):
-                merge(dict_a[key], dict_b[key], path + [str(key)])
+                merge(dict_a[key], dict_b[key], path + [str(key)],
+                      expect_overwrite)
             elif isinstance(dict_a[key], list) and isinstance(dict_b[key],
                                                               list):
                 dict_a[key].extend(dict_b[key])
-            elif (isinstance(dict_a[key], float) and
-                  isinstance(dict_b[key], float)):
-                dict_a[key] = dict_b[key]
-            else:
-                error_str = 'Conflict at %s' % '.'.join(path + [str(key)])
+            elif not isinstance(dict_a[key], type(dict_b[key])):
+                error_str = "Type mismatch at %s" % ".".join(path + [str(key)])
+                LOG.error(error_str)
+                LOG.error("left:  %s (%s)", type(dict_a[key]), dict_a[key])
+                LOG.error("right: %s (%s)", type(dict_b[key]), dict_b[key])
+            elif not expect_overwrite:
+                error_str = "Conflict at %s" % ".".join(path + [str(key)])
                 LOG.error(error_str)
                 LOG.error("left:  %s", dict_a[key])
                 LOG.error("right: %s", dict_b[key])
+            else:
+                dict_a[key] = dict_b[key]
         else:
             dict_a[key] = dict_b[key]
 
@@ -110,7 +116,8 @@ def merge(dict_a: dict, dict_b: dict, path: List[str] = None) -> dict:
 
 
 def load(data_path: str, variables: dict,
-         dict_to_update: dict) -> Tuple[dict, bool]:
+         dict_to_update: dict,
+         expect_overwrite: bool = False) -> Tuple[dict, bool]:
     """
     Load raw file data and meld it into an existing dictionary. Update
     the result as if it's a template using the provided variables.
@@ -126,7 +133,8 @@ def load(data_path: str, variables: dict,
         return ({}, False)
 
     new_data, loaded = load_stream(io.StringIO(str_output), data_path)
-    return merge(dict_to_update, new_data), loaded
+    return merge(dict_to_update, new_data,
+                 expect_overwrite=expect_overwrite), loaded
 
 
 def get_file_hash(path: str) -> str:

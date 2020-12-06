@@ -15,13 +15,13 @@ from datazen import PKG_NAME
 def get_file_name(full_path: str) -> str:
     """ From a full path to a file, get just the name of the file. """
 
-    return os.path.basename(full_path).split(".")[0]
+    return ".".join(os.path.basename(full_path).split(".")[:-1])
 
 
 def get_file_ext(full_path: str) -> str:
     """ From a pull path to a file, get just the file's extension. """
 
-    return os.path.basename(full_path).split(".")[1]
+    return os.path.basename(full_path).split(".")[-1]
 
 
 def get_path_list(root_abs_path: str, current_abs_path: str) -> List[str]:

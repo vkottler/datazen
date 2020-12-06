@@ -1,0 +1,3 @@
+name: datazen
+version: 1.0.4
+description: "Compile and render schema-validated configuration data."

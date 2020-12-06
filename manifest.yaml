@@ -1,0 +1,4 @@
+default_target: "renders-__init__.py"
+
+renders:
+- name: "__init__.py"

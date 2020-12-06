@@ -64,6 +64,7 @@ def test_operations():
     assert env.manifest_changed
 
     assert env.render("a") == (True, True)
+    assert env.render("z") == (False, False)
 
     # here 'b' render is already satisfied, because a compile depended on it
     assert env.render("b") == (True, False)

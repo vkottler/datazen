@@ -1,4 +1,5 @@
-.PHONY: lint sa test clean clean-venv view all venv todo host-coverage dist
+.PHONY: lint sa test clean clean-venv view all venv todo host-coverage dist \
+        sync clean-dz
 
 .DEFAULT_GOAL  := all
 PROJ           := datazen
@@ -24,8 +25,17 @@ dist: $(PY_PREFIX)dist
 
 all: lint sa test dist todo
 
+sync: $(EDITABLE_CONC)
+	$(PYTHON_BIN)/dz
+
+sync-verbose: $(EDITABLE_CONC)
+	$(PYTHON_BIN)/dz -v
+
 todo:
 	-cd $($(PROJ)_DIR) && ack -i todo $(PROJ) tests
 
-clean: $(PY_PREFIX)clean
-	@rm -rf $(BUILD_DIR) $($(PROJ)_DIR)/.manifest_cache
+clean-dz: $(EDITABLE_CONC)
+	$(PYTHON_BIN)/dz -c
+
+clean: $(PY_PREFIX)clean clean-dz
+	@rm -rf $(BUILD_DIR)

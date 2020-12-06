@@ -42,7 +42,7 @@ class FileInfoCache:
         os.makedirs(self.cache_dir, exist_ok=True)
 
         # reject things that don't belong by updating instead of assigning
-        new_data = load_dir_only(self.cache_dir)
+        new_data = load_dir_only(self.cache_dir, True)
         self.data["hashes"].update(new_data["hashes"])
         self.data["loaded"].update(new_data["loaded"])
 
@@ -60,7 +60,10 @@ class FileInfoCache:
         abs_path = os.path.abspath(path)
         is_new = set_file_hash(self.get_hashes(sub_dir), abs_path, also_cache)
         if also_cache and is_new:
-            self.get_loaded(sub_dir).append(abs_path)
+            # guard against a failure in the "new" detection
+            loaded_data = self.get_loaded(sub_dir)
+            if abs_path not in loaded_data:
+                loaded_data.append(abs_path)
 
         return not is_new
 
@@ -116,7 +119,7 @@ class FileInfoCache:
                                         "{}.{}".format(key, out_type))
                 with open(key_path, "w") as key_file:
                     key_file.write(str_compile(val, out_type))
-            LOG.info("wrote cache to '%s'", self.cache_dir)
+            LOG.debug("wrote cache to '%s'", self.cache_dir)
 
 
 def copy(cache: FileInfoCache) -> FileInfoCache:
@@ -134,7 +137,7 @@ def copy(cache: FileInfoCache) -> FileInfoCache:
 def meld(cache_a: FileInfoCache, cache_b: FileInfoCache) -> None:
     """ Promote all updates from cache_b into cache_a. """
 
-    merge(cache_a.data, cache_b.data)
+    merge(cache_a.data, cache_b.data, expect_overwrite=True)
 
 
 def time_str(time_s: float) -> str:

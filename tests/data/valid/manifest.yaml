@@ -54,6 +54,7 @@ renders:
   - "a"
   - "b"
   - "c"
+- name: "z"
 
 groups:
 - name: "test"

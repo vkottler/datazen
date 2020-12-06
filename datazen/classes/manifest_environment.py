@@ -43,7 +43,6 @@ def set_output_dir(data: dict, rel_path: str,
     out_dir = get_output_dir(data, rel_path, default)
     os.makedirs(out_dir, exist_ok=True)
     data["output_dir"] = out_dir
-    LOG.info("using output directory to '%s'", out_dir)
 
 
 class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
@@ -80,7 +79,18 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             elif os.path.isdir(os.path.join(rel_path, key)):
                 key_handles[key]([key], rel_path, namespace, allow_dup)
             else:
-                LOG.info("not loading any '%s'", key)
+                LOG.debug("not loading any '%s'", key)
+
+    def default_target(self) -> str:
+        """
+        Retrieve a configured default target for a manifest, otherwise an
+        empty String.
+        """
+
+        result = ""
+        if self.get_valid() and "default_target" in self.manifest["data"]:
+            result = self.manifest["data"]["default_target"]
+        return result
 
     def load_manifest(self, path: str = "manifest.yaml") -> bool:
         """ Attempt to load manifest data from a file. """

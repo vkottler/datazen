@@ -31,12 +31,13 @@ class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment):
         """ Execute an arbitrary target. """
 
         # resolve a default target if one wasn't provided
+        data = self.manifest["data"]
         if not target:
-            if "default_target" in self.manifest["data"]:
-                target = self.manifest["data"]["default_target"]
+            if "default_target" in data:
+                target = data["default_target"]
                 LOG.info("using default target '%s'", target)
-            elif self.manifest["data"][self.default]:
-                target = self.manifest["data"][self.default][0]["name"]
+            elif self.default in data and data[self.default]:
+                target = data[self.default][0]["name"]
                 LOG.info("resolving first target '%s'", target)
 
         slug = dep_slug_unwrap(target, self.default)

@@ -1,0 +1,15 @@
+
+"""
+{{package["name"]}} - Useful defaults and other package metadata.
+"""
+
+PKG_NAME = "{{package["name"]}}"
+VERSION = "{{package["version"]}}"
+DESCRIPTION = "{{package["description"]}}"
+
+DEFAULT_TYPE = "yaml"
+DEFAULT_MANIFEST = "manifest.{}".format(DEFAULT_TYPE)
+DEFAULT_DIR = "{}-out".format(PKG_NAME)
+CACHE_SUFFIX = "_cache"
+GLOBAL_KEY = "global"
+ROOT_NAMESPACE = "__root__"

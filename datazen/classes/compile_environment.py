@@ -51,7 +51,7 @@ class CompileEnvironment(TaskEnvironment):
         if self.already_satisfied(entry["name"], path,
                                   ["configs", "variables", "schemas"],
                                   deps_changed):
-            LOG.debug("compile '%s' satisfied, skipping", entry["name"])
+            LOG.info("compile '%s' satisfied, skipping", entry["name"])
             return True, False
 
         mode = "a" if "append" in entry and entry["append"] else "w"

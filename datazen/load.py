@@ -20,7 +20,8 @@ LOG = logging.getLogger(__name__)
 
 
 def meld_and_resolve(full_path: str, existing_data: dict, variables: dict,
-                     globals_added: bool = False) -> bool:
+                     globals_added: bool = False,
+                     expect_overwrite: bool = False) -> bool:
     """
     Meld dictionary data from a file into an existing dictionary, assume
     existing data is a template and attempt to resolve variables.
@@ -46,7 +47,8 @@ def meld_and_resolve(full_path: str, existing_data: dict, variables: dict,
             variables[GLOBAL_KEY] = variables_root[GLOBAL_KEY]
             global_add_success = True
 
-    _, loaded = load_raw_resolve(full_path, variables, data_dict)
+    _, loaded = load_raw_resolve(full_path, variables, data_dict,
+                                 expect_overwrite)
 
     if global_add_success:
         del variables[GLOBAL_KEY]
@@ -56,7 +58,8 @@ def meld_and_resolve(full_path: str, existing_data: dict, variables: dict,
 
 def load_dir(path: str, existing_data: dict, variables: dict = None,
              loaded_list: List[str] = None,
-             hashes: Dict[str, dict] = None) -> dict:
+             hashes: Dict[str, dict] = None,
+             expect_overwrite: bool = False) -> dict:
     """ Load a directory tree into a dictionary, optionally meld. """
 
     if variables is None:
@@ -87,8 +90,10 @@ def load_dir(path: str, existing_data: dict, variables: dict = None,
 
         # extend the provided list of files that were newly loaded, or at
         # least have new content
-        loaded_list.extend(load_files(files, root, (iter_data, variable_data,
-                                                    added_globals), hashes))
+        loaded_list.extend(load_files(files, root,
+                                      (iter_data, variable_data,
+                                       added_globals),
+                                      hashes, expect_overwrite))
 
         if added_globals:
             del variable_data[GLOBAL_KEY]
@@ -96,18 +101,20 @@ def load_dir(path: str, existing_data: dict, variables: dict = None,
     return existing_data
 
 
-def load_dir_only(path: str) -> dict:
+def load_dir_only(path: str, expect_overwrite: bool = False) -> dict:
     """
     A convenient wrapper for loading just directory data from a path without
     worrying about melding data, resolving variables, enforcing schemas, etc.
     """
 
-    return load_dir(path, defaultdict(dict), None, None, None)
+    return load_dir(path, defaultdict(dict), None, None, None,
+                    expect_overwrite)
 
 
 def load_files(file_paths: List[str], root: str,
                meld_data: Tuple[dict, dict, bool],
-               hashes: Dict[str, dict]) -> List[str]:
+               hashes: Dict[str, dict],
+               expect_overwrite: bool = False) -> List[str]:
     """
     Load files into a dictionary and return a list of the files that are
     new or had hash mismatches.
@@ -119,8 +126,9 @@ def load_files(file_paths: List[str], root: str,
     for name in file_paths:
         full_path = os.path.join(root, name)
         assert os.path.isabs(full_path)
-        if meld_and_resolve(full_path, meld_data[0], meld_data[1],
-                            meld_data[2]) and set_file_hash(hashes, full_path):
+        if (meld_and_resolve(full_path, meld_data[0], meld_data[1],
+                             meld_data[2], expect_overwrite) and
+                set_file_hash(hashes, full_path)):
             new_or_changed.append(full_path)
 
     return new_or_changed
