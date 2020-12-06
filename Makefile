@@ -1,5 +1,5 @@
 .PHONY: lint sa test clean clean-venv view all venv todo host-coverage dist \
-        sync clean-dz upload
+        sync upload
 
 .DEFAULT_GOAL  := all
 PROJ           := datazen
@@ -11,6 +11,7 @@ include $($(PROJ)_DIR)/mk/functions.mk
 include $($(PROJ)_DIR)/mk/venv.mk
 include $($(PROJ)_DIR)/mk/python.mk
 include $($(PROJ)_DIR)/mk/pypi.mk
+include $($(PROJ)_DIR)/mk/datazen.mk
 
 $(BUILD_DIR):
 	@mkdir -p $@
@@ -22,21 +23,13 @@ test: $(PY_PREFIX)test
 view: $(PY_PREFIX)view
 host-coverage: $(PY_PREFIX)host-coverage
 dist: $(PY_PREFIX)dist
-upload: sync pypi-upload
+upload: sync $(PYPI_PREFIX)upload
+sync: $(EDITABLE_CONC) $(DZ_PREFIX)sync
 
 all: sync lint sa test dist todo
-
-sync: $(EDITABLE_CONC)
-	$(PYTHON_BIN)/dz
-
-sync-verbose: $(EDITABLE_CONC)
-	$(PYTHON_BIN)/dz -v
 
 todo:
 	-cd $($(PROJ)_DIR) && ack -i todo $(PROJ) tests
 
-clean-dz: $(EDITABLE_CONC)
-	$(PYTHON_BIN)/dz -c
-
-clean: $(PY_PREFIX)clean clean-dz
+clean: $(PY_PREFIX)clean $(DZ_PREFIX)clean
 	@rm -rf $(BUILD_DIR)
