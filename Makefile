@@ -1,5 +1,5 @@
 .PHONY: lint sa test clean clean-venv view all venv todo host-coverage dist \
-        sync clean-dz
+        sync clean-dz upload
 
 .DEFAULT_GOAL  := all
 PROJ           := datazen
@@ -22,7 +22,7 @@ test: $(PY_PREFIX)test
 view: $(PY_PREFIX)view
 host-coverage: $(PY_PREFIX)host-coverage
 dist: $(PY_PREFIX)dist
-upload: sync python-upload
+upload: sync pypi-upload
 
 all: sync lint sa test dist todo
 
