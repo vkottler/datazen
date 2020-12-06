@@ -1,9 +1,4 @@
-.PHONY: dist check-env upload
-
-dist: $(BUILD_DIR)/$(VENV_NAME).txt
-	@rm -rf $($(PROJ)_DIR)/dist
-	$(PYTHON_BIN)/python $($(PROJ)_DIR)/setup.py sdist
-	$(PYTHON_BIN)/python $($(PROJ)_DIR)/setup.py bdist_wheel
+.PHONY: check-env upload
 
 UPLOAD_ENV := $($(PROJ)_DIR)/.upload.env
 $(UPLOAD_ENV):
@@ -20,6 +15,4 @@ ifndef TWINE_PASSWORD
 	$(error TWINE_PASSWORD not set, run 'source $(UPLOAD_ENV)')
 endif
 
-TWINE_ARGS := --non-interactive --verbose
-upload: $(BUILD_DIR)/$(VENV_NAME).txt check-env lint sa test dist
-	$(PYTHON_BIN)/twine upload $(TWINE_ARGS) $($(PROJ)_DIR)/dist/*
+upload: check-env $(PY_PREFIX)upload

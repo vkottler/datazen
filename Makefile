@@ -1,59 +1,31 @@
 .PHONY: lint sa test clean clean-venv view all venv todo host-coverage dist
 
 .DEFAULT_GOAL  := all
-PYTHON_VERSION := 3.8
 PROJ           := datazen
-$(PROJ)_DIR    := .
-BUILD_DIR      := $($(PROJ)_DIR)/build
-VENV_NAME      := venv$(PYTHON_VERSION)
-VENV_DIR       := $($(PROJ)_DIR)/$(VENV_NAME)
-PYTHON_BIN     := $(VENV_DIR)/bin
+$(PROJ)_DIR    := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+BUILD_DIR_NAME := build
+BUILD_DIR      := $($(PROJ)_DIR)/$(BUILD_DIR_NAME)
 
-include $($(PROJ)_DIR)/mk/upload.mk
+include $($(PROJ)_DIR)/mk/functions.mk
+include $($(PROJ)_DIR)/mk/venv.mk
+include $($(PROJ)_DIR)/mk/python.mk
+include $($(PROJ)_DIR)/upload.mk
 
 $(BUILD_DIR):
 	@mkdir -p $@
 
-$(VENV_DIR):
-	python$(PYTHON_VERSION) -m venv $(VENV_DIR)
-	$(PYTHON_BIN)/pip install --upgrade pip
-
-$(BUILD_DIR)/$(VENV_NAME)/req-%.txt: $($(PROJ)_DIR)/%.txt | $(BUILD_DIR) $(VENV_DIR)
-	$(PYTHON_BIN)/pip install --upgrade -r $<
-	@mkdir -p $(dir $@)
-	@date > $@
-
-$(BUILD_DIR)/$(VENV_NAME).txt: $(BUILD_DIR)/$(VENV_NAME)/req-requirements.txt $(BUILD_DIR)/$(VENV_NAME)/req-dev_requirements.txt
-	@date > $@
-
-venv: $(BUILD_DIR)/$(VENV_NAME).txt
-
-lint-%: $(BUILD_DIR)/$(VENV_NAME).txt
-	$(PYTHON_BIN)/$* $(PROJ) $($(PROJ)_DIR)/tests $($(PROJ)_DIR)/setup.py
-
-lint: lint-flake8 lint-pylint
-
-sa: lint-mypy
-
-test: $(BUILD_DIR)/$(VENV_NAME).txt
-	$(PYTHON_BIN)/pytest -x --log-cli-level=10 --cov=$(PROJ) --cov-report html
-
-view:
-	@$(BROWSER) htmlcov/index.html
-
-host-coverage:
-	cd $($(PROJ)_DIR)/htmlcov && python$(PYTHON_VERSION) -m http.server 8080
+PY_EXTRA_LINT_ARGS := $($(PROJ)_DIR)/setup.py
+lint: $(PY_PREFIX)lint
+sa: $(PY_PREFIX)sa
+test: $(PY_PREFIX)test
+view: $(PY_PREFIX)view
+host-coverage: $(PY_PREFIX)host-coverage
+dist: $(PY_PREFIX)dist
 
 all: lint sa test dist todo
 
 todo:
 	-cd $($(PROJ)_DIR) && ack -i todo $(PROJ) tests
 
-clean:
-	find -iname '*.pyc' -delete
-	find -iname '__pycache__' -delete
-	rm -rf $(BUILD_DIR)
-	rm -rf cover .coverage build dist *.egg-info htmlcov .pytest_cache
-
-clean-venv:
-	rm -rf $(VENV_DIR) $(BUILD_DIR)/$(VENV_NAME).txt
+clean: $(PY_PREFIX)clean
+	@rm -rf $(BUILD_DIR) $($(PROJ)_DIR)/.manifest_cache

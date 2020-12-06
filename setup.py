@@ -18,7 +18,7 @@ with open("README.md", "r") as desc_file:
     long_description = desc_file.read()
 
 # get requirements
-with open("requirements.txt", "r") as reqs_file:
+with open(os.path.join("requirements", "requirements.txt"), "r") as reqs_file:
     reqs = reqs_file.read().strip().split()
 
 # get data files
@@ -28,15 +28,19 @@ for root, _, files in os.walk(os.path.join(PKG_NAME, "data")):
         rel_name = os.path.join(root, fname).replace(PKG_NAME + os.sep, "")
         data_files.append(rel_name)
 
+author_info = {"name": "Vaughn Kottler",
+               "email": "vaughnkottler@gmail.com",
+               "username": "vkottler"}
+
 setuptools.setup(
     name=PKG_NAME,
     version=VERSION,
-    author="Vaughn Kottler",
-    author_email="vaughnkottler@gmail.com",
+    author=author_info["name"],
+    author_email=author_info["email"],
     description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/vkottler/{}".format(PKG_NAME),
+    url="https://github.com/{}/{}".format(author_info["username"], PKG_NAME),
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -44,7 +48,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.6",
-    entry_points={"console_scripts": ["dz=datazen.entry:main"]},
+    entry_points={"console_scripts": ["dz={}.entry:main".format(PKG_NAME)]},
     install_requires=reqs,
     package_data={PKG_NAME: data_files},
 )

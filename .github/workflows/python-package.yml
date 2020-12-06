@@ -18,7 +18,8 @@ jobs:
         python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@master
+    - uses: textbook/git-checkout-submodule-action@master
     - name: python${{matrix.python-version}} setup
       uses: actions/setup-python@v2
       with:
