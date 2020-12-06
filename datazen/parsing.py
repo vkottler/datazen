@@ -153,6 +153,8 @@ def set_file_hash(hashes: dict, path: str, set_new: bool = True) -> bool:
     if path in hashes and str_hash == hashes[path]["hash"]:
         result = False
     elif set_new:
+        if path not in hashes:
+            hashes[path] = {}
         hashes[path]["hash"] = str_hash
         hashes[path]["time"] = time.time()
 

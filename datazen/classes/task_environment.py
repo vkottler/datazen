@@ -130,7 +130,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
                 if self.is_resolved(key_name, target):
                     return True, False
 
-                LOG.info("executing '%s'", get_dep_slug(key_name, target))
+                LOG.debug("executing '%s'", get_dep_slug(key_name, target))
 
                 # push dependencies
                 dep_data = {}

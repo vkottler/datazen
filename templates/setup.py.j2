@@ -1,0 +1,16 @@
+
+"""
+{{package["name"]}} - Package definition for distribution.
+"""
+
+# internal
+from {{package["name"]}} import PKG_NAME, VERSION, DESCRIPTION
+from mk.setup import setup
+
+
+author_info = {"name": "{{package["author_info"]["name"]}}",
+               "email": "{{package["author_info"]["email"]}}",
+               "username": "{{package["author_info"]["username"]}}"}
+pkg_info = {"name": PKG_NAME, "version": VERSION, "description": DESCRIPTION}
+setup(pkg_info, author_info, entry_override="dz")
+

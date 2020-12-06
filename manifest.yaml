@@ -1,4 +1,16 @@
-default_target: "renders-__init__.py"
+default_target: "groups-all"
 
 renders:
 - name: "__init__.py"
+  output_dir: "datazen"
+- name: "README.md"
+  output_dir: "."
+- name: "setup.py"
+  output_dir: "."
+
+groups:
+- name: "all"
+  dependencies:
+  - "renders-__init__.py"
+  - "renders-README.md"
+  - "renders-setup.py"
