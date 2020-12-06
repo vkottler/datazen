@@ -9,7 +9,7 @@ BUILD_DIR      := $($(PROJ)_DIR)/$(BUILD_DIR_NAME)
 include $($(PROJ)_DIR)/mk/functions.mk
 include $($(PROJ)_DIR)/mk/venv.mk
 include $($(PROJ)_DIR)/mk/python.mk
-include $($(PROJ)_DIR)/upload.mk
+include $($(PROJ)_DIR)/mk/pypi.mk
 
 $(BUILD_DIR):
 	@mkdir -p $@

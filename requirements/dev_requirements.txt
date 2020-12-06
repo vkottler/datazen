@@ -3,6 +3,3 @@ flake8
 pytest
 pytest-cov
 mypy
-wheel
-setuptools
-twine
