@@ -14,7 +14,7 @@ include $($(PROJ)_DIR)/upload.mk
 $(BUILD_DIR):
 	@mkdir -p $@
 
-PY_EXTRA_LINT_ARGS := $($(PROJ)_DIR)/setup.py
+PY_EXTRA_LINT_ARGS += $($(PROJ)_DIR)/setup.py
 lint: $(PY_PREFIX)lint
 sa: $(PY_PREFIX)sa
 test: $(PY_PREFIX)test
