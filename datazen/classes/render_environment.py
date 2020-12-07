@@ -61,7 +61,7 @@ class RenderEnvironment(TaskEnvironment):
         # render the template
         with open(path, "w") as render_out:
             try:
-                render_str = templates[entry["name"]].render(dep_data)
+                render_str = templates[entry["name"]].render(dep_data).rstrip()
                 render_str += os.linesep
                 render_out.write(render_str)
 
