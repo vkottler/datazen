@@ -157,8 +157,25 @@ def cmp_loaded_count(cache_a: FileInfoCache, cache_b: FileInfoCache,
     return abs(len(cache_a.get_loaded(name)) - len(cache_b.get_loaded(name)))
 
 
+def cmp_loaded_count_from_set(cache_a: FileInfoCache, cache_b: FileInfoCache,
+                              name: str, files: List[str]) -> int:
+    """
+    Count the number of files uniquely loaded to one cache but not the other.
+    """
+
+    result = 0
+    a_loaded = cache_a.get_loaded(name)
+    b_loaded = cache_b.get_loaded(name)
+    for filename in files:
+        full_name = os.path.abspath(filename)
+        if a_loaded.count(full_name) > b_loaded.count(full_name):
+            result += 1
+    return result
+
+
 def cmp_total_loaded(cache_a: FileInfoCache, cache_b: FileInfoCache,
-                     known_types: List[str]) -> int:
+                     known_types: List[str],
+                     load_checks: Dict[str, List[str]] = None) -> int:
     """
     Compute the total difference in file counts for a provided set of named
     groups.
@@ -166,5 +183,9 @@ def cmp_total_loaded(cache_a: FileInfoCache, cache_b: FileInfoCache,
 
     result = 0
     for known in known_types:
-        result += cmp_loaded_count(cache_a, cache_b, known)
+        if load_checks is not None and known in load_checks:
+            result += cmp_loaded_count_from_set(cache_a, cache_b, known,
+                                                load_checks[known])
+        else:
+            result += cmp_loaded_count(cache_a, cache_b, known)
     return result

@@ -8,7 +8,7 @@ datazen - A class for exposing the capability to run concrete tasks against
 from collections import defaultdict
 import logging
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 # internal
 from datazen import ROOT_NAMESPACE
@@ -50,10 +50,15 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         return self.visited[get_dep_slug(operation, target)]
 
-    def resolve(self, operation: str, target: str) -> None:
+    def resolve(self, operation: str, target: str, should_cache: bool,
+                namespace: str) -> None:
         """ Set a target for an operation as resolved. """
 
         self.visited[get_dep_slug(operation, target)] = True
+        if should_cache:
+            self.write_cache()
+        if namespace != ROOT_NAMESPACE:
+            self.restore_cache()
 
     def push_deps(self, dep_dict: dict, task_stack:
                   List[Tuple[str, str]], curr_target: str) -> None:
@@ -84,14 +89,15 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
     def already_satisfied(self, target: str, output_path: str,
                           load_deps: List[str],
-                          deps_changed: List[str] = None) -> bool:
+                          deps_changed: List[str] = None,
+                          load_checks: Dict[str, List[str]] = None) -> bool:
         """
         Check if a target is already satisfied, if not debug-log some
         information about why not.
         """
 
         is_file = os.path.isfile(output_path)
-        newly_loaded = self.get_new_loaded(load_deps)
+        newly_loaded = self.get_new_loaded(load_deps, load_checks)
         result = (not self.manifest_changed and is_file and not deps_changed
                   and newly_loaded == 0)
 
@@ -108,7 +114,8 @@ class TaskEnvironment(ManifestCacheEnvironment):
         self,
         key_name: str,
         target: str,
-        task_stack: List[Tuple[str, str]] = None
+        task_stack: List[Tuple[str, str]] = None,
+        should_cache: bool = True
     ) -> Tuple[bool, bool]:
         """
         Handle the setup for manifest tasks, such as loading additional data
@@ -172,10 +179,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
                 result = self.handles[key_name](data, namespace, dep_data,
                                                 deps_changed)
                 if result[0]:
-                    self.resolve(key_name, target)
-                    self.write_cache()
-                    if namespace != ROOT_NAMESPACE:
-                        self.restore_cache()
+                    self.resolve(key_name, target, should_cache, namespace)
                 return result
 
         return False, False

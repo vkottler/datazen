@@ -1,5 +1,5 @@
 name: datazen
-version: 1.0.7
+version: 1.0.8
 description: "Compile and render schema-validated configuration data."
 setup_args:
 - entry_override="dz"

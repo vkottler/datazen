@@ -6,7 +6,7 @@ datazen - A centralized store for runtime data.
 # built-in
 from collections import defaultdict
 import logging
-from typing import Tuple
+from typing import List, Tuple
 
 # internal
 from datazen.classes.base_environment import dep_slug_unwrap
@@ -27,7 +27,8 @@ class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment):
         self.visited = defaultdict(bool)
         self.default = "compiles"
 
-    def execute(self, target: str = "") -> Tuple[bool, bool]:
+    def execute(self, target: str = "",
+                should_cache: bool = True) -> Tuple[bool, bool]:
         """ Execute an arbitrary target. """
 
         # resolve a default target if one wasn't provided
@@ -41,7 +42,29 @@ class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment):
                 LOG.info("resolving first target '%s'", target)
 
         slug = dep_slug_unwrap(target, self.default)
-        return self.handle_task(slug[0], slug[1])
+        return self.handle_task(slug[0], slug[1], should_cache=should_cache)
+
+    def execute_targets(self, targets: List[str]) -> bool:
+        """
+        Execute a list of named targets and return whether or not the entire
+        set was successful.
+        """
+
+        # use a resolved, default target if none are specified
+        if not targets and self.default_target():
+            targets.append(self.default_target())
+
+        for target in targets:
+            task_result = self.execute(target, False)
+            if not task_result[0]:
+                LOG.error("target '%s' failed", target)
+                return False
+            if not task_result[1]:
+                LOG.info("'%s' already satisfied", target)
+
+        # write the cache at the end, if we were totally successful
+        self.write_cache()
+        return True
 
     def compile(self, target: str) -> Tuple[bool, bool]:
         """ Execute a named 'compile' target from the manifest. """

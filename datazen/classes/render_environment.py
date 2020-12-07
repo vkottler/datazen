@@ -44,7 +44,10 @@ class RenderEnvironment(TaskEnvironment):
                       entry["name"], list(templates.keys()))
             return False, False
 
-        # if dependencies aren't specified, use config data
+        template = templates[entry["name"]]
+
+        # if dependencies aren't specified, use config data (but don't allow
+        # an implicit 'compile')
         change_criteria = ["templates"]
         if not dep_data and "dependencies" not in entry:
             dep_data = self.cached_load_configs(namespace)
@@ -53,15 +56,17 @@ class RenderEnvironment(TaskEnvironment):
                       entry["name"])
 
         # determine if we need to perform this render
+        assert template.filename is not None
+        load_checks = {"templates": [template.filename]}
         if self.already_satisfied(entry["name"], path, change_criteria,
-                                  deps_changed):
+                                  deps_changed, load_checks):
             LOG.debug("render '%s' satisfied, skipping", entry["name"])
             return True, False
 
         # render the template
         with open(path, "w") as render_out:
             try:
-                render_str = templates[entry["name"]].render(dep_data).rstrip()
+                render_str = template.render(dep_data).rstrip()
                 render_str += os.linesep
                 render_out.write(render_str)
 

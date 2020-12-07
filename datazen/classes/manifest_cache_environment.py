@@ -14,9 +14,7 @@ import jinja2
 # internal
 from datazen.classes.manifest_environment import ManifestEnvironment
 from datazen.paths import get_file_name
-from datazen import (
-    DEFAULT_MANIFEST, CACHE_SUFFIX, ROOT_NAMESPACE
-)
+from datazen import DEFAULT_MANIFEST, CACHE_SUFFIX, ROOT_NAMESPACE
 from datazen.classes.file_info_cache import FileInfoCache, cmp_total_loaded
 from datazen.classes.file_info_cache import copy as copy_cache
 from datazen.classes.file_info_cache import meld as meld_cache
@@ -101,13 +99,15 @@ class ManifestCacheEnvironment(ManifestEnvironment):
             meld_cache(self.aggregate_cache, self.cache)
             self.cache = copy_cache(self.initial_cache)
 
-    def get_new_loaded(self, types: List[str]) -> int:
+    def get_new_loaded(self, types: List[str],
+                       load_checks: Dict[str, List[str]] = None) -> int:
         """
         Compute the number of new files loaded (since the initial load)
         for a set of types;
         """
 
-        return cmp_total_loaded(self.cache, self.initial_cache, types)
+        return cmp_total_loaded(self.cache, self.initial_cache, types,
+                                load_checks)
 
     def cached_load_variables(self, name: str = ROOT_NAMESPACE) -> dict:
         """ Load variables, proxied through the cache. """
