@@ -9,6 +9,6 @@ __pycache__
 *.pyc
 dist
 htmlcov
-.pypi.env
+.*.env
 .manifest_cache
 datazen-out

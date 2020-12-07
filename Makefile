@@ -4,19 +4,11 @@
 .DEFAULT_GOAL  := all
 PROJ           := datazen
 $(PROJ)_DIR    := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
-BUILD_DIR_NAME := build
-BUILD_DIR      := $($(PROJ)_DIR)/$(BUILD_DIR_NAME)
-
-include $($(PROJ)_DIR)/mk/functions.mk
-include $($(PROJ)_DIR)/mk/venv.mk
-include $($(PROJ)_DIR)/mk/python.mk
-include $($(PROJ)_DIR)/mk/pypi.mk
-include $($(PROJ)_DIR)/mk/datazen.mk
-
-$(BUILD_DIR):
-	@mkdir -p $@
 
 PY_EXTRA_LINT_ARGS += $($(PROJ)_DIR)/setup.py
+
+include $($(PROJ)_DIR)/mk/conf.mk
+
 lint: $(PY_PREFIX)lint
 sa: $(PY_PREFIX)sa
 test: $(PY_PREFIX)test
@@ -31,5 +23,5 @@ all: sync lint sa test dist todo
 todo:
 	-cd $($(PROJ)_DIR) && ack -i todo $(PROJ) tests
 
-clean: $(PY_PREFIX)clean $(DZ_PREFIX)clean
+clean: $(PY_PREFIX)editable $(DZ_PREFIX)clean $(PY_PREFIX)clean
 	@rm -rf $(BUILD_DIR)
