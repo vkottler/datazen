@@ -150,6 +150,10 @@ def load(data_path: str, variables: dict,
     except FileNotFoundError:
         LOG.error("can't find '%s' to load file data", data_path)
         return ({}, False)
+    except jinja2.exceptions.TemplateError as exc:
+        LOG.error("couldn't render '%s': %s (variables: %s)", data_path, exc,
+                  variables)
+        return ({}, False)
 
     new_data, loaded = load_stream(io.StringIO(str_output), data_path)
     return merge(dict_to_update, new_data,

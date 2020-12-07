@@ -39,6 +39,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         super().__init__()
         self.visited = defaultdict(bool)
+        self.is_new = defaultdict(bool)
         self.default = "noop"
         self.handles = defaultdict(lambda: self.valid_noop)
         self.task_data = defaultdict(lambda: defaultdict(dict))
@@ -50,11 +51,17 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         return self.visited[get_dep_slug(operation, target)]
 
+    def is_task_new(self, operation: str, target: str) -> bool:
+        """ Determine if a target has been newly executed this iteration. """
+
+        return self.is_new[get_dep_slug(operation, target)]
+
     def resolve(self, operation: str, target: str, should_cache: bool,
-                namespace: str) -> None:
+                namespace: str, is_new: bool) -> None:
         """ Set a target for an operation as resolved. """
 
         self.visited[get_dep_slug(operation, target)] = True
+        self.is_new[get_dep_slug(operation, target)] = is_new
         if should_cache:
             self.write_cache()
         if namespace != ROOT_NAMESPACE:
@@ -66,8 +73,9 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         for dep in dep_dict:
             dep_tup = dep_slug_unwrap(dep, self.default)
-            if dep != curr_target and not self.is_resolved(dep_tup[0],
-                                                           dep_tup[1]):
+            is_new = self.is_task_new(dep_tup[0], dep_tup[1])
+            is_resolved = self.is_resolved(dep_tup[0], dep_tup[1])
+            if dep != curr_target and (not is_resolved or is_new):
                 task_stack.append(dep_tup)
 
     def get_dep_data(self, dep_list: List[str]) -> dict:
@@ -155,7 +163,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
                             return False, False
                         # otherwise if a dependency was updated (performed),
                         # capture it in a list
-                        if result[1]:
+                        if result[1] or self.is_task_new(task[0], task[1]):
                             deps_changed.append(get_dep_slug(task[0], task[1]))
 
                     # provide dependency data as "flattened"
@@ -179,7 +187,8 @@ class TaskEnvironment(ManifestCacheEnvironment):
                 result = self.handles[key_name](data, namespace, dep_data,
                                                 deps_changed)
                 if result[0]:
-                    self.resolve(key_name, target, should_cache, namespace)
+                    self.resolve(key_name, target, should_cache, namespace,
+                                 result[1])
                 return result
 
         return False, False

@@ -34,6 +34,9 @@ compiles:
 - name: "g"
   dependencies:
   - "noop-test"
+- name: "z"
+  configs:
+  - "configs_missing_vars"
 
 renders:
 - name: "a"

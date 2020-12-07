@@ -2,19 +2,34 @@ default_target: "groups-all"
 
 configs:
 - "config/configs"
-- "configs_local"
+- "local/configs"
+
+schemas:
+- "config/schemas"
 
 templates:
 - "config/templates"
-- "templates_local"
+- "local/templates"
+
+variables:
+- "local/variables"
+
+compiles:
+- name: "local"
 
 renders:
 - name: "__init__.py"
   output_dir: "datazen"
+  dependencies:
+  - "compiles-local"
 - name: "README.md"
   output_dir: "."
+  dependencies:
+  - "compiles-local"
 - name: "setup.py"
   output_dir: "."
+  dependencies:
+  - "compiles-local"
 
 groups:
 - name: "all"

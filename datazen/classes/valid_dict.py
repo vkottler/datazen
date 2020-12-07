@@ -32,3 +32,4 @@ class ValidDict(UserDict):
             LOG.error("validation error(s) for '%s': %s", self.name,
                       self.validator.errors)
             LOG.error("data: %s", data)
+            LOG.error("schema: %s", schema.schema)

@@ -4,7 +4,7 @@ datazen - A data structure for runtime data.
 """
 
 # built-in
-from copy import deepcopy
+from copy import copy, deepcopy
 import logging
 import os
 from typing import List
@@ -135,7 +135,10 @@ def clone(env: EnvironmentNamespace,
 
     # all we need to do is copy all of the attributes
     update.directories = deepcopy(env.directories)
-    update.data = deepcopy(env.data)
+    update.data[DataType.CONFIG] = deepcopy(env.data[DataType.CONFIG])
+    update.data[DataType.SCHEMA] = deepcopy(env.data[DataType.SCHEMA])
+    update.data[DataType.VARIABLE] = deepcopy(env.data[DataType.VARIABLE])
+    update.data[DataType.TEMPLATE] = copy(env.data[DataType.TEMPLATE])
     update.valid = env.valid
 
     return update

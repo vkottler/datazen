@@ -64,18 +64,18 @@ class RenderEnvironment(TaskEnvironment):
             return True, False
 
         # render the template
-        with open(path, "w") as render_out:
-            try:
-                render_str = template.render(dep_data).rstrip()
-                render_str += os.linesep
+        try:
+            render_str = template.render(dep_data).rstrip()
+            render_str += os.linesep
+            with open(path, "w") as render_out:
                 render_out.write(render_str)
 
-                # save the output into a dict for consistency
-                self.task_data["renders"][entry["name"]] = render_str
-            except jinja2.exceptions.TemplateError as exc:
-                LOG.error("couldn't render '%s' to '%s': %s",
-                          entry["name"], path, exc)
-                return False, False
+            # save the output into a dict for consistency
+            self.task_data["renders"][entry["name"]] = render_str
+        except jinja2.exceptions.TemplateError as exc:
+            LOG.error("couldn't render '%s' to '%s': %s",
+                      entry["name"], path, exc)
+            return False, False
 
         LOG.info("(%s) rendered '%s'", entry["name"], path)
 

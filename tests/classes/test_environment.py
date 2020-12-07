@@ -79,6 +79,7 @@ def test_operations():
     assert env.compile("d") == (False, False)
     assert env.compile("f") == (True, True)
     assert env.compile("g") == (False, False)
+    assert env.compile("z") == (True, True)
 
     env = from_manifest(manifest)
     assert not env.manifest_changed
