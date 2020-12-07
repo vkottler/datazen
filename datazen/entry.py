@@ -71,7 +71,7 @@ def main(argv: List[str] = None) -> int:
                 env.describe_cache()
             else:
                 # execute targets
-                if not args.targets:
+                if not args.targets and env.default_target():
                     args.targets.append(env.default_target())
                 for target in args.targets:
                     task_result = env.execute(target)
