@@ -91,7 +91,8 @@ def test_operations():
     del env.manifest["data"]["default_target"]
     assert env.execute() == (True, False)
 
-    assert env.execute("groups-test") == (True, False)
+    env.clean_cache()
+    assert env.execute("groups-test") == (True, True)
 
     # clean the cache so that we don't commit it to the repository, it's not
     # worth the cost of using relative paths over absolute paths
