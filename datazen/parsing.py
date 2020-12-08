@@ -82,7 +82,7 @@ def dedup_dict_lists(data: dict) -> dict:
 
     for key in data:
         if isinstance(data[key], dict):
-            dedup_dict_lists(data[key])
+            data[key] = dedup_dict_lists(data[key])
         elif isinstance(data[key], list):
             new_list = []
             for item in data[key]:

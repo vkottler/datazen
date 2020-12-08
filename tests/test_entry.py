@@ -27,7 +27,7 @@ def test_entry():
     assert datazen_main(args + ["a", "b", "c"]) == 0
     assert datazen_main(args + ["not_a_target"]) != 0
     assert datazen_main([PKG_NAME, "-C", manifest_dir, "a", "b", "c"]) == 0
-    assert datazen_main(args + ["-d"]) == 0
+    assert datazen_main(args + ["--sync", "-d"]) == 0
 
     # change a file to test describe's miss detection
     data_file = get_resource(os.path.join("configs", "a.yaml"), True)
@@ -37,11 +37,16 @@ def test_entry():
         manifest_file.write("a: {{a}}")
 
     assert datazen_main(args + ["-d"]) == 0
-    assert datazen_main(args + ["-c"]) == 0
 
-    # test inability to load a manifest
-    assert datazen_main(args + ["-m", "not-a-manifest"]) != 0
+    # remove a file to additionally test describe's miss detection
+    os.remove(data_file)
+    assert datazen_main(args + ["-d"]) == 0
 
     # restore the changed file
     with open(data_file, "w") as manifest_file:
         manifest_data = manifest_file.write(manifest_data)
+
+    assert datazen_main(args + ["-c"]) == 0
+
+    # test inability to load a manifest
+    assert datazen_main(args + ["-m", "not-a-manifest"]) != 0

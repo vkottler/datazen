@@ -156,7 +156,8 @@ class TaskEnvironment(ManifestCacheEnvironment):
                     # resolve dependencies
                     while task_stack:
                         task = task_stack.pop()
-                        result = self.handle_task(task[0], task[1], task_stack)
+                        result = self.handle_task(task[0], task[1], task_stack,
+                                                  False)
 
                         # if a dependency failed, propagate it up
                         if not result[0]:

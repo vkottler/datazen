@@ -38,6 +38,10 @@ def main(argv: List[str] = None) -> int:
                               "'%(default)s')"))
     parser.add_argument("-c", "--clean", action="store_true",
                         help="clean the manifest's cache and exit")
+    parser.add_argument("--sync", action="store_true",
+                        help=("sync the manifest's cache (write-through) " +
+                              "with the state of the file system before " +
+                              "execution"))
     parser.add_argument("-d", "--describe", action="store_true",
                         help="describe the manifest's cache and exit")
     parser.add_argument("-C", "--dir", default=os.getcwd(), dest="dir",
@@ -65,6 +69,8 @@ def main(argv: List[str] = None) -> int:
 
         if env.get_valid():
             # clean, if requested
+            if args.sync:
+                env.write_cache()
             if args.clean:
                 env.clean_cache()
             elif args.describe:

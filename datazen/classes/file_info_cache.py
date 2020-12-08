@@ -30,6 +30,7 @@ class FileInfoCache:
         """ Construct an empty cache or optionally load from a directory. """
 
         self.data: dict = deepcopy(DATA_DEFAULT)
+        self.removed_data: Dict[str, List[str]] = defaultdict(list)
         self.cache_dir: str = ""
         if cache_dir is not None:
             self.load(cache_dir)
@@ -42,7 +43,8 @@ class FileInfoCache:
         os.makedirs(self.cache_dir, exist_ok=True)
 
         # reject things that don't belong by updating instead of assigning
-        new_data = load_dir_only(self.cache_dir, True)
+        new_data = sync_cache_data(load_dir_only(self.cache_dir, True),
+                                   self.removed_data)
         self.data["hashes"].update(new_data["hashes"])
         self.data["loaded"].update(new_data["loaded"])
 
@@ -78,7 +80,7 @@ class FileInfoCache:
         curr_dir = os.getcwd()
         for hash_set, hash_data in self.data["hashes"].items():
             misses = []
-            total = 0
+            total = len(self.removed_data[hash_set])
             for filename, hash_item in hash_data.items():
                 total += 1
                 if curr_dir in filename:
@@ -92,9 +94,13 @@ class FileInfoCache:
             # log all misses / updates
             for miss in misses:
                 LOG.info("%s (%s) updated", miss[0], time_str(miss[1]["time"]))
+            for removed in self.removed_data[hash_set]:
+                LOG.info("%s no longer present", removed)
 
             # log a summary
-            LOG.info("%s: %d/%d match", hash_set, total - len(misses), total)
+            LOG.info("%s: %d/%d match", hash_set,
+                     total - (len(misses) + len(self.removed_data[hash_set])),
+                     total)
 
     def get_data(self, name: str) -> Tuple[List[str], Dict[str, dict]]:
         """ Get the tuple version of cached data. """
@@ -114,7 +120,7 @@ class FileInfoCache:
         """ Commit cached data to the file-system. """
 
         if self.cache_dir != "":
-            data = dedup_dict_lists(deepcopy(self.data))
+            data = sync_cache_data(self.data, self.removed_data)
             for key, val in data.items():
                 key_path = os.path.join(self.cache_dir,
                                         "{}.{}".format(key, out_type))
@@ -131,6 +137,7 @@ def copy(cache: FileInfoCache) -> FileInfoCache:
     # copy the cache
     new_cache.cache_dir = cache.cache_dir
     new_cache.data = deepcopy(cache.data)
+    new_cache.removed_data = deepcopy(cache.removed_data)
 
     return new_cache
 
@@ -154,7 +161,21 @@ def cmp_loaded_count(cache_a: FileInfoCache, cache_b: FileInfoCache,
     between two caches.
     """
 
-    return abs(len(cache_a.get_loaded(name)) - len(cache_b.get_loaded(name)))
+    a_loaded = cache_a.get_loaded(name)
+    b_loaded = cache_b.get_loaded(name)
+
+    # get counts of all the files from both caches
+    count_data: dict = defaultdict(lambda: {"a": 0, "b": 0})
+    for item in a_loaded:
+        count_data[item]["a"] = a_loaded.count(item)
+    for item in b_loaded:
+        count_data[item]["b"] = b_loaded.count(item)
+
+    # accumulated the differences in counts
+    result = 0
+    for data in count_data.values():
+        result += abs(data["a"] - data["b"])
+    return result
 
 
 def cmp_loaded_count_from_set(cache_a: FileInfoCache, cache_b: FileInfoCache,
@@ -184,8 +205,62 @@ def cmp_total_loaded(cache_a: FileInfoCache, cache_b: FileInfoCache,
     result = 0
     for known in known_types:
         if load_checks is not None and known in load_checks:
-            result += cmp_loaded_count_from_set(cache_a, cache_b, known,
-                                                load_checks[known])
+            iter_result = cmp_loaded_count_from_set(cache_a, cache_b, known,
+                                                    load_checks[known])
+            if iter_result > 0:
+                LOG.info("%d changes detected for '%s' in '%s'", iter_result,
+                         known, load_checks[known])
+            result += iter_result
         else:
-            result += cmp_loaded_count(cache_a, cache_b, known)
+            iter_result = cmp_loaded_count(cache_a, cache_b, known)
+            if iter_result > 0:
+                LOG.info("%d changes detected for '%s'", iter_result, known)
+            result += iter_result
     return result
+
+
+def sync_cache_data(cache_data: dict,
+                    removed_data: Dict[str, List[str]]) -> dict:
+    """
+    Before writing a cache to disk we want to de-duplicate items in the loaded
+    list and remove hash data for files that were removed so that if they
+    come back at the same hash, it's not considered already loaded.
+    """
+
+    data = dedup_dict_lists(deepcopy(cache_data))
+    data["hashes"] = remove_missing_hashed_files(data["hashes"], removed_data)
+    data["loaded"] = remove_missing_loaded_files(data["loaded"])
+    return data
+
+
+def remove_missing_hashed_files(data: dict,
+                                removed_data: Dict[str, List[str]]) -> dict:
+    """ Assign new hash data based on the files that are still present. """
+
+    for category in data.keys():
+        new_data = {}
+        for filename in data[category].keys():
+            if os.path.isfile(filename):
+                new_data[filename] = data[category][filename]
+            elif filename not in removed_data[category]:
+                removed_data[category].append(filename)
+        data[category] = new_data
+
+    return data
+
+
+def remove_missing_loaded_files(data: dict) -> dict:
+    """
+    Audit list elements in a dictionary recursively, assume the data is String
+    and the elements are filenames, assign a new list for all of the elements
+    that can be located.
+    """
+
+    for key, item in data.items():
+        new_list = []
+        for filename in item:
+            if os.path.isfile(filename):
+                new_list.append(filename)
+        data[key] = new_list
+
+    return data
