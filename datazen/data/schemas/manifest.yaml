@@ -78,6 +78,8 @@ renders:
         type: string
       output_path:
         type: string
+      no_dynamic_fingerprint:
+        type: boolean
 
 groups:
   type: list

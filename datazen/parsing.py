@@ -160,12 +160,18 @@ def load(data_path: str, variables: dict,
                  expect_overwrite=expect_overwrite), loaded
 
 
+def get_hash(data: str, encoding: str = "utf-8") -> str:
+    """ Get the MD5 of String data. """
+
+    return hashlib.md5(bytes(data, encoding)).hexdigest()
+
+
 def get_file_hash(path: str) -> str:
     """ Get the MD5 of a file by path. """
 
     with open(path) as data:
-        contents = bytes(data.read(), "utf-8")
-    return hashlib.md5(contents).hexdigest()
+        contents = data.read()
+    return get_hash(contents)
 
 
 def set_file_hash(hashes: dict, path: str, set_new: bool = True) -> bool:

@@ -58,9 +58,14 @@ renders:
   - "b"
   - "c"
 - name: "z"
+- name: "test.md"
+- name: "test.py"
+  no_dynamic_fingerprint: true
 
 groups:
 - name: "test"
   dependencies:
   - "renders-a"
   - "renders-b"
+  - "renders-test.md"
+  - "renders-test.py"

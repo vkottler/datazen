@@ -13,6 +13,8 @@ import jinja2
 
 # internal
 from datazen.classes.task_environment import TaskEnvironment
+from datazen.fingerprinting import build_fingerprint
+from datazen.paths import get_file_ext
 
 LOG = logging.getLogger(__name__)
 
@@ -25,6 +27,40 @@ class RenderEnvironment(TaskEnvironment):
 
         super().__init__()
         self.handles["renders"] = self.valid_render
+
+    def perform_render(self, template: jinja2.Template,
+                       path: str, entry: dict,
+                       data: dict = None) -> Tuple[bool, bool]:
+        """
+        Render a template to the requested path using the provided data.
+        """
+
+        try:
+            render_str = template.render(data).rstrip()
+            render_str += os.linesep
+
+            # determine if the caller wanted a dynamic fingerprint or not
+            dynamic = True
+            if ("no_dynamic_fingerprint" in entry and
+                    entry["no_dynamic_fingerprint"]):
+                dynamic = False
+
+            fprint = build_fingerprint(render_str, get_file_ext(path),
+                                       dynamic=dynamic)
+            render_str = fprint + render_str
+            with open(path, "w") as render_out:
+                render_out.write(render_str)
+
+            # save the output into a dict for consistency
+            self.task_data["renders"][entry["name"]] = render_str
+        except jinja2.exceptions.TemplateError as exc:
+            LOG.error("couldn't render '%s' to '%s': %s",
+                      entry["name"], path, exc)
+            return False, False
+
+        LOG.info("(%s) rendered '%s'", entry["name"], path)
+
+        return True, True
 
     def valid_render(self, entry: dict, namespace: str, dep_data: dict = None,
                      deps_changed: List[str] = None) -> Tuple[bool, bool]:
@@ -63,20 +99,4 @@ class RenderEnvironment(TaskEnvironment):
             LOG.debug("render '%s' satisfied, skipping", entry["name"])
             return True, False
 
-        # render the template
-        try:
-            render_str = template.render(dep_data).rstrip()
-            render_str += os.linesep
-            with open(path, "w") as render_out:
-                render_out.write(render_str)
-
-            # save the output into a dict for consistency
-            self.task_data["renders"][entry["name"]] = render_str
-        except jinja2.exceptions.TemplateError as exc:
-            LOG.error("couldn't render '%s' to '%s': %s",
-                      entry["name"], path, exc)
-            return False, False
-
-        LOG.info("(%s) rendered '%s'", entry["name"], path)
-
-        return True, True
+        return self.perform_render(template, path, entry, dep_data)

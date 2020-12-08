@@ -1,3 +1,8 @@
+# =====================================
+# generator=datazen
+# version=1.0.10
+# hash=0fa1178d9540f58f50fa175c79123a54
+# =====================================
 
 """
 datazen - Package definition for distribution.

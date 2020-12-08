@@ -13,6 +13,7 @@ import time
 from typing import Dict, List, Tuple
 
 # internal
+from datazen import VERSION
 from datazen.parsing import set_file_hash, merge, dedup_dict_lists
 from datazen.load import load_dir_only
 from datazen.compile import str_compile
@@ -20,7 +21,8 @@ from datazen.compile import str_compile
 LOG = logging.getLogger(__name__)
 
 DATA_DEFAULT = {"hashes": defaultdict(lambda: defaultdict(dict)),
-                "loaded": defaultdict(list)}
+                "loaded": defaultdict(list),
+                "meta": {"version": VERSION}}
 
 
 class FileInfoCache:
@@ -45,8 +47,8 @@ class FileInfoCache:
         # reject things that don't belong by updating instead of assigning
         new_data = sync_cache_data(load_dir_only(self.cache_dir, True),
                                    self.removed_data)
-        self.data["hashes"].update(new_data["hashes"])
-        self.data["loaded"].update(new_data["loaded"])
+        for key in DATA_DEFAULT:
+            self.data[key].update(new_data[key])
 
     def get_hashes(self, sub_dir: str) -> Dict[str, dict]:
         """ Get the cached, dictionary of file hashes for a certain key. """
@@ -101,6 +103,11 @@ class FileInfoCache:
             LOG.info("%s: %d/%d match", hash_set,
                      total - (len(misses) + len(self.removed_data[hash_set])),
                      total)
+
+        # describe metadata
+        if "meta" in self.data:
+            LOG.info("version: %s (current: %s)",
+                     self.data["meta"]["version"], VERSION)
 
     def get_data(self, name: str) -> Tuple[List[str], Dict[str, dict]]:
         """ Get the tuple version of cached data. """
