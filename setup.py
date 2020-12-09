@@ -1,18 +1,18 @@
 # =====================================
 # generator=datazen
 # version=1.1.0
-# hash=97839a45590a9ddf01d3ac75e8e911d4
+# hash=5c7e9660ab8e4c2d1c03184fdda5f9f6
 # =====================================
 
 """
 datazen - Package definition for distribution.
 """
 
+# third-party
+from vmklib.setup import setup  # type: ignore
+
 # internal
 from datazen import PKG_NAME, VERSION, DESCRIPTION
-
-# third-party
-from vmklib.setup import setup
 
 
 author_info = {"name": "Vaughn Kottler",
