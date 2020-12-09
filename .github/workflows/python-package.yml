@@ -24,21 +24,24 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: install-mk
+      run: |
+        pip${{matrix.python-version}} install vmklib
     - name: venv
       run: |
-        make PYTHON_VERSION=${{matrix.python-version}} venv
+        mk PYTHON_VERSION=${{matrix.python-version}} venv
     - name: lint
       run: |
-        make PYTHON_VERSION=${{matrix.python-version}} lint
+        mk PYTHON_VERSION=${{matrix.python-version}} lint
     - name: sa
       run: |
-        make PYTHON_VERSION=${{matrix.python-version}} sa
+        mk PYTHON_VERSION=${{matrix.python-version}} sa
     - name: test
       run: |
-        make PYTHON_VERSION=${{matrix.python-version}} test
+        mk PYTHON_VERSION=${{matrix.python-version}} test
     - name: dist
       run: |
-        make PYTHON_VERSION=${{matrix.python-version}} dist
+        mk PYTHON_VERSION=${{matrix.python-version}} dist
     - name: coverage-artifact
       uses: actions/upload-artifact@v2
       with:

@@ -2,12 +2,8 @@
         sync upload
 
 .DEFAULT_GOAL  := all
-PROJ           := datazen
-$(PROJ)_DIR    := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 
 PY_EXTRA_LINT_ARGS += $($(PROJ)_DIR)/setup.py
-
-include $($(PROJ)_DIR)/mk/conf.mk
 
 lint: $(PY_PREFIX)lint
 sa: $(PY_PREFIX)sa
