@@ -1,3 +1,8 @@
+includes:
+  type: list
+  schema:
+    type: string
+
 output_dir:
   type: string
 

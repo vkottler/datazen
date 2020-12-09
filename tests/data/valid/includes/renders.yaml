@@ -1,0 +1,26 @@
+renders:
+- name: "a"
+  dependencies:
+  - "a"
+  - "b"
+  - "c"
+- name: "b"
+  dependencies:
+  - "a"
+  - "b"
+  output_path: "b_cool"
+- name: "d"
+  dependencies:
+  - "x"
+- name: "e"
+  dependencies:
+  - "a"
+  - "b"
+  - "c"
+- name: "z"
+- name: "test.md"
+- name: "test.py"
+  no_dynamic_fingerprint: true
+
+includes:
+- "subdir/compiles.yaml"

@@ -34,6 +34,18 @@ def test_environment():
     assert not env.valid.add_dir(DataType.CONFIG, "/this/dir/shouldn't/exist")
 
 
+def test_bad_include():
+    """
+    Test the behavior of loading manifests when the includes have problems.
+    """
+
+    # load an invalid manifest (bad include)
+    manifest_path = get_resource(os.path.join("manifests", "bad_include.yaml"),
+                                 False)
+    env = from_manifest(manifest_path)
+    assert not env.get_valid()
+
+
 def test_environment_from_manifest():
     """ Test scenarios for loading manifest files. """
 

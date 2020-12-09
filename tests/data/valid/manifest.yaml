@@ -1,5 +1,8 @@
 output_dir: "datazen-out-test"
 
+includes:
+- "includes/renders.yaml"
+
 configs:
 - "configs"
 - "configs2"
@@ -8,59 +11,6 @@ variables:
 - "variables2"
 
 default_target: "renders-b"
-
-compiles:
-- name: "a"
-  configs:
-  - "configs3"
-- name: "b"
-  output_type: "json"
-  output_dir: "b_out"
-- name: "c"
-  dependencies:
-  - "renders-b"
-  index_path: "a.a"
-- name: "e"
-  index_path: "a"
-  dependencies:
-  - "compiles-a"
-  - "b"
-  - "compiles-c"
-- name: "f"
-  dependencies:
-  - "a"
-  - "b"
-  - "c"
-- name: "g"
-  dependencies:
-  - "noop-test"
-- name: "z"
-  configs:
-  - "configs_missing_vars"
-
-renders:
-- name: "a"
-  dependencies:
-  - "a"
-  - "b"
-  - "c"
-- name: "b"
-  dependencies:
-  - "a"
-  - "b"
-  output_path: "b_cool"
-- name: "d"
-  dependencies:
-  - "x"
-- name: "e"
-  dependencies:
-  - "a"
-  - "b"
-  - "c"
-- name: "z"
-- name: "test.md"
-- name: "test.py"
-  no_dynamic_fingerprint: true
 
 groups:
 - name: "test"

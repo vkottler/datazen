@@ -7,6 +7,7 @@ datazen - A class for adding manifest-loading to environments.
 import logging
 import os
 from io import StringIO
+from typing import Tuple
 
 # third-party
 from cerberus import Validator  # type: ignore
@@ -15,7 +16,7 @@ from cerberus import Validator  # type: ignore
 from datazen.classes.config_environment import ConfigEnvironment
 from datazen.classes.template_environment import TemplateEnvironment
 from datazen.parsing import load as load_raw
-from datazen.parsing import load_stream
+from datazen.parsing import load_stream, merge_dicts
 from datazen.paths import get_package_data, resolve_dir
 from datazen import DEFAULT_DIR, ROOT_NAMESPACE
 
@@ -92,6 +93,37 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             result = self.manifest["data"]["default_target"]
         return result
 
+    def load_manifest_reent(self, path: str,
+                            manifest_dir: str) -> Tuple[dict, bool]:
+        """
+        Load a manifest recursively by resolving includes and merging the
+        results.
+        """
+
+        if not os.path.isabs(path):
+            path = os.path.join(manifest_dir, path)
+
+        # load raw data
+        curr_manifest, loaded = load_raw(path, {}, {})
+        if not loaded:
+            return {}, False
+
+        # resolve includes
+        all_manifests = [curr_manifest]
+        if "includes" in curr_manifest:
+            for include_str in curr_manifest["includes"]:
+                data, success = self.load_manifest_reent(include_str,
+                                                         os.path.dirname(path))
+                if not success:
+                    LOG.info("include '%s' failed to load", path)
+                    return {}, False
+                all_manifests.append(data)
+
+        # merge include data
+        curr_manifest = merge_dicts(all_manifests)
+
+        return curr_manifest, True
+
     def load_manifest(self, path: str = "manifest.yaml") -> bool:
         """ Attempt to load manifest data from a file. """
 
@@ -101,9 +133,12 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
                       self.manifest["path"])
             return False
 
-        self.manifest["path"] = os.path.abspath(path)
-        self.manifest["dir"] = os.path.dirname(self.manifest["path"])
-        self.manifest["data"], loaded = load_raw(self.manifest["path"], {}, {})
+        path = os.path.abspath(path)
+        manifest_dir = os.path.dirname(path)
+        self.manifest["path"] = path
+        self.manifest["dir"] = manifest_dir
+        self.manifest["data"], loaded = self.load_manifest_reent(path,
+                                                                 manifest_dir)
 
         # make sure we loaded a manifest
         if not loaded:

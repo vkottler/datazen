@@ -1,0 +1,28 @@
+compiles:
+- name: "a"
+  configs:
+  - "configs3"
+- name: "b"
+  output_type: "json"
+  output_dir: "b_out"
+- name: "c"
+  dependencies:
+  - "renders-b"
+  index_path: "a.a"
+- name: "e"
+  index_path: "a"
+  dependencies:
+  - "compiles-a"
+  - "b"
+  - "compiles-c"
+- name: "f"
+  dependencies:
+  - "a"
+  - "b"
+  - "c"
+- name: "g"
+  dependencies:
+  - "noop-test"
+- name: "z"
+  configs:
+  - "configs_missing_vars"
