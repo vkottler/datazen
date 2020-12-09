@@ -7,7 +7,7 @@ datazen - A class for adding manifest-loading to environments.
 import logging
 import os
 from io import StringIO
-from typing import Tuple
+from typing import List, Tuple
 
 # third-party
 from cerberus import Validator  # type: ignore
@@ -93,8 +93,9 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             result = self.manifest["data"]["default_target"]
         return result
 
-    def load_manifest_reent(self, path: str,
-                            manifest_dir: str) -> Tuple[dict, bool]:
+    def load_manifest_reent(self, path: str, manifest_dir: str,
+                            params: dict,
+                            files: List[str]) -> Tuple[dict, bool]:
         """
         Load a manifest recursively by resolving includes and merging the
         results.
@@ -102,22 +103,33 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
 
         if not os.path.isabs(path):
             path = os.path.join(manifest_dir, path)
+        files.append(os.path.abspath(path))
 
         # load raw data
-        curr_manifest, loaded = load_raw(path, {}, {})
+        curr_manifest, loaded = load_raw(path, params, {})
+
+        # update params, load again so we can use self-referential params
+        if "params" in curr_manifest:
+            params = merge_dicts([params, curr_manifest["params"]])
+            curr_manifest, loaded = load_raw(path, params, {})
+
         if not loaded:
-            return {}, False
+            return curr_manifest, False
+
+        # load the data directories before resolving includes
+        rel_path = os.path.dirname(path)
+        self.load_dirs(curr_manifest, rel_path, allow_dup=True)
 
         # resolve includes
         all_manifests = [curr_manifest]
         if "includes" in curr_manifest:
-            for include_str in curr_manifest["includes"]:
-                data, success = self.load_manifest_reent(include_str,
-                                                         os.path.dirname(path))
-                if not success:
+            for include in curr_manifest["includes"]:
+                result = self.load_manifest_reent(include, rel_path, params,
+                                                  files)
+                if not result[1]:
                     LOG.info("include '%s' failed to load", path)
-                    return {}, False
-                all_manifests.append(data)
+                    return curr_manifest, False
+                all_manifests.append(result[0])
 
         # merge include data
         curr_manifest = merge_dicts(all_manifests)
@@ -137,8 +149,11 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         manifest_dir = os.path.dirname(path)
         self.manifest["path"] = path
         self.manifest["dir"] = manifest_dir
+        files: List[str] = []
         self.manifest["data"], loaded = self.load_manifest_reent(path,
-                                                                 manifest_dir)
+                                                                 manifest_dir,
+                                                                 {}, files)
+        self.manifest["files"] = files
 
         # make sure we loaded a manifest
         if not loaded:
@@ -156,9 +171,6 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         # relative to the directory the manifest is located
         rel_path = self.manifest["dir"]
         set_output_dir(self.manifest["data"], rel_path)
-
-        # load the data directories
-        self.load_dirs(self.manifest["data"], rel_path)
 
         return self.get_valid()
 

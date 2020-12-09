@@ -1,10 +1,10 @@
 compiles:
 - name: "a"
   configs:
-  - "configs3"
+  - "{{compiles}}"
 - name: "b"
   output_type: "json"
-  output_dir: "b_out"
+  output_dir: "{{sub_param}}"
 - name: "c"
   dependencies:
   - "renders-b"

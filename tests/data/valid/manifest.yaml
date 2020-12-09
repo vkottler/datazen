@@ -1,5 +1,10 @@
 output_dir: "datazen-out-test"
 
+params:
+  renders: "test"
+  renders_str: "renders"
+  compiles: "configs3"
+
 includes:
 - "includes/renders.yaml"
 
@@ -10,12 +15,12 @@ variables:
 - "variables"
 - "variables2"
 
-default_target: "renders-b"
+default_target: "{{renders_str}}-b"
 
 groups:
 - name: "test"
   dependencies:
-  - "renders-a"
-  - "renders-b"
-  - "renders-test.md"
-  - "renders-test.py"
+  - "{{renders_str}}-a"
+  - "{{renders_str}}-b"
+  - "{{renders_str}}-test.md"
+  - "{{renders_str}}-test.py"

@@ -29,6 +29,9 @@ variables:
   schema:
     type: string
 
+params:
+  type: dict
+
 default_target:
   type: string
 

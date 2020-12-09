@@ -1,3 +1,6 @@
+params:
+  sub_param: "b_out"
+
 renders:
 - name: "a"
   dependencies:
@@ -18,8 +21,8 @@ renders:
   - "b"
   - "c"
 - name: "z"
-- name: "test.md"
-- name: "test.py"
+- name: "{{renders}}.md"
+- name: "{{renders}}.py"
   no_dynamic_fingerprint: true
 
 includes:

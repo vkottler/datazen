@@ -1,14 +1,15 @@
 default_target: "groups-all"
 
+params:
+  project: "datazen"
+
+includes:
+- "config/includes/python.yaml"
+
 configs:
-- "config/configs"
 - "local/configs"
 
-schemas:
-- "config/schemas"
-
 templates:
-- "config/templates"
 - "local/templates"
 
 variables:
@@ -18,27 +19,13 @@ compiles:
 - name: "local"
 
 renders:
-- name: "__init__.py"
-  output_dir: "datazen"
-  dependencies:
-  - "compiles-local"
 - name: "README.md"
   output_dir: "."
-  dependencies:
-  - "compiles-local"
-- name: "setup.py"
-  output_dir: "."
-  dependencies:
-  - "compiles-local"
-- name: "entry.py"
-  output_dir: "datazen"
   dependencies:
   - "compiles-local"
 
 groups:
 - name: "all"
   dependencies:
-  - "renders-__init__.py"
   - "renders-README.md"
-  - "renders-setup.py"
-  - "renders-entry.py"
+  - "groups-python"
