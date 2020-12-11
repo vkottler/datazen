@@ -32,14 +32,16 @@ class TemplateEnvironment(BaseEnvironment):
 
         # determine directories that need to be loaded
         data_type = DataType.TEMPLATE
-        to_load = self.get_to_load(data_type, name)
 
-        # load new templates
-        template_data = self.get_data(data_type, name)
-        if to_load:
-            template_data.update(load_templates(to_load, template_loads[0],
-                                                template_loads[1]))
-            self.update_load_state(data_type, to_load, name)
+        with self.lock:
+            to_load = self.get_to_load(data_type, name)
+
+            # load new templates
+            template_data = self.get_data(data_type, name)
+            if to_load:
+                template_data.update(load_templates(to_load, template_loads[0],
+                                                    template_loads[1]))
+                self.update_load_state(data_type, to_load, name)
 
         return template_data
 

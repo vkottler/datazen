@@ -17,7 +17,10 @@ from datazen.classes.config_environment import ConfigEnvironment
 from datazen.classes.template_environment import TemplateEnvironment
 from datazen.parsing import load as load_raw
 from datazen.parsing import load_stream, merge_dicts
-from datazen.paths import get_package_data, resolve_dir
+from datazen.paths import get_package_data, get_package_dir, resolve_dir
+from datazen.schemas import (
+    load_types, add_global_schemas, remove_global_schemas
+)
 from datazen import DEFAULT_DIR, ROOT_NAMESPACE
 
 LOG = logging.getLogger(__name__)
@@ -68,6 +71,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         key_handles = {
             "configs": self.add_config_dirs,
             "schemas": self.add_schema_dirs,
+            "schema_types": self.add_schema_type_dirs,
             "templates": self.add_template_dirs,
             "variables": self.add_variable_dirs,
         }
@@ -79,8 +83,6 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             # load it
             elif os.path.isdir(os.path.join(rel_path, key)):
                 key_handles[key]([key], rel_path, namespace, allow_dup)
-            else:
-                LOG.debug("not loading any '%s'", key)
 
     def default_target(self) -> str:
         """
@@ -161,9 +163,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             return self.get_valid()
 
         # enforce the manifest schema
-        schema = get_manifest_schema(False)
-        if not schema.validate(self.manifest["data"]):
-            LOG.error("invalid manifest: %s", schema.errors)
+        if not validate_manifest(self.manifest["data"]):
             self.set_valid(False)
             return self.get_valid()
 
@@ -182,3 +182,19 @@ def get_manifest_schema(require_all: bool = True) -> Validator:
     schema_str = get_package_data(rel_path)
     return Validator(load_stream(StringIO(schema_str), rel_path)[0],
                      require_all=require_all)
+
+
+def validate_manifest(manifest: dict) -> bool:
+    """ Validate manifest data against the package schema. """
+
+    custom_schemas = load_types([get_package_dir("schema_types")])
+
+    add_global_schemas(custom_schemas)
+    schema = get_manifest_schema(False)
+    result = schema.validate(manifest)
+    remove_global_schemas(custom_schemas)
+
+    if not result:
+        LOG.error("invalid manifest: %s", schema.errors)
+
+    return result

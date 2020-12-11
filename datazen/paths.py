@@ -8,6 +8,9 @@ import os
 import pkgutil
 from typing import List
 
+# third-party
+import pkg_resources
+
 # internal
 from datazen import PKG_NAME
 
@@ -59,6 +62,13 @@ def get_package_data(relative_path: str) -> str:
     schema_raw = pkgutil.get_data(PKG_NAME, rel_path)
     schema_bytes = schema_raw if schema_raw else bytes()
     return schema_bytes.decode("utf-8")
+
+
+def get_package_dir(relative_path: str) -> str:
+    """ Locate the path to a package-data directory. """
+
+    return pkg_resources.resource_filename(__name__,
+                                           os.path.join("data", relative_path))
 
 
 def resolve_dir(data: str, rel_base: str = "") -> str:

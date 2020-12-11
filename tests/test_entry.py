@@ -14,6 +14,18 @@ from datazen.entry import main as datazen_main
 from .resources import get_resource
 
 
+def test_entry_basic():
+    """
+    Build the default target to provide a useful test when isolating
+    individual tests.
+    """
+
+    manifest = get_resource("manifest.yaml", True)
+    args = [PKG_NAME, "-m", manifest]
+    assert datazen_main(args) == 0
+    assert datazen_main(args + ["-c"]) == 0
+
+
 def test_entry():
     """ Test some basic command-line argument scenarios. """
 

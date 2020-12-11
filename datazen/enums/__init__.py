@@ -12,5 +12,6 @@ class DataType(Enum):
 
     CONFIG = "config"
     SCHEMA = "schema"
+    SCHEMA_TYPES = "schema_type"
     TEMPLATE = "template"
     VARIABLE = "variable"

@@ -12,7 +12,9 @@ from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
 from datazen.classes.base_environment import BaseEnvironment, LOADTYPE
 from datazen.schemas import load as load_schemas
-from datazen.schemas import validate
+from datazen.schemas import (
+    validate, load_types, add_global_schemas, remove_global_schemas
+)
 
 
 class SchemaEnvironment(BaseEnvironment):
@@ -21,32 +23,79 @@ class SchemaEnvironment(BaseEnvironment):
     environment capability to function.
     """
 
+    def load_schema_types(self, sch_loads: LOADTYPE = (None, None),
+                          name: str = ROOT_NAMESPACE) -> dict:
+        """ Load custom schema types and resolve any un-loaded directories. """
+
+        # determine directories that need to be loaded
+        data_type = DataType.SCHEMA_TYPES
+
+        with self.lock:
+            to_load = self.get_to_load(data_type, name)
+
+            # load schema data for this namespace
+            schema_type_data = self.get_data(data_type, name)
+            if to_load:
+                schema_type_data.update(load_types(to_load, sch_loads[0],
+                                        sch_loads[1]))
+
+        return schema_type_data
+
     def load_schemas(self, require_all: bool = True,
                      sch_loads: LOADTYPE = (None, None),
-                     name: str = ROOT_NAMESPACE) -> dict:
+                     sch_types_loads: LOADTYPE = (None, None),
+                     name: str = ROOT_NAMESPACE,
+                     modify_registry: bool = True) -> dict:
         """ Load schema data, resolve any un-loaded schema directories. """
 
         # determine directories that need to be loaded
         data_type = DataType.SCHEMA
-        to_load = self.get_to_load(data_type, name)
 
-        # load new data
-        schema_data = self.get_data(data_type, name)
-        if to_load:
-            schema_data.update(load_schemas(to_load, require_all, sch_loads[0],
-                                            sch_loads[1]))
+        sch_types = self.load_schema_types(sch_types_loads, name)
+
+        with self.lock:
+            to_load = self.get_to_load(data_type, name)
+
+            # load new data
+            schema_data = self.get_data(data_type, name)
+            if to_load:
+                if modify_registry:
+                    add_global_schemas(sch_types)
+                schema_data.update(load_schemas(to_load, require_all,
+                                                sch_loads[0], sch_loads[1]))
+                if modify_registry:
+                    remove_global_schemas(sch_types)
 
         return schema_data
 
     def enforce_schemas(self, data: dict, require_all: bool = True,
                         sch_loads: LOADTYPE = (None, None),
+                        sch_types_loads: LOADTYPE = (None, None),
                         name: str = ROOT_NAMESPACE) -> bool:
         """
         Perform schema-validation on provided data and return the boolean
-        result.
+        result. Adds (and removes) namespaced types if applicable.
         """
 
-        return validate(self.load_schemas(require_all, sch_loads, name), data)
+        with self.lock:
+            sch_types = self.load_schema_types(sch_types_loads, name)
+            add_global_schemas(sch_types)
+            result = validate(self.load_schemas(require_all, sch_loads,
+                              sch_types_loads, name, False), data)
+            remove_global_schemas(sch_types)
+
+        return result
+
+    def add_schema_type_dirs(self, dir_paths: List[str], rel_path: str = ".",
+                             name: str = ROOT_NAMESPACE,
+                             allow_dup: bool = False) -> int:
+        """
+        Add directories containing schema-type data (to be registered at
+        runtime).
+        """
+
+        return self.add_dirs(DataType.SCHEMA_TYPES, dir_paths, rel_path, name,
+                             allow_dup)
 
     def add_schema_dirs(self, dir_paths: List[str], rel_path: str = ".",
                         name: str = ROOT_NAMESPACE,

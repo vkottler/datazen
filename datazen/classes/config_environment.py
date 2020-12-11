@@ -34,6 +34,7 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
     def load_configs(self, cfg_loads: LOADTYPE = (None, None),
                      var_loads: LOADTYPE = (None, None),
                      sch_loads: LOADTYPE = (None, None),
+                     sch_types_loads: LOADTYPE = (None, None),
                      name: str = ROOT_NAMESPACE) -> dict:
         """
         Load configuration data, resolve any un-loaded configuration
@@ -44,18 +45,21 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
 
         # determine directories that need to be loaded
         data_type = DataType.CONFIG
-        to_load = self.get_to_load(data_type, name)
 
-        # load new data
-        config_data = self.get_data(data_type, name)
-        if to_load:
-            vdata = self.load_variables(var_loads, name)
-            config_data.update(load_configs(to_load, vdata, cfg_loads[0],
-                                            cfg_loads[1]))
-            self.update_load_state(data_type, to_load, name)
+        with self.lock:
+            to_load = self.get_to_load(data_type, name)
+
+            # load new data
+            config_data = self.get_data(data_type, name)
+            if to_load:
+                vdata = self.load_variables(var_loads, name)
+                config_data.update(load_configs(to_load, vdata, cfg_loads[0],
+                                                cfg_loads[1]))
+                self.update_load_state(data_type, to_load, name)
 
         # enforce schemas
-        if not self.enforce_schemas(config_data, True, sch_loads, name):
+        if not self.enforce_schemas(config_data, True, sch_loads,
+                                    sch_types_loads, name):
             LOG.error("schema validation failed, returning an empty dict")
             return {}
 

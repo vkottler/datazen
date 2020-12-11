@@ -8,6 +8,7 @@ from collections import defaultdict
 import logging
 from typing import Dict, List, Tuple
 from typing import Optional as Opt
+import threading
 
 # internal
 from datazen import ROOT_NAMESPACE
@@ -53,13 +54,15 @@ class BaseEnvironment:
 
         self.namespaces = {}
         self.namespaces[default_ns] = EnvironmentNamespace()
+        self.lock = threading.RLock()
 
     def add_namespace(self, name: str, clone_root: bool = True) -> None:
         """ Add a new namespace, optionally clone from the existing root. """
 
-        self.namespaces[name] = EnvironmentNamespace()
-        if clone_root and name != ROOT_NAMESPACE:
-            clone(self.namespaces[ROOT_NAMESPACE], self.namespaces[name])
+        with self.lock:
+            self.namespaces[name] = EnvironmentNamespace()
+            if clone_root and name != ROOT_NAMESPACE:
+                clone(self.namespaces[ROOT_NAMESPACE], self.namespaces[name])
 
     def get_valid(self, name: str = ROOT_NAMESPACE) -> bool:
         """ Get the 'valid' flag for a namespace. """
@@ -117,7 +120,8 @@ class BaseEnvironment:
         """
 
         load_deps = defaultdict(list)
-        load_deps["compiles"] = ["configs", "schemas", "variables"]
+        schema_deps = ["schemas", "schema_types"]
+        load_deps["compiles"] = ["configs", "variables"] + schema_deps
         load_deps["renders"] = ["templates"]
 
         # add a unique namespace for this target if it loads

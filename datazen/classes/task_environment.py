@@ -192,4 +192,5 @@ class TaskEnvironment(ManifestCacheEnvironment):
                                  result[1])
                 return result
 
+        LOG.error("no '%s' found", get_dep_slug(key_name, target))
         return False, False

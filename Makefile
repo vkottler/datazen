@@ -1,5 +1,5 @@
 .PHONY: lint sa test clean clean-venv view all venv todo host-coverage dist \
-        sync upload
+        sync upload test-single
 
 .DEFAULT_GOAL  := all
 
@@ -8,6 +8,7 @@ PY_EXTRA_LINT_ARGS += $($(PROJ)_DIR)/setup.py
 lint: $(PY_PREFIX)lint
 sa: $(PY_PREFIX)sa
 test: $(PY_PREFIX)test
+test-single: $(PY_PREFIX)test-test_entry_basic
 view: $(PY_PREFIX)view
 host-coverage: $(PY_PREFIX)host-coverage
 dist: $(PY_PREFIX)dist

@@ -15,6 +15,9 @@ variables:
 - "variables"
 - "variables2"
 
+schemas:
+- "custom_schemas"
+
 default_target: "{{renders_str}}-b"
 
 groups:

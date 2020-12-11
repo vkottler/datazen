@@ -121,7 +121,7 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         """ Load schemas, proxied through the cache. """
 
         return self.load_schemas(require_all, self.cache.get_data("schemas"),
-                                 name)
+                                 self.cache.get_data("schema_types"), name)
 
     def cached_enforce_schemas(self, data: dict,
                                require_all: bool = True,
@@ -129,14 +129,16 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         """ Enforce schemas, proxied through the cache. """
 
         return self.enforce_schemas(data, require_all,
-                                    self.cache.get_data("schemas"), name)
+                                    self.cache.get_data("schemas"),
+                                    self.cache.get_data("schema_types"), name)
 
     def cached_load_configs(self, name: str = ROOT_NAMESPACE) -> dict:
         """ Load configs, proxied through the cache. """
 
         return self.load_configs(self.cache.get_data("configs"),
                                  self.cache.get_data("variables"),
-                                 self.cache.get_data("schemas"), name)
+                                 self.cache.get_data("schemas"),
+                                 self.cache.get_data("schema_types"), name)
 
     def cached_load_templates(
         self,

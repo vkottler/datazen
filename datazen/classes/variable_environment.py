@@ -26,14 +26,16 @@ class VariableEnvironment(BaseEnvironment):
 
         # determine directories that need to be loaded
         data_type = DataType.VARIABLE
-        to_load = self.get_to_load(data_type, name)
 
-        # load new data
-        variable_data = self.get_data(data_type, name)
-        if to_load:
-            variable_data.update(load_variables(to_load, var_loads[0],
-                                                var_loads[1]))
-            self.update_load_state(data_type, to_load, name)
+        with self.lock:
+            to_load = self.get_to_load(data_type, name)
+
+            # load new data
+            variable_data = self.get_data(data_type, name)
+            if to_load:
+                variable_data.update(load_variables(to_load, var_loads[0],
+                                                    var_loads[1]))
+                self.update_load_state(data_type, to_load, name)
 
         return variable_data
 
