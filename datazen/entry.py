@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
 # version=1.2.0
-# hash=4f3a065715a84d8205d216935ad1e939
+# hash=701c3e0b235ac0d4d5723ea66cf1f0c0
 # =====================================
 
 """
@@ -47,6 +47,7 @@ def main(argv: List[str] = None) -> int:
     try:
         args = parser.parse_args(command_args[1:])
         args.version = VERSION
+        args.dir = os.path.abspath(args.dir)
 
         # initialize logging
         log_level = logging.DEBUG if args.verbose else logging.INFO
