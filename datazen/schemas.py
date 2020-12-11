@@ -4,7 +4,8 @@ datazen - Top-level APIs for loading and interacting with schema definitions.
 """
 
 # built-in
-from typing import List, Dict
+from contextlib import contextmanager
+from typing import List, Dict, Iterator
 import logging
 
 # third-party
@@ -80,3 +81,20 @@ def validate(schema_data: Dict[str, Validator], data: dict) -> bool:
             LOG.warning("no schema for '%s', not validating", item)
 
     return True
+
+
+@contextmanager
+def inject_custom_schemas(schema_data: Dict[str, dict],
+                          should_inject: bool = True) -> Iterator[None]:
+    """
+    Allow the user to more easily control adding and removing global schema
+    definitions.
+    """
+
+    try:
+        if should_inject:
+            add_global_schemas(schema_data)
+        yield
+    finally:
+        if should_inject:
+            remove_global_schemas(schema_data)

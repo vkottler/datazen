@@ -18,9 +18,7 @@ from datazen.classes.template_environment import TemplateEnvironment
 from datazen.parsing import load as load_raw
 from datazen.parsing import load_stream, merge_dicts
 from datazen.paths import get_package_data, get_package_dir, resolve_dir
-from datazen.schemas import (
-    load_types, add_global_schemas, remove_global_schemas
-)
+from datazen.schemas import load_types, inject_custom_schemas
 from datazen import DEFAULT_DIR, ROOT_NAMESPACE
 
 LOG = logging.getLogger(__name__)
@@ -189,10 +187,9 @@ def validate_manifest(manifest: dict) -> bool:
 
     custom_schemas = load_types([get_package_dir("schema_types")])
 
-    add_global_schemas(custom_schemas)
-    schema = get_manifest_schema(False)
-    result = schema.validate(manifest)
-    remove_global_schemas(custom_schemas)
+    with inject_custom_schemas(custom_schemas):
+        schema = get_manifest_schema(False)
+        result = schema.validate(manifest)
 
     if not result:
         LOG.error("invalid manifest: %s", schema.errors)

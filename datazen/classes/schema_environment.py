@@ -12,9 +12,7 @@ from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
 from datazen.classes.base_environment import BaseEnvironment, LOADTYPE
 from datazen.schemas import load as load_schemas
-from datazen.schemas import (
-    validate, load_types, add_global_schemas, remove_global_schemas
-)
+from datazen.schemas import validate, load_types, inject_custom_schemas
 
 
 class SchemaEnvironment(BaseEnvironment):
@@ -59,12 +57,10 @@ class SchemaEnvironment(BaseEnvironment):
             # load new data
             schema_data = self.get_data(data_type, name)
             if to_load:
-                if modify_registry:
-                    add_global_schemas(sch_types)
-                schema_data.update(load_schemas(to_load, require_all,
-                                                sch_loads[0], sch_loads[1]))
-                if modify_registry:
-                    remove_global_schemas(sch_types)
+                with inject_custom_schemas(sch_types, modify_registry):
+                    schema_data.update(load_schemas(to_load, require_all,
+                                                    sch_loads[0],
+                                                    sch_loads[1]))
 
         return schema_data
 
@@ -79,10 +75,9 @@ class SchemaEnvironment(BaseEnvironment):
 
         with self.lock:
             sch_types = self.load_schema_types(sch_types_loads, name)
-            add_global_schemas(sch_types)
-            result = validate(self.load_schemas(require_all, sch_loads,
-                              sch_types_loads, name, False), data)
-            remove_global_schemas(sch_types)
+            with inject_custom_schemas(sch_types):
+                result = validate(self.load_schemas(require_all, sch_loads,
+                                  sch_types_loads, name, False), data)
 
         return result
 
