@@ -13,11 +13,13 @@ from datazen.classes.base_environment import dep_slug_unwrap
 from datazen.classes.compile_environment import CompileEnvironment
 from datazen.classes.group_environment import GroupEnvironment
 from datazen.classes.render_environment import RenderEnvironment
+from datazen.classes.command_environment import CommandEnvironment
 
 LOG = logging.getLogger(__name__)
 
 
-class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment):
+class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment,
+                  CommandEnvironment):
     """ A wrapper for inheriting all environment-loading capabilities. """
 
     def __init__(self):
