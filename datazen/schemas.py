@@ -47,8 +47,9 @@ def add_global_schemas(schema_data: Dict[str, dict]) -> None:
 def remove_global_schemas(schema_data: Dict[str, dict]) -> None:
     """ Remove schema-type registrations by key name. """
 
-    LOG.debug("removing schema types '%s'", ", '".join(schema_data.keys()))
-    rules_set_registry.remove(*schema_data.keys())
+    if schema_data:
+        LOG.debug("removing schema types '%s'", ", '".join(schema_data.keys()))
+        rules_set_registry.remove(*schema_data.keys())
 
 
 def load_types(directories: List[str], loaded_list: List[str] = None,

@@ -38,6 +38,19 @@ compiles:
       append:
         type: boolean
 
+commands:
+  type: list
+  schema:
+    type: dict
+    schema:
+      name:
+        type: string
+      daemon:
+        type: boolean
+      timeout:
+        type: number
+      dependencies: deps
+
 renders:
   type: list
   schema:
