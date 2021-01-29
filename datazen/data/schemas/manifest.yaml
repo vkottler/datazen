@@ -45,10 +45,9 @@ commands:
     schema:
       name:
         type: string
-      daemon:
-        type: boolean
-      timeout:
-        type: number
+      command:
+        type: string
+      arguments: deps
       dependencies: deps
 
 renders:

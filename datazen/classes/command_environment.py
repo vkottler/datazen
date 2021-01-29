@@ -14,7 +14,7 @@ LOG = logging.getLogger(__name__)
 
 
 class CommandEnvironment(TaskEnvironment):
-    """ TODO """
+    """ Exposes command-line commanding capability to the environment. """
 
     def __init__(self):
         """ Add the 'commands' handle. """
@@ -22,14 +22,11 @@ class CommandEnvironment(TaskEnvironment):
         super().__init__()
         self.handles["commands"] = self.valid_command
 
-    def valid_command(self, entry: dict, namespace: str, dep_data: dict = None,
-                      deps_changed: List[str] = None) -> Tuple[bool, bool]:
+    def valid_command(self, entry: dict, _: str, __: dict = None,
+                      ___: List[str] = None) -> Tuple[bool, bool]:
         """ Perform the command specified by the entry. """
 
         LOG.info(entry)
-        LOG.info(namespace)
-        LOG.info(dep_data)
-        LOG.info(deps_changed)
         LOG.info(self.handles)
 
         return False, False

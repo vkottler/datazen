@@ -20,6 +20,12 @@ schemas:
 
 default_target: "{{renders_str}}-b"
 
+commands:
+- name: "a"
+  command: "ls"
+  arguments:
+  - "-lat"
+
 groups:
 - name: "test"
   dependencies:

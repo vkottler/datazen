@@ -78,6 +78,11 @@ class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment,
 
         return self.handle_task("renders", target)
 
+    def command(self, target: str) -> Tuple[bool, bool]:
+        """ Execute a named 'command' target from the manifest. """
+
+        return self.handle_task("commands", target)
+
 
 def from_manifest(manifest_path: str) -> Environment:
     """ Load an environment object from a schema definition on disk. """
