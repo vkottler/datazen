@@ -3,9 +3,11 @@ default_target: "groups-all"
 params:
   project: "datazen"
   python_version: "3.8"
+  entry: "dz"
 
 includes:
 - "config/includes/python.yaml"
+- "config/includes/help.yaml"
 
 configs:
 - "local/configs"
@@ -18,19 +20,6 @@ variables:
 
 compiles:
 - name: "local"
-
-commands:
-- name: "ensure-venv"
-  command: "mk"
-  arguments:
-  - "venv"
-  - "PYTHON_VERSION={{python_version}}"
-- name: "help"
-  command: "./venv{{python_version}}/bin/dz"
-  arguments:
-  - "-h"
-  dependencies:
-  - "commands-ensure-venv"
 
 renders:
 - name: "README.md"
