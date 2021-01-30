@@ -4,8 +4,10 @@ datazen - An environment extension that exposes command-line command execution.
 """
 
 # built-in
+from collections import defaultdict
 import logging
-from typing import List, Tuple
+import subprocess
+from typing import Dict, List, Tuple
 
 # internal
 from datazen.classes.task_environment import TaskEnvironment
@@ -26,7 +28,17 @@ class CommandEnvironment(TaskEnvironment):
                       ___: List[str] = None) -> Tuple[bool, bool]:
         """ Perform the command specified by the entry. """
 
-        LOG.info(entry)
-        LOG.info(self.handles)
+        cmd = [entry["command"]]
+        if "arguments" in entry and entry["arguments"]:
+            cmd += entry["arguments"]
 
-        return False, False
+        result = subprocess.run(cmd, capture_output=True)
+
+        cmd_data: Dict[str, Dict[str, str]] = {entry["name"]: defaultdict(str)}
+        cmd_data[entry["name"]]["args"] = result.args
+        cmd_data[entry["name"]]["stdout"] = result.stdout.decode()
+        cmd_data[entry["name"]]["stderr"] = result.stderr.decode()
+        cmd_data[entry["name"]]["returncode"] = str(result.returncode)
+        self.task_data["commands"][entry["name"]] = cmd_data
+
+        return result.returncode == 0, True

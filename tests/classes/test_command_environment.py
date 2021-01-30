@@ -18,6 +18,6 @@ def test_command_basic():
     env.clean_cache()
 
     # run a command
-    assert env.command("a") == (False, False)
+    assert env.command("a") == (True, True)
 
     env.clean_cache()
