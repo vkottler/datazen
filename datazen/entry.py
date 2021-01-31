@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
 # version=1.3.1
-# hash=5843cd91d084149024276442216d856f
+# hash=8a6c0e7fa959b7b10800d57d61c88fd3
 # =====================================
 
 """
@@ -37,8 +37,7 @@ def main(argv: List[str] = None) -> int:
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="set to increase logging verbosity")
     parser.add_argument("-C", "--dir", default=os.getcwd(), dest="dir",
-                        help=("execute from a specific directory (default: " +
-                              "'%(default)s')"))
+                        help="execute from a specific directory")
     starting_dir = os.getcwd()
 
     add_app_args(parser)

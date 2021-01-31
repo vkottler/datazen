@@ -2,7 +2,7 @@
     =====================================
     generator=datazen
     version=1.3.1
-    hash=52a99ce0891d867ca51f9a3d82f0d26c
+    hash=d7a4ab50bd813e0167535c86d818222c
     =====================================
 -->
 
@@ -35,8 +35,7 @@ optional arguments:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   -v, --verbose         set to increase logging verbosity
-  -C DIR, --dir DIR     execute from a specific directory (default:
-                        '/home/vkottler/Documents/git/workspace/datazen')
+  -C DIR, --dir DIR     execute from a specific directory
   -m MANIFEST, --manifest MANIFEST
                         manifest to execute tasks from (default:
                         'manifest.yaml')
