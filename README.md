@@ -1,16 +1,18 @@
 <!--
     =====================================
     generator=datazen
-    version=1.3.0
-    hash=d600940c4db030ae24b1c956c84a80b2
+    version=1.3.1
+    hash=52a99ce0891d867ca51f9a3d82f0d26c
     =====================================
 -->
 
-# datazen
+# datazen ([1.3.1](https://pypi.org/project/datazen/))
 
 ![Python package](https://github.com/vkottler/datazen/workflows/Python%20package/badge.svg)
 
-Compile and render schema-validated configuration data. Good software is composable and configurable, but
+*Compile and render schema-validated configuration data.*
+
+Good software is composable and configurable, but
 the complexity of managing configuration data scales with its complexity.
 
 This package simplifies data curation and partitioning for uses in rendering

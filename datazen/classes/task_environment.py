@@ -8,7 +8,7 @@ datazen - A class for exposing the capability to run concrete tasks against
 from collections import defaultdict
 import logging
 import os
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Optional
 
 # internal
 from datazen import ROOT_NAMESPACE
@@ -67,16 +67,15 @@ class TaskEnvironment(ManifestCacheEnvironment):
         if namespace != ROOT_NAMESPACE:
             self.restore_cache()
 
-    def push_deps(self, dep_dict: dict, task_stack:
-                  List[Tuple[str, str]], curr_target: str) -> None:
-        """ Push dependencies onto a stack if they need to be resolved. """
+    def push_dep(self, dep: str, task_stack:
+                 List[Tuple[str, str]], curr_target: str) -> None:
+        """ Push a dependency onto a stack if they need to be resolved. """
 
-        for dep in dep_dict:
-            dep_tup = dep_slug_unwrap(dep, self.default)
-            is_new = self.is_task_new(dep_tup[0], dep_tup[1])
-            is_resolved = self.is_resolved(dep_tup[0], dep_tup[1])
-            if dep != curr_target and (not is_resolved or is_new):
-                task_stack.append(dep_tup)
+        dep_tup = dep_slug_unwrap(dep, self.default)
+        is_new = self.is_task_new(dep_tup[0], dep_tup[1])
+        is_resolved = self.is_resolved(dep_tup[0], dep_tup[1])
+        if dep != curr_target and (not is_resolved or is_new):
+            task_stack.append(dep_tup)
 
     def get_dep_data(self, dep_list: List[str]) -> dict:
         """
@@ -91,11 +90,11 @@ class TaskEnvironment(ManifestCacheEnvironment):
             dep_tup = dep_slug_unwrap(dep, self.default)
             curr_data = self.task_data[dep_tup[0]][dep_tup[1]]
             if isinstance(curr_data, dict):
-                dep_data.update(self.task_data[dep_tup[0]][dep_tup[1]])
+                dep_data.update(curr_data)
 
         return dep_data
 
-    def already_satisfied(self, target: str, output_path: str,
+    def already_satisfied(self, target: str, output_path: Optional[str],
                           load_deps: List[str],
                           deps_changed: List[str] = None,
                           load_checks: Dict[str, List[str]] = None) -> bool:
@@ -104,7 +103,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         information about why not.
         """
 
-        is_file = os.path.isfile(output_path)
+        is_file = True if output_path is None else os.path.isfile(output_path)
         newly_loaded = self.get_new_loaded(load_deps, load_checks)
         result = (not self.manifest_changed and is_file and not deps_changed
                   and newly_loaded == 0)
@@ -117,6 +116,35 @@ class TaskEnvironment(ManifestCacheEnvironment):
                 LOG.debug("%s: %d file updates detected", target, newly_loaded)
 
         return result
+
+    def resolve_dependencies(self, dep_list: List[str],
+                             task_stack: List[Tuple[str, str]],
+                             target: str) -> Tuple[bool, dict, List[str]]:
+        """
+        Execute the entire chain of dependencies for a task, return the
+        aggregate result as a boolean as well as the dependency data and which
+        dependencies changed.
+        """
+
+        deps_changed = []
+        for dep in dep_list:
+            self.push_dep(dep, task_stack, target)
+
+            # resolve dependencies
+            while task_stack:
+                task = task_stack.pop()
+                result = self.handle_task(task[0], task[1], task_stack, False)
+
+                # if a dependency failed, propagate it up
+                if not result[0]:
+                    return False, {}, []
+                # otherwise if a dependency was updated
+                # (performed), capture it in a list
+                if result[1] or self.is_task_new(task[0], task[1]):
+                    deps_changed.append(get_dep_slug(task[0], task[1]))
+
+        # provide dependency data as "flattened"
+        return True, self.get_dep_data(dep_list), deps_changed
 
     def handle_task(
         self,
@@ -151,24 +179,12 @@ class TaskEnvironment(ManifestCacheEnvironment):
                 dep_data = {}
                 deps_changed = []
                 if "dependencies" in data:
-                    self.push_deps(data["dependencies"], task_stack, target)
-
-                    # resolve dependencies
-                    while task_stack:
-                        task = task_stack.pop()
-                        result = self.handle_task(task[0], task[1], task_stack,
-                                                  False)
-
-                        # if a dependency failed, propagate it up
-                        if not result[0]:
-                            return False, False
-                        # otherwise if a dependency was updated (performed),
-                        # capture it in a list
-                        if result[1] or self.is_task_new(task[0], task[1]):
-                            deps_changed.append(get_dep_slug(task[0], task[1]))
-
-                    # provide dependency data as "flattened"
-                    dep_data = self.get_dep_data(data["dependencies"])
+                    dep_result = self.resolve_dependencies(
+                        data["dependencies"], task_stack, target
+                    )
+                    if not dep_result[0]:
+                        return False, False
+                    dep_data, deps_changed = dep_result[1], dep_result[2]
 
                 # resolve the output directory
                 set_output_dir(data, self.manifest["dir"],

@@ -27,6 +27,7 @@ renders:
   dependencies:
   - "compiles-local"
   - "commands-help"
+  - "renders-python_readme_header.md"
 
 groups:
 - name: "all"

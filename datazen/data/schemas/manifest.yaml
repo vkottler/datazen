@@ -65,6 +65,8 @@ renders:
         type: string
       no_dynamic_fingerprint:
         type: boolean
+      no_file:
+        type: boolean
 
 groups:
   type: list

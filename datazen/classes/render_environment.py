@@ -6,7 +6,7 @@ datazen - An environment extension that exposes rendering capabilities.
 # built-in
 import logging
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 # third-party
 import jinja2
@@ -19,6 +19,25 @@ from datazen.paths import get_file_ext
 LOG = logging.getLogger(__name__)
 
 
+def get_render_str(template: jinja2.Template, name: str, data: dict = None,
+                   out_data: dict = None) -> str:
+    """ Render a template. """
+
+    result = template.render(data).rstrip()
+    if out_data is not None:
+        out_data[name.replace(".", "_")] = result
+    return result
+
+
+def get_path(entry: dict) -> str:
+    """ Get the full path to a render output from the manifest entry. """
+
+    path = entry["name"]
+    if "output_path" in entry:
+        path = entry["output_path"]
+    return os.path.join(entry["output_dir"], path)
+
+
 class RenderEnvironment(TaskEnvironment):
     """ Leverages a cache-equipped environment to render templates. """
 
@@ -29,15 +48,16 @@ class RenderEnvironment(TaskEnvironment):
         self.handles["renders"] = self.valid_render
 
     def perform_render(self, template: jinja2.Template,
-                       path: str, entry: dict,
+                       path: Optional[str], entry: dict,
                        data: dict = None) -> Tuple[bool, bool]:
         """
         Render a template to the requested path using the provided data.
         """
 
         try:
-            render_str = template.render(data).rstrip()
-            render_str += os.linesep
+            out_data: dict = {}
+            render_str = get_render_str(template, entry["name"], data,
+                                        out_data)
 
             # determine if the caller wanted a dynamic fingerprint or not
             dynamic = True
@@ -45,14 +65,17 @@ class RenderEnvironment(TaskEnvironment):
                     entry["no_dynamic_fingerprint"]):
                 dynamic = False
 
-            fprint = build_fingerprint(render_str, get_file_ext(path),
+            fprint = build_fingerprint(render_str,
+                                       get_file_ext(get_path(entry)),
                                        dynamic=dynamic)
-            render_str = fprint + render_str
-            with open(path, "w") as render_out:
-                render_out.write(render_str)
+
+            # don't write a file, if requested
+            if path is not None:
+                with open(path, "w") as render_out:
+                    render_out.write(fprint + render_str + os.linesep)
 
             # save the output into a dict for consistency
-            self.task_data["renders"][entry["name"]] = render_str
+            self.task_data["renders"][entry["name"]] = out_data
         except jinja2.exceptions.TemplateError as exc:
             LOG.error("couldn't render '%s' to '%s': %s",
                       entry["name"], path, exc)
@@ -67,10 +90,9 @@ class RenderEnvironment(TaskEnvironment):
         """ Perform the render specified by the entry. """
 
         # determine the output that will be produced
-        path = entry["name"]
-        if "output_path" in entry:
-            path = entry["output_path"]
-        path = os.path.join(entry["output_dir"], path)
+        path = None
+        if "no_file" not in entry or not entry["no_file"]:
+            path = get_path(entry)
 
         # load templates
         templates = self.cached_load_templates(namespace)
@@ -97,6 +119,9 @@ class RenderEnvironment(TaskEnvironment):
         if self.already_satisfied(entry["name"], path, change_criteria,
                                   deps_changed, load_checks):
             LOG.debug("render '%s' satisfied, skipping", entry["name"])
+            data: dict = {}
+            get_render_str(template, entry["name"], dep_data, data)
+            self.task_data["renders"][entry["name"]] = data
             return True, False
 
         return self.perform_render(template, path, entry, dep_data)
