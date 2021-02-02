@@ -41,4 +41,14 @@ class CommandEnvironment(TaskEnvironment):
         cmd_data[entry["name"]]["returncode"] = str(result.returncode)
         self.task_data["commands"][entry["name"]] = cmd_data
 
+        # log information about failures
+        if result.returncode != 0:
+            LOG.error("command '%s' failed!", entry["command"])
+            LOG.error("args: %s", ", ".join(result.args))
+            LOG.error("exit: %d", result.returncode)
+            LOG.error("stdout:")
+            print(cmd_data[entry["name"]]["stdout"])
+            LOG.error("stderr:")
+            print(cmd_data[entry["name"]]["stderr"])
+
         return result.returncode == 0, True

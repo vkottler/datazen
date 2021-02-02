@@ -25,6 +25,8 @@ commands:
   command: "ls"
   arguments:
   - "-lat"
+- name: "false"
+  command: "false"
 
 groups:
 - name: "test"
