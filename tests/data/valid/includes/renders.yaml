@@ -3,6 +3,7 @@ params:
 
 renders:
 - name: "a"
+  indent: 4
   dependencies:
   - "a"
   - "b"
@@ -13,9 +14,11 @@ renders:
   - "b"
   output_path: "b_cool"
 - name: "d"
+  indent: 4
   dependencies:
   - "x"
 - name: "e"
+  indent: 4
   dependencies:
   - "a"
   - "b"

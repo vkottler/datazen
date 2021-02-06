@@ -67,6 +67,8 @@ renders:
         type: boolean
       no_file:
         type: boolean
+      indent:
+        type: integer
 
 groups:
   type: list

@@ -19,11 +19,20 @@ from datazen.paths import get_file_ext
 LOG = logging.getLogger(__name__)
 
 
-def get_render_str(template: jinja2.Template, name: str, data: dict = None,
-                   out_data: dict = None) -> str:
+def get_render_str(template: jinja2.Template, name: str, indent: int,
+                   data: dict = None, out_data: dict = None) -> str:
     """ Render a template. """
 
     result = template.render(data).rstrip()
+
+    # add indents if requested
+    if indent:
+        new_result = ""
+        indent_str = " " * indent
+        for line in result.split(os.linesep):
+            new_result += indent_str + line + os.linesep
+        result = new_result.rstrip()
+
     if out_data is not None:
         out_data[name.replace(".", "_")] = result
     return result
@@ -56,13 +65,14 @@ class RenderEnvironment(TaskEnvironment):
 
         try:
             out_data: dict = {}
-            render_str = get_render_str(template, entry["name"], data,
-                                        out_data)
+            render_str = get_render_str(template, entry["name"],
+                                        entry["indent"], data, out_data)
 
-            # determine if the caller wanted a dynamic fingerprint or not
+            # determine if the caller wanted a dynamic fingerprint or not,
+            # if an indent is set, also disable it
             dynamic = True
             if ("no_dynamic_fingerprint" in entry and
-                    entry["no_dynamic_fingerprint"]):
+                    entry["no_dynamic_fingerprint"]) or entry["indent"]:
                 dynamic = False
 
             fprint = build_fingerprint(render_str,
@@ -94,6 +104,9 @@ class RenderEnvironment(TaskEnvironment):
         if "no_file" not in entry or not entry["no_file"]:
             path = get_path(entry)
 
+        if "indent" not in entry:
+            entry["indent"] = 0
+
         # load templates
         templates = self.cached_load_templates(namespace)
 
@@ -120,7 +133,8 @@ class RenderEnvironment(TaskEnvironment):
                                   deps_changed, load_checks):
             LOG.debug("render '%s' satisfied, skipping", entry["name"])
             data: dict = {}
-            get_render_str(template, entry["name"], dep_data, data)
+            get_render_str(template, entry["name"], entry["indent"], dep_data,
+                           data)
             self.task_data["renders"][entry["name"]] = data
             return True, False
 
