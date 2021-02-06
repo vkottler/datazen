@@ -19,6 +19,12 @@ from datazen.paths import get_file_ext
 LOG = logging.getLogger(__name__)
 
 
+def render_name_to_key(name: str) -> str:
+    """ Convert the name of a render target with a valid dictionary key. """
+
+    return name.replace(".", "_")
+
+
 def get_render_str(template: jinja2.Template, name: str, indent: int,
                    data: dict = None, out_data: dict = None) -> str:
     """ Render a template. """
@@ -34,7 +40,7 @@ def get_render_str(template: jinja2.Template, name: str, indent: int,
         result = new_result.rstrip()
 
     if out_data is not None:
-        out_data[name.replace(".", "_")] = result
+        out_data[render_name_to_key(name)] = result
     return result
 
 
@@ -101,6 +107,8 @@ class RenderEnvironment(TaskEnvironment):
         store_name = entry["name"]
         if "as" in entry and entry["as"]:
             store_name = entry["as"]
+            data[store_name] = data[render_name_to_key(entry["name"])]
+            del data[render_name_to_key(entry["name"])]
         self.task_data["renders"][store_name] = data
 
     def valid_render(self, entry: dict, namespace: str, dep_data: dict = None,

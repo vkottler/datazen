@@ -88,7 +88,16 @@ class TaskEnvironment(ManifestCacheEnvironment):
         # flatten all of the tasks' data into a single dict
         for dep in dep_list:
             dep_tup = dep_slug_unwrap(dep, self.default)
-            curr_data = self.task_data[dep_tup[0]][dep_tup[1]]
+
+            # determine if the task aliased its output with "as"
+            store_name = dep_tup[1]
+            entry = self.get_manifest_entry(dep_tup[0], dep_tup[1])
+            if "as" in entry and entry["as"]:
+                store_name = entry["as"]
+                LOG.debug("'%s' stored as '%s' (%s)", dep, store_name,
+                          dep_tup[0])
+
+            curr_data = self.task_data[dep_tup[0]][store_name]
             if isinstance(curr_data, dict):
                 dep_data.update(curr_data)
 
@@ -145,6 +154,19 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         # provide dependency data as "flattened"
         return True, self.get_dep_data(dep_list), deps_changed
+
+    def get_manifest_entry(self, category: str, name: str) -> dict:
+        """ Get an entry from the manifest. """
+
+        result: dict = defaultdict(lambda: None)
+
+        entries = self.manifest["data"][category]
+        for data in entries:
+            if name == data["name"]:
+                result = data
+                break
+
+        return result
 
     def handle_task(
         self,
