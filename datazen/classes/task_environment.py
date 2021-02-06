@@ -49,23 +49,26 @@ class TaskEnvironment(ManifestCacheEnvironment):
         Determine whether a target for an operation has already been resolved.
         """
 
-        return self.visited[get_dep_slug(operation, target)]
+        with self.lock:
+            return self.visited[get_dep_slug(operation, target)]
 
     def is_task_new(self, operation: str, target: str) -> bool:
         """ Determine if a target has been newly executed this iteration. """
 
-        return self.is_new[get_dep_slug(operation, target)]
+        with self.lock:
+            return self.is_new[get_dep_slug(operation, target)]
 
     def resolve(self, operation: str, target: str, should_cache: bool,
                 namespace: str, is_new: bool) -> None:
         """ Set a target for an operation as resolved. """
 
-        self.visited[get_dep_slug(operation, target)] = True
-        self.is_new[get_dep_slug(operation, target)] = is_new
-        if should_cache:
-            self.write_cache()
-        if namespace != ROOT_NAMESPACE:
-            self.restore_cache()
+        with self.lock:
+            self.visited[get_dep_slug(operation, target)] = True
+            self.is_new[get_dep_slug(operation, target)] = is_new
+            if should_cache:
+                self.write_cache()
+            if namespace != ROOT_NAMESPACE:
+                self.restore_cache()
 
     def push_dep(self, dep: str, task_stack:
                  List[Tuple[str, str]], curr_target: str) -> None:
@@ -89,15 +92,9 @@ class TaskEnvironment(ManifestCacheEnvironment):
         for dep in dep_list:
             dep_tup = dep_slug_unwrap(dep, self.default)
 
-            # determine if the task aliased its output with "as"
-            store_name = dep_tup[1]
-            entry = self.get_manifest_entry(dep_tup[0], dep_tup[1])
-            if "as" in entry and entry["as"]:
-                store_name = entry["as"]
-                LOG.debug("'%s' stored as '%s' (%s)", dep, store_name,
-                          dep_tup[0])
+            with self.lock:
+                curr_data = self.task_data[dep_tup[0]][dep_tup[1]]
 
-            curr_data = self.task_data[dep_tup[0]][store_name]
             if isinstance(curr_data, dict):
                 dep_data.update(curr_data)
 
@@ -113,9 +110,10 @@ class TaskEnvironment(ManifestCacheEnvironment):
         """
 
         is_file = True if output_path is None else os.path.isfile(output_path)
-        newly_loaded = self.get_new_loaded(load_deps, load_checks)
-        result = (not self.manifest_changed and is_file and not deps_changed
-                  and newly_loaded == 0)
+        with self.lock:
+            newly_loaded = self.get_new_loaded(load_deps, load_checks)
+            result = (not self.manifest_changed and is_file and
+                      not deps_changed and newly_loaded == 0)
 
         # log less-obvious dependency-resolution hits
         if is_file:
@@ -160,11 +158,12 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         result: dict = defaultdict(lambda: None)
 
-        entries = self.manifest["data"][category]
-        for data in entries:
-            if name == data["name"]:
-                result = data
-                break
+        with self.lock:
+            entries = self.manifest["data"][category]
+            for data in entries:
+                if name == data["name"]:
+                    result = data
+                    break
 
         return result
 
@@ -188,47 +187,47 @@ class TaskEnvironment(ManifestCacheEnvironment):
         if task_stack is None:
             task_stack = []
 
-        entries = self.manifest["data"][key_name]
-        for data in entries:
-            if target == data["name"]:
-                # skip targets we know we've resolved
-                if self.is_resolved(key_name, target):
-                    return True, False
+        data = self.get_manifest_entry(key_name, target)
 
-                LOG.debug("executing '%s'", get_dep_slug(key_name, target))
+        if data["name"] is None:
+            LOG.error("no '%s' found", get_dep_slug(key_name, target))
+            return False, False
 
-                # push dependencies
-                dep_data = {}
-                deps_changed = []
-                if "dependencies" in data:
-                    dep_result = self.resolve_dependencies(
-                        data["dependencies"], task_stack, target
-                    )
-                    if not dep_result[0]:
-                        return False, False
-                    dep_data, deps_changed = dep_result[1], dep_result[2]
+        if self.is_resolved(key_name, target):
+            return True, False
 
-                # resolve the output directory
-                set_output_dir(data, self.manifest["dir"],
-                               self.manifest["data"]["output_dir"])
+        LOG.debug("executing '%s'", get_dep_slug(key_name, target))
 
-                # load additional data directories if specified
-                namespace = self.get_namespace(key_name, target, data)
-                self.load_dirs(data, self.manifest["dir"], namespace, True)
+        # push dependencies
+        dep_data = {}
+        deps_changed = []
+        if "dependencies" in data:
+            dep_result = self.resolve_dependencies(
+                data["dependencies"], task_stack, target
+            )
+            if not dep_result[0]:
+                return False, False
+            dep_data, deps_changed = dep_result[1], dep_result[2]
 
-                # make sure this namespace is valid
-                if not self.get_valid(namespace):
-                    LOG.info("namespace '%s' is invalid!", namespace)
-                    return False, False
+        # resolve the output directory
+        set_output_dir(data, self.manifest["dir"],
+                       self.manifest["data"]["output_dir"])
 
-                # write-through to the cache when we complete an operation,
-                # if it succeeded
-                result = self.handles[key_name](data, namespace, dep_data,
-                                                deps_changed)
-                if result[0]:
-                    self.resolve(key_name, target, should_cache, namespace,
-                                 result[1])
-                return result
+        # load additional data directories if specified
+        with self.lock:
+            namespace = self.get_namespace(key_name, target, data)
+            self.load_dirs(data, self.manifest["dir"], namespace, True)
 
-        LOG.error("no '%s' found", get_dep_slug(key_name, target))
-        return False, False
+        # make sure this namespace is valid
+        if not self.get_valid(namespace):
+            LOG.info("namespace '%s' is invalid!", namespace)
+            return False, False
+
+        # write-through to the cache when we complete an operation,
+        # if it succeeded
+        result = self.handles[key_name](data, namespace, dep_data,
+                                        deps_changed)
+        if result[0]:
+            self.resolve(key_name, target, should_cache, namespace,
+                         result[1])
+        return result

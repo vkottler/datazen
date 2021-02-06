@@ -104,12 +104,10 @@ class RenderEnvironment(TaskEnvironment):
     def store_render(self, entry: dict, data: dict) -> None:
         """ Store data from the current render. """
 
-        store_name = entry["name"]
         if "as" in entry and entry["as"]:
-            store_name = entry["as"]
-            data[store_name] = data[render_name_to_key(entry["name"])]
+            data[entry["as"]] = data[render_name_to_key(entry["name"])]
             del data[render_name_to_key(entry["name"])]
-        self.task_data["renders"][store_name] = data
+        self.task_data["renders"][entry["name"]] = data
 
     def valid_render(self, entry: dict, namespace: str, dep_data: dict = None,
                      deps_changed: List[str] = None) -> Tuple[bool, bool]:
