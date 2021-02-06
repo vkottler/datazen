@@ -59,6 +59,10 @@ renders:
       dependencies: deps
       name:
         type: string
+      as:
+        type: string
+      key:
+        type: string
       output_dir:
         type: string
       output_path:

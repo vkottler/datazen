@@ -8,6 +8,8 @@ renders:
   - "a"
   - "b"
   - "c"
+  key: "a"
+  as: "a"
 - name: "b"
   dependencies:
   - "a"

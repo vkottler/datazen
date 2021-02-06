@@ -85,7 +85,7 @@ class RenderEnvironment(TaskEnvironment):
                     render_out.write(fprint + render_str + os.linesep)
 
             # save the output into a dict for consistency
-            self.task_data["renders"][entry["name"]] = out_data
+            self.store_render(entry, out_data)
         except jinja2.exceptions.TemplateError as exc:
             LOG.error("couldn't render '%s' to '%s': %s",
                       entry["name"], path, exc)
@@ -94,6 +94,14 @@ class RenderEnvironment(TaskEnvironment):
         LOG.info("(%s) rendered '%s'", entry["name"], path)
 
         return True, True
+
+    def store_render(self, entry: dict, data: dict) -> None:
+        """ Store data from the current render. """
+
+        store_name = entry["name"]
+        if "as" in entry and entry["as"]:
+            store_name = entry["as"]
+        self.task_data["renders"][store_name] = data
 
     def valid_render(self, entry: dict, namespace: str, dep_data: dict = None,
                      deps_changed: List[str] = None) -> Tuple[bool, bool]:
@@ -110,12 +118,16 @@ class RenderEnvironment(TaskEnvironment):
         # load templates
         templates = self.cached_load_templates(namespace)
 
-        if entry["name"] not in templates:
+        temp_name = entry["name"]
+        if "key" in entry and entry["key"]:
+            temp_name = entry["key"]
+
+        if temp_name not in templates:
             LOG.error("no template for key '%s' found, options: %s",
                       entry["name"], list(templates.keys()))
             return False, False
 
-        template = templates[entry["name"]]
+        template = templates[temp_name]
 
         # if dependencies aren't specified, use config data (but don't allow
         # an implicit 'compile')
@@ -135,7 +147,7 @@ class RenderEnvironment(TaskEnvironment):
             data: dict = {}
             get_render_str(template, entry["name"], entry["indent"], dep_data,
                            data)
-            self.task_data["renders"][entry["name"]] = data
+            self.store_render(entry, data)
             return True, False
 
         return self.perform_render(template, path, entry, dep_data)
