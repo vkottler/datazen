@@ -14,7 +14,7 @@ from typing import Dict, List, Tuple
 
 # internal
 from datazen import VERSION
-from datazen.parsing import set_file_hash, merge, dedup_dict_lists
+from datazen.parsing import set_file_hash, dedup_dict_lists
 from datazen.load import load_dir_only
 from datazen.compile import str_compile
 
@@ -152,7 +152,34 @@ def copy(cache: FileInfoCache) -> FileInfoCache:
 def meld(cache_a: FileInfoCache, cache_b: FileInfoCache) -> None:
     """ Promote all updates from cache_b into cache_a. """
 
-    merge(cache_a.data, cache_b.data, expect_overwrite=True)
+    # aggregates new files
+    a_load = cache_a.data["loaded"]
+    b_load = cache_b.data["loaded"]
+    for key in b_load:
+        if key not in a_load:
+            a_load[key] = b_load[key]
+        else:
+            for item in b_load[key]:
+                if item not in a_load[key]:
+                    a_load[key].append(item)
+
+    # update hash data
+    a_hash = cache_a.data["hashes"]
+    b_hash = cache_b.data["hashes"]
+    for key in b_hash:
+        if key not in a_hash:
+            a_hash[key] = b_hash[key]
+        else:
+            for item in b_hash[key]:
+                if item not in a_hash[key]:
+                    a_hash[key][item] = b_hash[key][item]
+                else:
+                    a_data = a_hash[key][item]
+                    b_data = b_hash[key][item]
+                    if (b_data["hash"] != a_data["hash"] and
+                            b_data["time"] > a_data["time"]):
+                        a_data["hash"] = b_data["hash"]
+                        a_data["time"] = b_data["time"]
 
 
 def time_str(time_s: float) -> str:

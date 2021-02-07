@@ -13,3 +13,4 @@ def test_bad_overwrite():
     dict_a = {"a": "a"}
     dict_b = {"a": "b"}
     assert merge(dict_a, dict_b) == dict_a
+    assert merge(dict_a, dict_b, expect_overwrite=True) == dict_b
