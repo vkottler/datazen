@@ -25,6 +25,11 @@ commands:
   command: "ls"
   arguments:
   - "-lat"
+- name: "b"
+  command: "ls"
+  arguments:
+  - "-lat"
+  file: "out.txt"
 - name: "false"
   command: "false"
 

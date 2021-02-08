@@ -52,6 +52,7 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         Load a manifest and its cache, or set up a new cache if one doesn't
         exist.
         """
+
         result = self.load_manifest(path)
 
         # if we successfully loaded this manifest, try to load its cache
@@ -73,11 +74,12 @@ class ManifestCacheEnvironment(ManifestEnvironment):
 
         return result and self.cache is not None
 
-    def clean_cache(self) -> None:
+    def clean_cache(self, purge_data: bool = True) -> None:
         """ Remove cached data from the file-system. """
 
-        for name in self.namespaces:
-            self.unload_all(name)
+        if purge_data:
+            for name in self.namespaces:
+                self.unload_all(name)
         if self.cache is not None:
             self.cache.clean()
         self.manifest_changed = True

@@ -18,6 +18,16 @@ from datazen import DEFAULT_TYPE
 LOG = logging.getLogger(__name__)
 
 
+def write_dir(directory: str, data: dict, out_type: str = "json") -> None:
+    """ Write dictionary data to the file-system. """
+
+    os.makedirs(directory, exist_ok=True)
+    for key, val in data.items():
+        key_path = os.path.join(directory, "{}.{}".format(key, out_type))
+        with open(key_path, "w") as key_file:
+            key_file.write(str_compile(val, out_type))
+
+
 def str_compile(configs: dict, data_type: str) -> str:
     """
     Serialize dictionary data into the String-form of a specific,

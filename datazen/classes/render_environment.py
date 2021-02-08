@@ -12,7 +12,7 @@ from typing import List, Tuple, Optional
 import jinja2
 
 # internal
-from datazen.classes.task_environment import TaskEnvironment
+from datazen.classes.task_environment import TaskEnvironment, get_path
 from datazen.fingerprinting import build_fingerprint
 from datazen.paths import get_file_ext
 
@@ -36,21 +36,15 @@ def get_render_str(template: jinja2.Template, name: str, indent: int,
         new_result = ""
         indent_str = " " * indent
         for line in result.split(os.linesep):
-            new_result += indent_str + line + os.linesep
+            if line:
+                new_result += indent_str + line + os.linesep
+            else:
+                new_result += os.linesep
         result = new_result.rstrip()
 
     if out_data is not None:
         out_data[render_name_to_key(name)] = result
     return result
-
-
-def get_path(entry: dict) -> str:
-    """ Get the full path to a render output from the manifest entry. """
-
-    path = entry["name"]
-    if "output_path" in entry:
-        path = entry["output_path"]
-    return os.path.join(entry["output_dir"], path)
 
 
 class RenderEnvironment(TaskEnvironment):
@@ -105,8 +99,10 @@ class RenderEnvironment(TaskEnvironment):
         """ Store data from the current render. """
 
         if "as" in entry and entry["as"]:
-            data[entry["as"]] = data[render_name_to_key(entry["name"])]
-            del data[render_name_to_key(entry["name"])]
+            name_key = render_name_to_key(entry["name"])
+            data[entry["as"]] = data[name_key]
+            if entry["as"] != name_key:
+                del data[name_key]
         self.task_data["renders"][entry["name"]] = data
 
     def valid_render(self, entry: dict, namespace: str, dep_data: dict = None,
@@ -150,10 +146,6 @@ class RenderEnvironment(TaskEnvironment):
         if self.already_satisfied(entry["name"], path, change_criteria,
                                   deps_changed, load_checks):
             LOG.debug("render '%s' satisfied, skipping", entry["name"])
-            data: dict = {}
-            get_render_str(template, entry["name"], entry["indent"], dep_data,
-                           data)
-            self.store_render(entry, data)
             return True, False
 
         return self.perform_render(template, path, entry, dep_data)

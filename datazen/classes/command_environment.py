@@ -6,11 +6,12 @@ datazen - An environment extension that exposes command-line command execution.
 # built-in
 from collections import defaultdict
 import logging
+import os
 import subprocess
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 # internal
-from datazen.classes.task_environment import TaskEnvironment
+from datazen.classes.task_environment import TaskEnvironment, get_path
 
 LOG = logging.getLogger(__name__)
 
@@ -25,21 +26,32 @@ class CommandEnvironment(TaskEnvironment):
         self.handles["commands"] = self.valid_command
 
     def valid_command(self, entry: dict, _: str, __: dict = None,
-                      ___: List[str] = None) -> Tuple[bool, bool]:
+                      deps_changed: List[str] = None) -> Tuple[bool, bool]:
         """ Perform the command specified by the entry. """
 
         cmd = [entry["command"]]
         if "arguments" in entry and entry["arguments"]:
             cmd += entry["arguments"]
 
+        task_data = self.task_data["commands"][entry["name"]]
+
+        # determine if the command needs to run
+        file_exists = True
+        if "file" in entry:
+            file_exists = os.path.isfile(get_path(entry, "file"))
+        force = "force" in entry and entry["force"]
+        if not force and (not deps_changed and file_exists and
+                          entry["name"] in task_data):
+            return True, False
+
         result = subprocess.run(cmd, capture_output=True)
 
-        cmd_data: Dict[str, Dict[str, str]] = {entry["name"]: defaultdict(str)}
-        cmd_data[entry["name"]]["args"] = result.args
-        cmd_data[entry["name"]]["stdout"] = result.stdout.decode()
-        cmd_data[entry["name"]]["stderr"] = result.stderr.decode()
-        cmd_data[entry["name"]]["returncode"] = str(result.returncode)
-        self.task_data["commands"][entry["name"]] = cmd_data
+        task_data[entry["name"]] = defaultdict(str)
+        data = task_data[entry["name"]]
+        data["args"] = result.args
+        data["stdout"] = result.stdout.decode()
+        data["stderr"] = result.stderr.decode()
+        data["returncode"] = str(result.returncode)
 
         # log information about failures
         if result.returncode != 0:
@@ -47,8 +59,8 @@ class CommandEnvironment(TaskEnvironment):
             LOG.error("args: %s", ", ".join(result.args))
             LOG.error("exit: %d", result.returncode)
             LOG.error("stdout:")
-            print(cmd_data[entry["name"]]["stdout"])
+            print(data["stdout"])
             LOG.error("stderr:")
-            print(cmd_data[entry["name"]]["stderr"])
+            print(data["stderr"])
 
         return result.returncode == 0, True

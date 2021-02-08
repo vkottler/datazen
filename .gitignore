@@ -10,5 +10,5 @@ __pycache__
 dist
 htmlcov
 .*.env
-.manifest_cache
+.*_cache
 datazen-out

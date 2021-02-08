@@ -6,9 +6,11 @@ datazen - A centralized store for runtime data.
 # built-in
 from collections import defaultdict
 import logging
+import os
 from typing import List, Tuple
 
 # internal
+from datazen import CACHE_SUFFIX
 from datazen.classes.base_environment import dep_slug_unwrap
 from datazen.classes.compile_environment import CompileEnvironment
 from datazen.classes.group_environment import GroupEnvironment
@@ -84,7 +86,8 @@ class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment,
         return self.handle_task("commands", target)
 
 
-def from_manifest(manifest_path: str) -> Environment:
+def from_manifest(manifest_path: str,
+                  data_cache_name: str = "task_data") -> Environment:
     """ Load an environment object from a schema definition on disk. """
 
     env = Environment()
@@ -92,5 +95,9 @@ def from_manifest(manifest_path: str) -> Environment:
     # load the manifest
     if not env.load_manifest_with_cache(manifest_path):
         LOG.error("couldn't load manifest at '%s'", manifest_path)
+    else:
+        data_cache = ".{}{}".format(data_cache_name, CACHE_SUFFIX)
+        path = os.path.join(os.path.dirname(env.cache.cache_dir), data_cache)
+        env.init_cache(os.path.abspath(path))
 
     return env

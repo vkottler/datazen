@@ -19,6 +19,12 @@ def test_command_basic():
 
     # run a command
     assert env.command("a") == (True, True)
+    assert env.command("b") == (True, True)
+    assert env.command("a") == (True, False)
     assert env.command("false") == (False, True)
+
+    env.write_cache()
+    env = from_manifest(manifest)
+    assert env.command("a") == (True, False)
 
     env.clean_cache()

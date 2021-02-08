@@ -16,7 +16,7 @@ from typing import Dict, List, Tuple
 from datazen import VERSION
 from datazen.parsing import set_file_hash, dedup_dict_lists
 from datazen.load import load_dir_only
-from datazen.compile import str_compile
+from datazen.compile import write_dir
 
 LOG = logging.getLogger(__name__)
 
@@ -120,7 +120,6 @@ class FileInfoCache:
         self.data = deepcopy(DATA_DEFAULT)
         if self.cache_dir != "":
             shutil.rmtree(self.cache_dir)
-            os.makedirs(self.cache_dir, exist_ok=True)
             LOG.info("cleaning cache at '%s'", self.cache_dir)
 
     def write(self, out_type: str = "json") -> None:
@@ -128,11 +127,7 @@ class FileInfoCache:
 
         if self.cache_dir != "":
             data = sync_cache_data(self.data, self.removed_data)
-            for key, val in data.items():
-                key_path = os.path.join(self.cache_dir,
-                                        "{}.{}".format(key, out_type))
-                with open(key_path, "w") as key_file:
-                    key_file.write(str_compile(val, out_type))
+            write_dir(self.cache_dir, data, out_type)
             LOG.debug("wrote cache to '%s'", self.cache_dir)
 
 

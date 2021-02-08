@@ -43,10 +43,14 @@ commands:
   schema:
     type: dict
     schema:
+      file:
+        type: string
       name:
         type: string
       command:
         type: string
+      force:
+        type: boolean
       arguments: deps
       dependencies: deps
 

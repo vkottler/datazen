@@ -15,6 +15,7 @@ from datazen import ROOT_NAMESPACE
 from datazen.classes.manifest_environment import set_output_dir
 from datazen.classes.base_environment import get_dep_slug, dep_slug_unwrap
 from datazen.classes.manifest_cache_environment import ManifestCacheEnvironment
+from datazen.classes.task_data_cache import TaskDataCache
 
 LOG = logging.getLogger(__name__)
 
@@ -42,7 +43,34 @@ class TaskEnvironment(ManifestCacheEnvironment):
         self.is_new = defaultdict(bool)
         self.default = "noop"
         self.handles = defaultdict(lambda: self.valid_noop)
-        self.task_data = defaultdict(lambda: defaultdict(dict))
+        self.data_cache: Optional[TaskDataCache] = None
+
+    def init_cache(self, cache_dir: str) -> None:
+        """ Initialize the task-data cache. """
+
+        if self.data_cache is None:
+            self.data_cache = TaskDataCache(cache_dir)
+
+    def write_cache(self) -> None:
+        """ Commit cached data to the file-system. """
+
+        super().write_cache()
+        if self.data_cache is not None:
+            self.data_cache.save()
+
+    def clean_cache(self, purge_data: bool = True) -> None:
+        """ Remove cached data from the file-system. """
+
+        super().clean_cache(True)
+        if self.data_cache is not None:
+            self.data_cache.clean(purge_data)
+
+    @property
+    def task_data(self) -> dict:
+        """ Proxy task data through the cache. """
+
+        assert self.data_cache is not None
+        return self.data_cache.data
 
     def is_resolved(self, operation: str, target: str) -> bool:
         """
@@ -172,7 +200,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         key_name: str,
         target: str,
         task_stack: List[Tuple[str, str]] = None,
-        should_cache: bool = True
+        should_cache: bool = True,
     ) -> Tuple[bool, bool]:
         """
         Handle the setup for manifest tasks, such as loading additional data
@@ -231,3 +259,14 @@ class TaskEnvironment(ManifestCacheEnvironment):
             self.resolve(key_name, target, should_cache, namespace,
                          result[1])
         return result
+
+
+def get_path(entry: dict, key: str = "name") -> str:
+    """ Get the full path to a render output from the manifest entry. """
+
+    path = entry[key]
+    if "output_path" in entry:
+        path = entry["output_path"]
+    if not os.path.isabs(path):
+        path = os.path.join(entry["output_dir"], path)
+    return path

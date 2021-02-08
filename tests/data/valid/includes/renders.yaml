@@ -3,6 +3,7 @@ params:
 
 renders:
 - name: "a"
+  output_path: "a_render"
   indent: 4
   dependencies:
   - "a"
@@ -26,8 +27,11 @@ renders:
   - "b"
   - "c"
 - name: "z"
+  as: "zz"
 - name: "{{renders}}.md"
+  as: "test"
 - name: "{{renders}}.py"
+  as: "test"
   no_dynamic_fingerprint: true
 
 includes:

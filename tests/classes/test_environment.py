@@ -44,6 +44,7 @@ def test_bad_include():
                                  False)
     env = from_manifest(manifest_path)
     assert not env.get_valid()
+    env.clean_cache()
 
 
 def test_environment_from_manifest():
@@ -63,6 +64,7 @@ def test_environment_from_manifest():
     env = from_manifest(manifest_path)
     assert not env.get_valid()
     assert env.compile("a") == (False, False)
+    env.clean_cache()
 
 
 def test_operations():
@@ -93,6 +95,7 @@ def test_operations():
     assert env.compile("g") == (False, False)
     assert env.compile("z") == (True, True)
 
+    env.write_cache()
     env = from_manifest(manifest)
     assert not env.manifest_changed
     assert env.compile("e") == (True, False)
@@ -103,7 +106,7 @@ def test_operations():
     del env.manifest["data"]["default_target"]
     assert env.execute() == (True, False)
 
-    env.clean_cache()
+    env.clean_cache(False)
     assert env.execute("groups-test") == (True, True)
 
     # clean the cache so that we don't commit it to the repository, it's not
