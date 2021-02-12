@@ -95,8 +95,10 @@ class TaskEnvironment(ManifestCacheEnvironment):
             self.is_new[get_dep_slug(operation, target)] = is_new
             if should_cache:
                 self.write_cache()
-            if namespace != ROOT_NAMESPACE:
-                self.restore_cache()
+
+            # if namespace != ROOT_NAMESPACE:
+            #     self.restore_cache()
+            self.restore_cache()
 
     def push_dep(self, dep: str, task_stack:
                  List[Tuple[str, str]], curr_target: str) -> None:

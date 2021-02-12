@@ -70,6 +70,11 @@ class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment,
         self.write_cache()
         return True
 
+    def group(self, target: str) -> Tuple[bool, bool]:
+        """ Attempt to satisfy a 'group' target. """
+
+        return self.handle_task("groups", target)
+
     def compile(self, target: str) -> Tuple[bool, bool]:
         """ Execute a named 'compile' target from the manifest. """
 
