@@ -1,6 +1,9 @@
 params:
   sub_param: "b_out"
 
+templates:
+- "../templates2"
+
 renders:
 - name: "a"
   output_path: "a_render"
@@ -33,6 +36,24 @@ renders:
 - name: "{{renders}}.py"
   as: "test"
   no_dynamic_fingerprint: true
+
+- name: "render2"
+  key: "test"
+  indent: 4
+  dependencies:
+  - "a"
+  - "b"
+- name: "test"
+  output_dir: "b_cool"
+  dependencies:
+  - "a"
+  - "b"
+
+groups:
+- name: "render_test"
+  dependencies:
+  - "renders-test"
+  - "renders-render2"
 
 includes:
 - "subdir/compiles.yaml"

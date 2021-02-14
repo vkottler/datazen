@@ -87,7 +87,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
             return self.is_new[get_dep_slug(operation, target)]
 
     def resolve(self, operation: str, target: str, should_cache: bool,
-                namespace: str, is_new: bool) -> None:
+                is_new: bool) -> None:
         """ Set a target for an operation as resolved. """
 
         with self.lock:
@@ -95,8 +95,6 @@ class TaskEnvironment(ManifestCacheEnvironment):
             self.is_new[get_dep_slug(operation, target)] = is_new
             if should_cache:
                 self.write_cache()
-            if namespace != ROOT_NAMESPACE:
-                self.restore_cache()
 
     def push_dep(self, dep: str, task_stack:
                  List[Tuple[str, str]], curr_target: str) -> None:
@@ -256,8 +254,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         result = self.handles[key_name](data, namespace, dep_data,
                                         deps_changed)
         if result[0]:
-            self.resolve(key_name, target, should_cache, namespace,
-                         result[1])
+            self.resolve(key_name, target, should_cache, result[1])
         return result
 
 
