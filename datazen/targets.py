@@ -4,8 +4,9 @@ datazen - An interface for parsing and matching targets.
 """
 
 # built-in
+from collections import defaultdict
 import re
-from typing import Tuple, List
+from typing import Dict, Tuple, List
 
 KW_OPEN = "{"
 KW_CLOSE = "}"
@@ -34,3 +35,63 @@ def parse_target(name: str) -> Tuple[re.Pattern, List[str]]:
 
     assert len(keys) == open_len
     return re.compile(pattern), keys
+
+
+def match_target(name: str, pattern: re.Pattern,
+                 keys: List[str]) -> Tuple[bool, Dict[str, str]]:
+    """
+    From a target name, attempt to match against a pattern and resolve a set
+    of key names.
+    """
+
+    data: Dict[str, str] = defaultdict(str)
+    result = pattern.fullmatch(name)
+
+    if result is None:
+        return False, data
+
+    for idx, key in enumerate(keys):
+        data[key] = result.group(1 + idx)
+
+    return True, data
+
+
+def resolve_target_list(target_list: list, match_data: Dict[str, str]) -> list:
+    """
+    Resovle matched-target data into a list form of target data from a
+    manifest.
+    """
+
+    result: list = []
+
+    for value in target_list:
+        if isinstance(value, dict):
+            result.append(resolve_target_data(value, match_data))
+        elif isinstance(value, list):
+            result.append(resolve_target_list(value, match_data))
+        elif isinstance(value, str):
+            result.append(value.format(**match_data))
+        else:
+            result.append(value)
+
+    assert len(result) == len(target_list)
+    return result
+
+
+def resolve_target_data(target_data: dict, match_data: Dict[str, str]) -> dict:
+    """ Resolve matched-target data into a target's data from a manifest. """
+
+    result: dict = {}
+
+    for key, value in target_data.items():
+        if isinstance(value, dict):
+            result[key] = resolve_target_data(value, match_data)
+        elif isinstance(value, list):
+            result[key] = resolve_target_list(value, match_data)
+        elif isinstance(value, str):
+            result[key] = value.format(**match_data)
+        else:
+            result[key] = value
+
+    assert len(result.keys()) == len(target_data.keys())
+    return result
