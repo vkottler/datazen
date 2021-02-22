@@ -185,11 +185,9 @@ class TaskEnvironment(ManifestCacheEnvironment):
         result: dict = defaultdict(lambda: None)
 
         with self.lock:
-            entries = self.manifest["data"][category]
-            for data in entries:
-                if name == data["name"]:
-                    result = data
-                    break
+            candidate = self.target_resolver.get_literal(category, name)
+        if candidate is not None:
+            result = candidate
 
         return result
 

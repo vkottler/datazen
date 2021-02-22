@@ -14,6 +14,7 @@ from cerberus import Validator  # type: ignore
 
 # internal
 from datazen.classes.config_environment import ConfigEnvironment
+from datazen.classes.target_resolver import TargetResolver
 from datazen.classes.template_environment import TemplateEnvironment
 from datazen.parsing import load as load_raw
 from datazen.parsing import load_stream, merge_dicts
@@ -57,6 +58,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
 
         super().__init__()
         self.manifest = {}
+        self.target_resolver = TargetResolver()
 
     def load_dirs(self, data: dict, rel_path: str,
                   namespace: str = ROOT_NAMESPACE,
@@ -154,6 +156,14 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
                                                                  manifest_dir,
                                                                  {}, files)
         self.manifest["files"] = files
+
+        # set up target resolver
+        self.target_resolver.clear()
+        candidates = ["compiles", "commands", "renders", "groups"]
+        for candidate in candidates:
+            if candidate in self.manifest["data"]:
+                cand_data = self.manifest["data"][candidate]
+                self.target_resolver.register_group(candidate, cand_data)
 
         # make sure we loaded a manifest
         if not loaded:
