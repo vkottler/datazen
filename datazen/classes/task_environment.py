@@ -185,7 +185,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         result: dict = defaultdict(lambda: None)
 
         with self.lock:
-            candidate = self.target_resolver.get_literal(category, name)
+            candidate = self.target_resolver.get_target(category, name)
         if candidate is not None:
             result = candidate
 

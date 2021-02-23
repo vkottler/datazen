@@ -23,6 +23,13 @@ def test_command_basic():
     assert env.command("a") == (True, False)
     assert env.command("false") == (False, True)
 
+    # test templated commands
+    assert env.command("echo-asdf") == (True, True)
+    assert env.command("echo-asdf") == (True, False)
+    assert env.command("echo-asdfasdf") == (True, True)
+    assert env.command("echo-asdfasdf") == (True, False)
+    assert env.command("ECHO-asdf") == (False, False)
+
     env.write_cache()
     env = from_manifest(manifest)
     assert env.command("a") == (True, False)

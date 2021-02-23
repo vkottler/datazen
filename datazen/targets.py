@@ -45,25 +45,28 @@ def parse_target(name: str) -> Tuple[re.Pattern, List[str]]:
     return re.compile(pattern), keys
 
 
-def parse_targets(targets: List[dict]) -> Dict[str, dict]:
+def parse_targets(targets: List[dict]) -> Tuple[Dict[str, dict],
+                                                Dict[str, dict]]:
     """
     From a list of target structures, parse them into a dictionary with keys
     as target names and data initialization to support future interaction.
     """
 
-    result: Dict[str, dict] = {}
+    literals: Dict[str, dict] = {}
+    patterns: Dict[str, dict] = {}
 
     for target in targets:
         data: dict = {}
         assert "name" in target
         data["literal"] = target_is_literal(target["name"])
+        dest_set = literals if data["literal"] else patterns
         data["data"] = target
         parsed = parse_target(target["name"])
         data["pattern"] = parsed[0]
         data["keys"] = parsed[1]
-        result[target["name"]] = data
+        dest_set[target["name"]] = data
 
-    return result
+    return literals, patterns
 
 
 def match_target(name: str, pattern: re.Pattern,

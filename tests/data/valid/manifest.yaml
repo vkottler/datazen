@@ -32,6 +32,10 @@ commands:
   file: "out.txt"
 - name: "false"
   command: "false"
+- name: "echo-{test}"
+  command: "echo"
+  arguments:
+  - "{test}"
 
 groups:
 - name: "test"
