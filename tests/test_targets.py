@@ -18,6 +18,13 @@ def test_parse_target_basic():
     assert "named" in result[1]
     assert result[1]["named"] == "hello"
 
+    # test a match that includes a dash and an underscore
+    target = "test-hello-hello_hello-target"
+    result = match_target(target, regex, keys)
+    assert result[0]
+    assert "named" in result[1]
+    assert result[1]["named"] == "hello-hello_hello"
+
     regex, keys = parse_target("{test1}-{test2}")
     assert "test1" in keys
     assert "test2" in keys

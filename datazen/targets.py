@@ -10,7 +10,7 @@ from typing import Dict, Tuple, List
 
 KW_OPEN = "{"
 KW_CLOSE = "}"
-KW_PATTERN = "[a-zA-Z0-9]+"
+KW_PATTERN = "[a-zA-Z0-9-_]+"
 
 
 def target_is_literal(name: str) -> bool:
