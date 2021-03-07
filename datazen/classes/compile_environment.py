@@ -11,6 +11,7 @@ from typing import List, Tuple
 from datazen.classes.task_environment import TaskEnvironment
 from datazen.compile import str_compile, get_compile_output
 from datazen.paths import advance_dict_by_path
+from datazen.targets import resolve_dep_data
 
 LOG = logging.getLogger(__name__)
 
@@ -43,6 +44,9 @@ class CompileEnvironment(TaskEnvironment):
         # advance the dict if it was requested
         if "index_path" in entry:
             data = advance_dict_by_path(entry["index_path"].split("."), data)
+
+        # apply overrides if present
+        data = resolve_dep_data(entry, data)
 
         # set task-data early, in case we don't need to re-compile
         self.task_data["compiles"][entry["name"]] = data

@@ -44,3 +44,9 @@ groups:
   - "{{renders_str}}-b"
   - "{{renders_str}}-test.md"
   - "{{renders_str}}-test.py"
+- name: "compile-test"
+  dependencies:
+  - "compiles-comp1-a"
+  - "compiles-comp1-b"
+  - "compiles-comp2-c"
+  - "compiles-comp2-e"

@@ -8,6 +8,9 @@ from collections import defaultdict
 import re
 from typing import Dict, Tuple, List
 
+# internal
+from datazen.paths import advance_dict_by_path
+
 KW_OPEN = "{"
 KW_CLOSE = "}"
 KW_PATTERN = "[a-zA-Z0-9-_]+"
@@ -108,6 +111,20 @@ def resolve_target_list(target_list: list, match_data: Dict[str, str]) -> list:
 
     assert len(result) == len(target_list)
     return result
+
+
+def resolve_dep_data(entry: dict, data: dict) -> dict:
+    """
+    Implements the business logic for applying match data to manifest entries.
+    """
+
+    if "overrides" in entry and "override_path" in entry:
+        to_update = advance_dict_by_path(entry["override_path"].split("."),
+                                         data)
+        if isinstance(to_update, dict):
+            to_update.update(entry["overrides"])
+
+    return data
 
 
 def resolve_target_data(target_data: dict, match_data: Dict[str, str]) -> dict:

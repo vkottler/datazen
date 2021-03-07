@@ -68,6 +68,7 @@ class TargetResolver:
         new_literal = resolve_target_data(matches[0][0]["data"], matches[0][1])
         data = {"literal": True, "data": new_literal,
                 "pattern": new_literal["name"], "keys": []}
+        data["data"]["overrides"] = matches[0][1]
         self.literals[group][new_literal["name"]] = data
         return new_literal
 

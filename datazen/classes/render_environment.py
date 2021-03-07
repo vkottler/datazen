@@ -15,6 +15,7 @@ import jinja2
 from datazen.classes.task_environment import TaskEnvironment, get_path
 from datazen.fingerprinting import build_fingerprint
 from datazen.paths import get_file_ext
+from datazen.targets import resolve_dep_data
 
 LOG = logging.getLogger(__name__)
 
@@ -139,6 +140,10 @@ class RenderEnvironment(TaskEnvironment):
             change_criteria.append("configs")
             LOG.debug("no dependencies loaded for '%s', using config data",
                       entry["name"])
+
+        # apply overrides if present
+        if dep_data is not None:
+            dep_data = resolve_dep_data(entry, dep_data)
 
         # determine if we need to perform this render
         assert template.filename is not None

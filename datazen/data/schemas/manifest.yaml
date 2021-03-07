@@ -29,6 +29,8 @@ compiles:
       dependencies: deps
       name:
         type: string
+      override_path:
+        type: string
       output_type:
         type: string
       output_dir:
@@ -62,6 +64,8 @@ renders:
       templates: paths
       dependencies: deps
       name:
+        type: string
+      override_path:
         type: string
       as:
         type: string

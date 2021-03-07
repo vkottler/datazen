@@ -20,6 +20,14 @@ compiles:
   - "a"
   - "b"
   - "c"
+- name: "comp1-{test}"
+  override_path: ""
+  dependencies:
+  - "{test}"
+- name: "comp2-{test}"
+  override_path: "a.b.c"
+  dependencies:
+  - "{test}"
 - name: "g"
   dependencies:
   - "noop-test"

@@ -45,7 +45,7 @@ def advance_dict_by_path(path_list: List[str], data: dict) -> dict:
     """
 
     for path in path_list:
-        if path:
+        if path and isinstance(data, dict):
             try:
                 data = data[path]
             except KeyError:
