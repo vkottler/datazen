@@ -1,0 +1,19 @@
+entries:
+- name: "deps"
+  description: |
+    Dependencies are lists of Strings.
+    They should be formatted as `(compiles,renders,...)-target`.
+  content: |
+    type: list
+    schema:
+      type: string
+- name: "paths"
+  description: |
+    Paths are lists of Strings and can use `/` or `\\\\` as delimeters.
+    Paths are relative to the directory that a manifest file is in, but for
+    manifest includes, all "loaded" directories are relative to the root
+    manifest's directory. Paths can also be absolute.
+  content: |
+    type: list
+    schema:
+      type: string

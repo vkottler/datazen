@@ -55,7 +55,7 @@ def resolve_encapsulation(comment_lines: List[str], file_ext: str) -> str:
     new_lines = []
 
     ext = file_ext.lower()
-    if ext in ("py", "mk"):
+    if ext in ("py", "mk", "yaml"):
         for line in comment_lines:
             new_lines.append("# " + line if line else line)
     elif ext == "md":

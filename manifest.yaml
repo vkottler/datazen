@@ -22,6 +22,10 @@ compiles:
 - name: "local"
 
 renders:
+- name: "manifest.yaml"
+  output_dir: "{{project}}/data/schemas"
+  dependencies:
+  - "compiles-local"
 - name: "README.md"
   output_dir: "."
   dependencies:
@@ -33,4 +37,5 @@ groups:
 - name: "all"
   dependencies:
   - "renders-README.md"
+  - "renders-manifest.yaml"
   - "groups-python"
