@@ -28,6 +28,10 @@ compiles:
   override_path: "a.b.c"
   dependencies:
   - "{test}"
+- name: "comp3-{a.b.c}"
+  override_path: "test"
+  dependencies:
+  - "{a.b.c}"
 - name: "g"
   dependencies:
   - "noop-test"

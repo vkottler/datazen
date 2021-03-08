@@ -4,7 +4,21 @@ datazen - Test functions in the 'targets' module.
 """
 
 # module under test
+from datazen.paths import unflatten_dict
 from datazen.targets import parse_target, match_target, resolve_target_data
+
+
+def test_parse_target_hiera():
+    """ Test a pattern-matching case with delimeters in the key name. """
+
+    regex, keys = parse_target("test-{a.b.c}-target")
+    assert "a.b.c" in keys
+    target = "test-hello-target"
+    result = match_target(target, regex, keys)
+    assert result[0]
+    assert "a.b.c" in result[1]
+    assert result[1]["a.b.c"] == "hello"
+    assert unflatten_dict(result[1]) == {"a": {"b": {"c": "hello"}}}
 
 
 def test_parse_target_basic():

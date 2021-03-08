@@ -5,11 +5,14 @@ datazen - An interface for parsing and matching targets.
 
 # built-in
 from collections import defaultdict
+from copy import deepcopy
 import re
 from typing import Dict, Tuple, List
 
 # internal
-from datazen.paths import advance_dict_by_path
+from datazen.paths import (
+    advance_dict_by_path, unflatten_dict, format_resolve_delims
+)
 
 KW_OPEN = "{"
 KW_CLOSE = "}"
@@ -105,7 +108,7 @@ def resolve_target_list(target_list: list, match_data: Dict[str, str]) -> list:
         elif isinstance(value, list):
             result.append(resolve_target_list(value, match_data))
         elif isinstance(value, str):
-            result.append(value.format(**match_data))
+            result.append(format_resolve_delims(value, match_data))
         else:
             result.append(value)
 
@@ -119,10 +122,11 @@ def resolve_dep_data(entry: dict, data: dict) -> dict:
     """
 
     if "overrides" in entry and "override_path" in entry:
+        data = deepcopy(data)
         to_update = advance_dict_by_path(entry["override_path"].split("."),
                                          data)
         if isinstance(to_update, dict):
-            to_update.update(entry["overrides"])
+            to_update.update(unflatten_dict(entry["overrides"]))
 
     return data
 
@@ -138,7 +142,7 @@ def resolve_target_data(target_data: dict, match_data: Dict[str, str]) -> dict:
         elif isinstance(value, list):
             result[key] = resolve_target_list(value, match_data)
         elif isinstance(value, str):
-            result[key] = value.format(**match_data)
+            result[key] = format_resolve_delims(value, match_data)
         else:
             result[key] = value
 
