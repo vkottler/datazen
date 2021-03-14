@@ -17,7 +17,7 @@ from datazen.parsing import merge
 
 KW_OPEN = "{"
 KW_CLOSE = "}"
-KW_PATTERN = "[a-zA-Z0-9-_]+"
+KW_PATTERN = "[a-zA-Z0-9-_.]+"
 
 
 def target_is_literal(name: str) -> bool:

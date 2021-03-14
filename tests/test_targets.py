@@ -20,6 +20,12 @@ def test_parse_target_hiera():
     assert result[1]["a.b.c"] == "hello"
     assert unflatten_dict(result[1]) == {"a": {"b": {"c": "hello"}}}
 
+    target = "test-asdf.asdf-target"
+    result = match_target(target, regex, keys)
+    assert result[0]
+    assert "a.b.c" in result[1]
+    assert result[1]["a.b.c"] == "asdf.asdf"
+
 
 def test_parse_target_basic():
     """ Test some simple pattern-matching cases. """
