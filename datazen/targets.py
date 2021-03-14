@@ -13,6 +13,7 @@ from typing import Dict, Tuple, List
 from datazen.paths import (
     advance_dict_by_path, unflatten_dict, format_resolve_delims
 )
+from datazen.parsing import merge
 
 KW_OPEN = "{"
 KW_CLOSE = "}"
@@ -126,7 +127,8 @@ def resolve_dep_data(entry: dict, data: dict) -> dict:
         to_update = advance_dict_by_path(entry["override_path"].split("."),
                                          data)
         if isinstance(to_update, dict):
-            to_update.update(unflatten_dict(entry["overrides"]))
+            merge(to_update, unflatten_dict(entry["overrides"]),
+                  expect_overwrite=True)
 
     return data
 

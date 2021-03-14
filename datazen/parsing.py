@@ -118,6 +118,13 @@ def merge(dict_a: dict, dict_b: dict, path: List[str] = None,
 
     for key in dict_b:
         if key in dict_a:
+            # first try to coerce b's type into a's
+            if not isinstance(dict_b[key], type(dict_a[key])):
+                try:
+                    dict_b[key] = type(dict_a[key])(dict_b[key])
+                except ValueError:
+                    pass
+
             # same leaf value
             if dict_a[key] == dict_b[key]:
                 pass
@@ -128,7 +135,7 @@ def merge(dict_a: dict, dict_b: dict, path: List[str] = None,
             elif isinstance(dict_a[key], list) and isinstance(dict_b[key],
                                                               list):
                 dict_a[key].extend(dict_b[key])
-            elif not isinstance(dict_a[key], type(dict_b[key])):
+            elif not isinstance(dict_b[key], type(dict_a[key])):
                 error_str = "Type mismatch at %s" % ".".join(path + [str(key)])
                 LOG.error(error_str)
                 LOG.error("left:  %s (%s)", type(dict_a[key]), dict_a[key])
