@@ -36,6 +36,14 @@ commands:
   command: "echo"
   arguments:
   - "{test}"
+- name: "bad-pattern-{test1}"
+  command: "echo"
+  arguments:
+  - "{test1}"
+- name: "bad-pattern-{test1}-{test2}"
+  command: "echo"
+  arguments:
+  - "{test1}"
 
 groups:
 - name: "test"

@@ -61,6 +61,8 @@ class TargetResolver:
             log_str = ("couldn't match one target for '%s-%s', found " +
                        "%d candidates")
             LOG.error(log_str, group, name, len(matches))
+            for match in matches:
+                LOG.error("%s", match[0]["data"]["name"])
             return None
 
         # create a new target from the template, save it as a new literal so
