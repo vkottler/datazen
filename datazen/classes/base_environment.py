@@ -6,8 +6,7 @@ datazen - A base class to be extended for runtime data loading and storing.
 # built-in
 from collections import defaultdict
 import logging
-from typing import Dict, List, Tuple
-from typing import Optional as Opt
+from typing import Dict, List, Tuple, Optional
 import threading
 
 # internal
@@ -15,11 +14,7 @@ from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
 from datazen.classes.environment_namespace import EnvironmentNamespace, clone
 
-# python3.9 regression: https://github.com/PyCQA/pylint/issues/3882
-# pylint: disable=unsubscriptable-object
-LOADTYPE = Tuple[Opt[List[str]], Opt[Dict[str, dict]]]
-# pylint: enable=unsubscriptable-object
-
+LOADTYPE = Tuple[Optional[List[str]], Optional[Dict[str, dict]]]
 LOG = logging.getLogger(__name__)
 SLUG_DELIM = "-"
 

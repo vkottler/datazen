@@ -13,6 +13,15 @@ from datazen.classes.environment import from_manifest
 from ..resources import get_resource, injected_content, scoped_environment
 
 
+def test_render_children():
+    """
+    Test render targets used to validate behavior of the 'children' key.
+    """
+
+    with scoped_environment("manifest.yaml", True) as env:
+        assert env.group("test-children") == (True, True)
+
+
 def test_render_common_template_dep():
     """
     Make sure that a render task can't consume the state of a template change

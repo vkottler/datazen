@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=1.6.6
-# hash=67328dd1ad877647888de3ee7f9beb95
+# version=1.6.7
+# hash=a527b5a8714fb7ee559ed74309551849
 # =====================================
 includes: paths
 
@@ -67,6 +67,9 @@ renders:
     type: dict
     schema:
       templates: paths
+      children: deps
+      child_delimeter:
+        type: string
       dependencies: deps
       name:
         type: string

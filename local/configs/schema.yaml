@@ -98,6 +98,9 @@ entries:
         type: dict
         schema:
           templates: paths
+          children: deps
+          child_delimeter:
+            type: string
           dependencies: deps
           name:
             type: string

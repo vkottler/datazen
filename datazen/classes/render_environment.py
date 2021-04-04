@@ -12,6 +12,7 @@ from typing import List, Tuple, Optional
 import jinja2
 
 # internal
+from datazen.classes.base_environment import dep_slug_unwrap
 from datazen.classes.task_environment import TaskEnvironment, get_path
 from datazen.fingerprinting import build_fingerprint
 from datazen.paths import get_file_ext
@@ -46,6 +47,19 @@ def get_render_str(template: jinja2.Template, name: str, indent: int,
     if out_data is not None:
         out_data[render_name_to_key(name)] = result
     return result
+
+
+def get_render_children(children: dict, dep_data: dict,
+                        default_op: str, delimeter: str = "") -> None:
+    """ Build child dependency data. """
+
+    result = []
+    for child in children:
+        slug = dep_slug_unwrap(child, default_op)
+        assert slug[1] in dep_data
+        assert isinstance(dep_data[slug[1]], str)
+        result.append(dep_data[slug[1]])
+    dep_data["__children__"] = delimeter.join(result)
 
 
 class RenderEnvironment(TaskEnvironment):
@@ -144,6 +158,11 @@ class RenderEnvironment(TaskEnvironment):
         # apply overrides if present
         if dep_data is not None:
             dep_data = resolve_dep_data(entry, dep_data)
+
+        if "children" in entry:
+            assert dep_data is not None
+            get_render_children(entry["children"], dep_data, self.default,
+                                entry.get("child_delimeter", ""))
 
         # determine if we need to perform this render
         assert template.filename is not None

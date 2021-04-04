@@ -52,6 +52,10 @@ groups:
   - "{{renders_str}}-b"
   - "{{renders_str}}-test.md"
   - "{{renders_str}}-test.py"
+- name: "test-children"
+  dependencies:
+  - "{{renders_str}}-test-children"
+  - "{{renders_str}}-test-child-delim"
 - name: "compile-test"
   dependencies:
   - "compiles-comp1-a"

@@ -1,6 +1,5 @@
 a: {a: a, b: b, c: c}
-b: "json\nyaml\n{'a': 'a', 'b': 'b', 'c': 'c'}\n{'a': 'a', 'b': 'b', 'c': 'c'}\n{'a':\
-  \ 'a', 'b': 'b', 'c': 'c'}\n{'d': 'd'}\n{'e': 'e'}\n{'f': 'f'}"
+b: {a: a, b: b, c: c}
 bad: 5
 c: {a: a, b: b, c: c}
 custom:

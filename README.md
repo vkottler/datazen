@@ -1,12 +1,12 @@
 <!--
     =====================================
     generator=datazen
-    version=1.6.6
-    hash=d23b745f0800d78241d9230d2d8e6eda
+    version=1.6.7
+    hash=e19c726f19be8186eb51105562adec12
     =====================================
 -->
 
-# datazen ([1.6.7](https://pypi.org/project/datazen/))
+# datazen ([1.7.0](https://pypi.org/project/datazen/))
 
 ![Python package](https://github.com/vkottler/datazen/workflows/Python%20package/badge.svg)
 
@@ -168,6 +168,9 @@ renders:
     type: dict
     schema:
       templates: paths
+      children: deps
+      child_delimeter:
+        type: string
       dependencies: deps
       name:
         type: string
@@ -222,7 +225,7 @@ schema:
 ```
 ## paths
 
-Paths are lists of Strings and can use `/` or `\\\\` as delimeters.
+Paths are lists of Strings and can use `/` or `\\` as delimeters.
 Paths are relative to the directory that a manifest file is in, but for
 manifest includes, all "loaded" directories are relative to the root
 manifest's directory. Paths can also be absolute.

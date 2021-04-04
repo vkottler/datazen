@@ -191,13 +191,9 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         return result
 
-    def handle_task(
-        self,
-        key_name: str,
-        target: str,
-        task_stack: List[Tuple[str, str]] = None,
-        should_cache: bool = True,
-    ) -> Tuple[bool, bool]:
+    def handle_task(self, key_name: str, target: str,
+                    task_stack: List[Tuple[str, str]] = None,
+                    should_cache: bool = True) -> Tuple[bool, bool]:
         """
         Handle the setup for manifest tasks, such as loading additional data
         directories and setting the correct output directory.
@@ -223,15 +219,10 @@ class TaskEnvironment(ManifestCacheEnvironment):
         LOG.debug("executing '%s'", get_dep_slug(key_name, target))
 
         # push dependencies
-        dep_data = {}
-        deps_changed = []
-        if "dependencies" in data:
-            dep_result = self.resolve_dependencies(
-                data["dependencies"], task_stack, target
-            )
-            if not dep_result[0]:
-                return False, False
-            dep_data, deps_changed = dep_result[1], dep_result[2]
+        dep_result = self.resolve_dependencies(get_dep_list(data), task_stack,
+                                               target)
+        if not dep_result[0]:
+            return False, False
 
         # resolve the output directory
         set_output_dir(data, self.manifest["dir"],
@@ -249,11 +240,22 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         # write-through to the cache when we complete an operation,
         # if it succeeded
-        result = self.handles[key_name](data, namespace, dep_data,
-                                        deps_changed)
+        result = self.handles[key_name](data, namespace, dep_result[1],
+                                        dep_result[2])
         if result[0]:
             self.resolve(key_name, target, should_cache, result[1])
         return result
+
+
+def get_dep_list(entry: dict) -> List[str]:
+    """ From task data, build a list of task dependencies. """
+
+    result = []
+    dep_keys = ["dependencies", "children"]
+    for key in dep_keys:
+        if key in entry:
+            result += entry[key]
+    return list(set(result))
 
 
 def get_path(entry: dict, key: str = "name") -> str:

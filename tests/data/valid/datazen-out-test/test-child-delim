@@ -1,0 +1,59 @@
+start
+
+
+json
+
+yaml
+
+{'a': 'a', 'b': 'b', 'c': 'c'}
+
+{'a': 'a', 'b': 'b', 'c': 'c'}
+
+{'a': 'a', 'b': 'b', 'c': 'c'}
+
+{'d': 'd'}
+
+{'e': 'e'}
+
+{'f': 'f'}
+end
+
+# super awesome project
+
+json
+yaml
+['d', 'e', 'f', 'a', 'b', 'c']
+{'b': {'b': 'b'}, 'a': {'a': 'a'}}
+
+======== delim working! ========
+
+
+"""
+example - description
+"""
+
+JSON = "json"
+YAML = "yaml"
+TOP_LIST = ['d', 'e', 'f', 'a', 'b', 'c']
+TOP_DICT = {'b': {'b': 'b'}, 'a': {'a': 'a'}}
+
+======== delim working! ========
+
+# super awesome project
+
+json
+yaml
+['d', 'e', 'f', 'a', 'b', 'c']
+{'b': {'b': 'b'}, 'a': {'a': 'a'}}
+
+======== delim working! ========
+
+
+"""
+example - description
+"""
+
+JSON = "json"
+YAML = "yaml"
+TOP_LIST = ['d', 'e', 'f', 'a', 'b', 'c']
+TOP_DICT = {'b': {'b': 'b'}, 'a': {'a': 'a'}}

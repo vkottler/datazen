@@ -32,10 +32,29 @@ renders:
 - name: "z"
   as: "zz"
 - name: "{{renders}}.md"
-  as: "test"
+  as: "test.md"
 - name: "{{renders}}.py"
-  as: "test"
+  as: "test.py"
   no_dynamic_fingerprint: true
+
+- name: "test-children"
+  dependencies:
+  - "a"
+  - "b"
+  children:
+  - "renders-{{renders}}.md"
+  - "renders-{{renders}}.py"
+- name: "test-child-delim"
+  key: "test-children"
+  dependencies:
+  - "a"
+  - "b"
+  children:
+  - "renders-{{renders}}.md"
+  - "renders-{{renders}}.py"
+  - "renders-{{renders}}.md"
+  - "renders-{{renders}}.py"
+  child_delimeter: "\n\n======== delim working! ========\n\n"
 
 - name: "render2"
   key: "test"
