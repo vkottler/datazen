@@ -38,6 +38,7 @@ def test_entry():
     assert datazen_main(args) == 0
     assert datazen_main(args + ["a", "b", "c"]) == 0
     assert datazen_main(args + ["not_a_target"]) != 0
+    assert datazen_main(args + ["--sync", "-d"]) == 0
     assert datazen_main([PKG_NAME, "-C", manifest_dir, "a", "b", "c"]) == 0
     assert datazen_main(args + ["--sync", "-d"]) == 0
 
