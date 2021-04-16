@@ -64,6 +64,7 @@ class EnvironmentNamespace:
         with self.lock:
             for dir_inst in self.directories[dir_type]:
                 dir_inst["loaded"] = False
+            self.data[dir_type] = {}
 
     def unload_all(self) -> None:
         """ Mark all directories as unloaded. """

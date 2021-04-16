@@ -121,6 +121,7 @@ class FileInfoCache:
         if self.cache_dir != "":
             shutil.rmtree(self.cache_dir)
             LOG.info("cleaning cache at '%s'", self.cache_dir)
+            os.sync()
 
     def write(self, out_type: str = "json") -> None:
         """ Commit cached data to the file-system. """

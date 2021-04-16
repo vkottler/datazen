@@ -72,6 +72,7 @@ def load_dir(path: str, existing_data: dict, variables: dict = None,
         hashes = defaultdict(dict)
 
     root_abs = os.path.abspath(path)
+    os.sync()
     for root, _, files in os.walk(path):
         LOG.debug("loading '%s'", root)
 

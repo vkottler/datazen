@@ -12,7 +12,7 @@ from datazen.classes.environment import from_manifest
 
 # internal
 from ..environment import EnvironmentMock
-from ..resources import get_test_configs, get_resource
+from ..resources import get_test_configs, get_resource, scoped_environment
 
 
 def test_environment():
@@ -70,78 +70,48 @@ def test_environment_from_manifest():
 def test_operations():
     """ Test some 'compile' and 'render' scenarios. """
 
-    manifest = get_resource("manifest.yaml", True)
-    env = from_manifest(manifest)
-    env.clean_cache()
-    env = from_manifest(manifest)
+    with scoped_environment("manifest.yaml", True) as env:
+        assert env.manifest_changed
 
-    assert env.manifest_changed
+        assert env.render("a") == (True, True)
+        # here 'b' render is already satisfied, because a compile depended
+        # on it
+        assert env.render("b") == (True, False)
 
-    assert env.render("a") == (True, True)
-    assert env.render("xx") == (False, False)
-    assert env.render("z") == (False, False)
+        # test default goals
+        assert env.execute() == (True, False)
+        del env.manifest["data"]["default_target"]
+        assert env.execute() == (True, False)
 
-    # here 'b' render is already satisfied, because a compile depended on it
-    assert env.render("b") == (True, False)
-
-    assert env.render("c") == (False, False)
-    assert env.render("d") == (False, False)
-
-    assert env.compile("a") == (True, False)
-    assert env.compile("a") == (True, False)
-    assert env.compile("b") == (True, False)
-    assert env.compile("c") == (True, False)
-    assert env.compile("d") == (False, False)
-    assert env.compile("f") == (True, True)
-    assert env.compile("g") == (False, False)
-    assert env.compile("z") == (True, True)
-
-    env.write_cache()
-    env = from_manifest(manifest)
-    assert not env.manifest_changed
-    assert env.compile("e") == (True, False)
-    assert env.render("e") == (False, False)
-
-    # test default goals
-    assert env.execute() == (True, False)
-    del env.manifest["data"]["default_target"]
-    assert env.execute() == (True, False)
-
-    env.clean_cache(False)
-    assert env.execute("groups-test") == (True, True)
-
-    # clean the cache so that we don't commit it to the repository, it's not
-    # worth the cost of using relative paths over absolute paths
-    env.clean_cache()
+        # test builds that should fail
+        assert env.render("xx") == (False, False)
+        assert env.render("z") == (False, False)
+        assert env.render("c") == (False, False)
+        assert env.render("d") == (False, False)
+        assert env.compile("d") == (False, False)
+        assert env.compile("g") == (False, False)
+        assert env.render("e") == (False, False)
 
 
 def test_load_manifest():
     """ Test a nominal manifest-loading scenario. """
 
-    manifest = get_resource("manifest.yaml", True)
-    env = from_manifest(manifest)
-    env.clean_cache()
-    env = from_manifest(manifest)
+    with scoped_environment("manifest.yaml", True) as env:
+        cfg_data1 = env.cached_load_configs()
+        assert cfg_data1
+        assert env.cached_load_configs()
+        env.write_cache()
 
-    cfg_data1 = env.cached_load_configs()
-    assert cfg_data1
-    assert env.cached_load_configs()
-    env.write_cache()
+        assert env.cached_enforce_schemas(cfg_data1)
 
-    assert env.cached_enforce_schemas(cfg_data1)
+        # clean the cache
+        env.clean_cache()
 
-    # clean the cache
-    env.clean_cache()
+        cfg_data2 = env.cached_load_configs()
+        assert cfg_data2
+        assert cfg_data2 == cfg_data1
+        env.write_cache()
 
-    cfg_data2 = env.cached_load_configs()
-    assert cfg_data2
-    assert cfg_data2 == cfg_data1
-    env.write_cache()
-
-    # make sure configs loaded correctly
-    assert "yaml2" in cfg_data2 and "json2" in cfg_data2
-    assert len(cfg_data2["top_list"]) == 6
-
-    # clean the cache so that we don't commit it to the repository, it's not
-    # worth the cost of using relative paths over absolute paths
-    env.clean_cache()
+        # make sure configs loaded correctly
+        assert "yaml2" in cfg_data2 and "json2" in cfg_data2
+        assert len(cfg_data2["top_list"]) == 6

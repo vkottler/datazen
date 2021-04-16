@@ -59,8 +59,6 @@ groups:
 - name: "compile-test"
   dependencies:
   - "compiles-comp1-a"
-  - "compiles-comp1-b"
   - "compiles-comp2-c"
   - "compiles-comp2-e"
   - "compiles-comp3-a"
-  - "compiles-comp3-b"
