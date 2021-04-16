@@ -98,6 +98,7 @@ class RenderEnvironment(TaskEnvironment):
             if path is not None:
                 with open(path, "w") as render_out:
                     render_out.write(fprint + render_str + os.linesep)
+                os.sync()
 
             # save the output into a dict for consistency
             self.store_render(entry, out_data)

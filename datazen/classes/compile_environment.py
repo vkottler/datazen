@@ -5,6 +5,7 @@ datazen - An environment extension that exposes compilation capabilities.
 
 # built-in
 import logging
+import os
 from typing import List, Tuple
 
 # internal
@@ -62,5 +63,6 @@ class CompileEnvironment(TaskEnvironment):
         with open(path, mode) as out_file:
             out_file.write(str_compile(data, output_type))
             LOG.info("compiled '%s' data to '%s'", output_type, path)
+        os.sync()
 
         return True, True

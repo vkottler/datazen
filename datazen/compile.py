@@ -26,6 +26,7 @@ def write_dir(directory: str, data: dict, out_type: str = "json") -> None:
         key_path = os.path.join(directory, "{}.{}".format(key, out_type))
         with open(key_path, "w") as key_file:
             key_file.write(str_compile(val, out_type))
+    os.sync()
 
 
 def str_compile(configs: dict, data_type: str) -> str:
