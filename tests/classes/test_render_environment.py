@@ -13,6 +13,18 @@ from datazen.classes.environment import from_manifest
 from ..resources import get_resource, injected_content, scoped_environment
 
 
+def test_render_simple():
+    """ Test that rendering isn't always necessary. """
+
+    with scoped_environment("manifest.yaml", True) as env:
+        assert env.render("test.md") == (True, True)
+        assert env.render("test.py") == (True, True)
+        env.write_cache()
+        new_env = from_manifest(get_resource("manifest.yaml", True))
+        assert new_env.render("test.md") == (True, False)
+        assert new_env.render("test.py") == (True, False)
+
+
 def test_render_children():
     """
     Test render targets used to validate behavior of the 'children' key.
