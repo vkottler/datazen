@@ -2,11 +2,11 @@
     =====================================
     generator=datazen
     version=1.7.1
-    hash=f19eda7afcf03a3b3b6faa90ea6c208f
+    hash=9cdea6c0adff327598136794f07942b3
     =====================================
 -->
 
-# datazen ([1.7.1](https://pypi.org/project/datazen/))
+# datazen ([1.7.2](https://pypi.org/project/datazen/))
 
 ![Python package](https://github.com/vkottler/datazen/workflows/Python%20package/badge.svg)
 
@@ -171,6 +171,8 @@ renders:
       children: deps
       child_delimeter:
         type: string
+      child_indent:
+        type: integer
       dependencies: deps
       name:
         type: string

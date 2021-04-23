@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=1.7.0
-# hash=a527b5a8714fb7ee559ed74309551849
+# version=1.7.1
+# hash=f1c6169e8b83ba3b614efd113976a4d3
 # =====================================
 includes: paths
 
@@ -70,6 +70,8 @@ renders:
       children: deps
       child_delimeter:
         type: string
+      child_indent:
+        type: integer
       dependencies: deps
       name:
         type: string

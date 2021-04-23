@@ -101,6 +101,8 @@ entries:
           children: deps
           child_delimeter:
             type: string
+          child_indent:
+            type: integer
           dependencies: deps
           name:
             type: string

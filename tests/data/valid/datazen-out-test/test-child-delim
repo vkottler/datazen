@@ -18,42 +18,42 @@ yaml
 {'f': 'f'}
 end
 
-# super awesome project
+    # super awesome project
 
-json
-yaml
-['d', 'e', 'f', 'a', 'b', 'c']
-{'b': {'b': 'b'}, 'a': {'a': 'a'}}
+    json
+    yaml
+    ['d', 'e', 'f', 'a', 'b', 'c']
+    {'b': {'b': 'b'}, 'a': {'a': 'a'}}
 
-======== delim working! ========
-
-
-"""
-example - description
-"""
-
-JSON = "json"
-YAML = "yaml"
-TOP_LIST = ['d', 'e', 'f', 'a', 'b', 'c']
-TOP_DICT = {'b': {'b': 'b'}, 'a': {'a': 'a'}}
-
-======== delim working! ========
-
-# super awesome project
-
-json
-yaml
-['d', 'e', 'f', 'a', 'b', 'c']
-{'b': {'b': 'b'}, 'a': {'a': 'a'}}
-
-======== delim working! ========
+    ======== delim working! ========
 
 
-"""
-example - description
-"""
+    """
+    example - description
+    """
 
-JSON = "json"
-YAML = "yaml"
-TOP_LIST = ['d', 'e', 'f', 'a', 'b', 'c']
-TOP_DICT = {'b': {'b': 'b'}, 'a': {'a': 'a'}}
+    JSON = "json"
+    YAML = "yaml"
+    TOP_LIST = ['d', 'e', 'f', 'a', 'b', 'c']
+    TOP_DICT = {'b': {'b': 'b'}, 'a': {'a': 'a'}}
+
+    ======== delim working! ========
+
+    # super awesome project
+
+    json
+    yaml
+    ['d', 'e', 'f', 'a', 'b', 'c']
+    {'b': {'b': 'b'}, 'a': {'a': 'a'}}
+
+    ======== delim working! ========
+
+
+    """
+    example - description
+    """
+
+    JSON = "json"
+    YAML = "yaml"
+    TOP_LIST = ['d', 'e', 'f', 'a', 'b', 'c']
+    TOP_DICT = {'b': {'b': 'b'}, 'a': {'a': 'a'}}

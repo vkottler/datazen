@@ -28,6 +28,21 @@ def render_name_to_key(name: str) -> str:
     return name.replace(".", "_")
 
 
+def indent_str(data: str, indent: int, sep: str = os.linesep) -> str:
+    """
+    Attempt to indent String data by some amount, based on some separator.
+    """
+
+    result = ""
+    ind_str = " " * indent
+    for line in data.split(sep):
+        if line:
+            result += ind_str + line + sep
+        else:
+            result += sep
+    return result.rstrip()
+
+
 def get_render_str(template: jinja2.Template, name: str, indent: int,
                    data: dict = None, out_data: dict = None) -> str:
     """ Render a template. """
@@ -45,15 +60,7 @@ def get_render_str(template: jinja2.Template, name: str, indent: int,
         del data[GLOBAL_KEY]
 
     # add indents if requested
-    if indent:
-        new_result = ""
-        indent_str = " " * indent
-        for line in result.split(os.linesep):
-            if line:
-                new_result += indent_str + line + os.linesep
-            else:
-                new_result += os.linesep
-        result = new_result.rstrip()
+    result = indent_str(result, indent)
 
     if out_data is not None:
         out_data[render_name_to_key(name)] = result
@@ -61,7 +68,8 @@ def get_render_str(template: jinja2.Template, name: str, indent: int,
 
 
 def get_render_children(children: dict, dep_data: dict,
-                        default_op: str, delimeter: str = "") -> None:
+                        default_op: str, indent: int,
+                        delimeter: str = "") -> None:
     """ Build child dependency data. """
 
     result = []
@@ -70,7 +78,7 @@ def get_render_children(children: dict, dep_data: dict,
         assert slug[1] in dep_data
         assert isinstance(dep_data[slug[1]], str)
         result.append(dep_data[slug[1]])
-    dep_data["__children__"] = delimeter.join(result)
+    dep_data["__children__"] = indent_str(delimeter.join(result), indent)
 
 
 class RenderEnvironment(TaskEnvironment):
@@ -174,6 +182,7 @@ class RenderEnvironment(TaskEnvironment):
         if "children" in entry:
             assert dep_data is not None
             get_render_children(entry["children"], dep_data, self.default,
+                                entry.get("child_indent", 0),
                                 entry.get("child_delimeter", ""))
 
         # determine if we need to perform this render

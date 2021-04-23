@@ -55,6 +55,7 @@ renders:
   - "renders-{{renders}}.md"
   - "renders-{{renders}}.py"
   child_delimeter: "\n\n======== delim working! ========\n\n"
+  child_indent: 4
 
 - name: "render2"
   key: "test"
