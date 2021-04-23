@@ -12,6 +12,7 @@ from typing import List, Tuple, Optional
 import jinja2
 
 # internal
+from datazen import GLOBAL_KEY
 from datazen.classes.base_environment import dep_slug_unwrap
 from datazen.classes.task_environment import TaskEnvironment, get_path
 from datazen.fingerprinting import build_fingerprint
@@ -31,7 +32,17 @@ def get_render_str(template: jinja2.Template, name: str, indent: int,
                    data: dict = None, out_data: dict = None) -> str:
     """ Render a template. """
 
+    # add a self-reference key for convenience
+    global_added: bool = False
+    if data is not None and GLOBAL_KEY not in data:
+        data[GLOBAL_KEY] = data
+        global_added = True
+
     result = template.render(data).rstrip()
+
+    if global_added:
+        assert data is not None
+        del data[GLOBAL_KEY]
 
     # add indents if requested
     if indent:

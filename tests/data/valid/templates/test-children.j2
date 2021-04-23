@@ -1,5 +1,7 @@
 start
-{{global}}
+{% if global %}
+{{global["json"]}}
+{% endif %}
 
 {{json}}
 
