@@ -21,6 +21,7 @@ def test_bad_overwrite():
     assert merge(dict_a, dict_b) == dict_a
     assert merge(dict_a, dict_b, expect_overwrite=True) == dict_b
 
+
 def test_load_bad_template():
     """ Test that loading invalid templates returns correctly. """
 
