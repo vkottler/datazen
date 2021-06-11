@@ -7,7 +7,7 @@ datazen - An interface for retrieving and interacting with test data.
 from contextlib import contextmanager
 import os
 from tempfile import NamedTemporaryFile
-from typing import List, IO, TextIO, Iterator
+from typing import List, TextIO, Iterator
 import pkg_resources
 
 # module under test
@@ -82,7 +82,8 @@ def get_test_variables(valid: bool = True) -> List[str]:
     return [get_resource("variables", valid)]
 
 
-def get_tempfile(extension: str) -> IO:
+def get_tempfile(extension: str) -> str:
     """ Obtain a temporary file name with a specific extension. """
 
-    return NamedTemporaryFile(suffix=extension)
+    with NamedTemporaryFile(suffix=extension) as tfile:
+        return tfile.name

@@ -1,1 +1,2 @@
 vmklib
+types-pkg-resources

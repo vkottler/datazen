@@ -13,7 +13,7 @@ import time
 
 # third-party
 import jinja2
-from ruamel import yaml  # type: ignore
+from ruamel.yaml import YAML, scanner, parser
 
 # internal
 from datazen.paths import get_file_ext
@@ -42,10 +42,10 @@ def get_yaml_data(data_file: TextIO) -> Tuple[dict, bool]:
     data = {}
     loaded = True
     try:
-        data = yaml.safe_load(data_file)
+        data = YAML(typ="safe").load(data_file)
         if not data:
             data = {}
-    except (yaml.scanner.ScannerError, yaml.parser.ParserError) as exc:
+    except (scanner.ScannerError, parser.ParserError) as exc:
         loaded = False
         LOG.error("yaml-load error: %s", exc)
     return data, loaded

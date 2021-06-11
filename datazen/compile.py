@@ -4,13 +4,14 @@ datazen - An interface for turning a dictionary into various serialized forms.
 """
 
 # built-in
+import io
 import json
 import logging
 import os
 from typing import Tuple
 
 # third-party
-from ruamel import yaml
+from ruamel.yaml import YAML
 
 # internal
 from datazen import DEFAULT_TYPE
@@ -35,11 +36,14 @@ def str_compile(configs: dict, data_type: str) -> str:
     serializeable type.
     """
 
+    ostream = io.StringIO()
+
     # serialize the data
     if data_type == "json":
         result = json.dumps(configs, indent=4, sort_keys=True)
     elif data_type == "yaml":
-        raw_result = yaml.dump(configs)
+        YAML(typ="safe").dump(configs, ostream)
+        raw_result = ostream.getvalue()
         result = raw_result if raw_result else ""
     else:
         LOG.error("can't serialize '%s' data (unknown type)", data_type)

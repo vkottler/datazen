@@ -23,12 +23,12 @@ def test_compile():
     variable_dirs = get_test_variables(True)
 
     yaml_out = get_tempfile(".yaml")
-    assert cmd_compile(config_dirs, schema_dirs, variable_dirs, yaml_out.name)
+    assert cmd_compile(config_dirs, schema_dirs, variable_dirs, yaml_out)
     json_out = get_tempfile(".json")
-    assert cmd_compile(config_dirs, schema_dirs, variable_dirs, json_out.name)
+    assert cmd_compile(config_dirs, schema_dirs, variable_dirs, json_out)
     toml_out = get_tempfile(".toml")
     assert not cmd_compile(config_dirs, schema_dirs, variable_dirs,
-                           toml_out.name)
+                           toml_out)
 
 
 def test_invalid_compile():
@@ -40,4 +40,4 @@ def test_invalid_compile():
 
     yaml_out = get_tempfile(".yaml")
     assert not cmd_compile(config_dirs, schema_dirs, variable_dirs,
-                           yaml_out.name)
+                           yaml_out)
