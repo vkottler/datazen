@@ -6,7 +6,7 @@ datazen - APIs for working with file paths.
 # built-in
 import os
 import pkgutil
-from typing import List
+from typing import List, Iterator, Tuple
 
 # third-party
 import pkg_resources
@@ -16,6 +16,7 @@ from datazen import PKG_NAME
 
 FMT_OPEN = "{"
 FMT_CLOSE = "}"
+EXCLUDES = [".git", ".svn", ".gitignore"]
 
 
 def get_file_name(full_path: str) -> str:
@@ -153,3 +154,25 @@ def resolve_dir(data: str, rel_base: str = "") -> str:
     if not os.path.isabs(data) and rel_base:
         data = os.path.join(rel_base, data)
     return os.path.abspath(data)
+
+
+def walk_with_excludes(
+    path: str,
+    excludes: List[str] = None
+) -> Iterator[Tuple[str, List[str], List[str]]]:
+    """
+    Behaves like os.walk but attempts to skip iterations that would enter
+    directories we want to exclude (and thus not traverse).
+    """
+
+    if excludes is None:
+        excludes = EXCLUDES
+
+    for root, dirnames, filenames in os.walk(path):
+        dirs = root.split(os.sep)
+
+        # don't yield any directories that have an excluded path
+        if any(x in dirs for x in excludes):
+            continue
+
+        yield root, dirnames, filenames

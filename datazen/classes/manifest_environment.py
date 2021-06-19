@@ -75,14 +75,14 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             "templates": self.add_template_dirs,
             "variables": self.add_variable_dirs,
         }
-        for key in key_handles:
+        for key, handler in key_handles.items():
             if key in data:
-                key_handles[key](data[key], rel_path, namespace, allow_dup)
+                handler(data[key], rel_path, namespace, allow_dup)
             # if a directory list isn't provided, and the directory of the
             # same name of the key is present in the manifest directory,
             # load it
             elif os.path.isdir(os.path.join(rel_path, key)):
-                key_handles[key]([key], rel_path, namespace, allow_dup)
+                handler([key], rel_path, namespace, allow_dup)
 
     def default_target(self) -> str:
         """
