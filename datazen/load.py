@@ -11,8 +11,9 @@ from typing import Dict, List, Tuple
 
 # internal
 from datazen import GLOBAL_KEY
-from datazen.paths import get_path_list, advance_dict_by_path
-from datazen.paths import get_file_name
+from datazen.paths import (
+    get_path_list, advance_dict_by_path, walk_with_excludes, get_file_name
+)
 from datazen.parsing import load as load_raw_resolve
 from datazen.parsing import set_file_hash
 
@@ -73,7 +74,7 @@ def load_dir(path: str, existing_data: dict, variables: dict = None,
 
     root_abs = os.path.abspath(path)
     os.sync()
-    for root, _, files in os.walk(path):
+    for root, _, files in walk_with_excludes(path):
         LOG.debug("loading '%s'", root)
 
         path_list = get_path_list(root_abs, root)

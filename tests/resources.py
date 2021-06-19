@@ -6,9 +6,12 @@ datazen - An interface for retrieving and interacting with test data.
 # built-in
 from contextlib import contextmanager
 import os
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import List, TextIO, Iterator
 import pkg_resources
+
+# third-party
+import git
 
 # module under test
 from datazen.classes.environment import Environment, from_manifest
@@ -87,3 +90,14 @@ def get_tempfile(extension: str) -> str:
 
     with NamedTemporaryFile(suffix=extension) as tfile:
         return tfile.name
+
+
+@contextmanager
+def get_temp_repo() -> Iterator[str]:
+    """
+    Creates a temporary directory and initializes an empty git repository.
+    """
+
+    with TemporaryDirectory() as tmpdir:
+        git.Repo.init(tmpdir)
+        yield tmpdir
