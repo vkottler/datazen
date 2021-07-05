@@ -1,4 +1,3 @@
-
 """
 datazen - A child class for adding template-loading capabilities to the
           environment dataset.
@@ -26,9 +25,9 @@ class TemplateEnvironment(BaseEnvironment):
     def load_templates(
         self,
         template_loads: LOADTYPE = (None, None),
-        name: str = ROOT_NAMESPACE
+        name: str = ROOT_NAMESPACE,
     ) -> Dict[str, jinja2.Template]:
-        """ Load templates, resolve any un-loaded template directories. """
+        """Load templates, resolve any un-loaded template directories."""
 
         # determine directories that need to be loaded
         data_type = DataType.TEMPLATE
@@ -39,18 +38,26 @@ class TemplateEnvironment(BaseEnvironment):
             # load new templates
             template_data = self.get_data(data_type, name)
             if to_load:
-                template_data.update(load_templates(to_load, template_loads[0],
-                                                    template_loads[1]))
+                template_data.update(
+                    load_templates(
+                        to_load, template_loads[0], template_loads[1]
+                    )
+                )
                 self.update_load_state(data_type, to_load, name)
 
         return template_data
 
-    def add_template_dirs(self, dir_paths: List[str], rel_path: str = ".",
-                          name: str = ROOT_NAMESPACE,
-                          allow_dup: bool = False) -> int:
+    def add_template_dirs(
+        self,
+        dir_paths: List[str],
+        rel_path: str = ".",
+        name: str = ROOT_NAMESPACE,
+        allow_dup: bool = False,
+    ) -> int:
         """
         Add template directories, return the number of directories added.
         """
 
-        return self.add_dirs(DataType.TEMPLATE, dir_paths, rel_path, name,
-                             allow_dup)
+        return self.add_dirs(
+            DataType.TEMPLATE, dir_paths, rel_path, name, allow_dup
+        )

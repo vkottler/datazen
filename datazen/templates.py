@@ -1,4 +1,3 @@
-
 """
 datazen - Top-level APIs for loading and interacting with templates.
 """
@@ -15,8 +14,9 @@ from datazen.paths import get_file_name, get_file_ext
 from datazen.parsing import set_file_hash
 
 
-def update_cache_primitives(dir_path: str, loaded_list: List[str],
-                            hashes: Dict[str, dict]) -> None:
+def update_cache_primitives(
+    dir_path: str, loaded_list: List[str], hashes: Dict[str, dict]
+) -> None:
     """
     From a directory path, update the 'loaded_list' and 'hashes' primitives
     that belong to an upstream cache.
@@ -29,8 +29,11 @@ def update_cache_primitives(dir_path: str, loaded_list: List[str],
                 loaded_list.append(fpath)
 
 
-def load(template_dirs: List[str], loaded_list: List[str] = None,
-         hashes: Dict[str, dict] = None) -> Dict[str, jinja2.Template]:
+def load(
+    template_dirs: List[str],
+    loaded_list: List[str] = None,
+    hashes: Dict[str, dict] = None,
+) -> Dict[str, jinja2.Template]:
     """
     Load jinja2 templates from a list of directories where templates can be
     found.
@@ -40,8 +43,9 @@ def load(template_dirs: List[str], loaded_list: List[str] = None,
 
     # setup jinja environment
     loader = jinja2.FileSystemLoader(template_dirs, followlinks=True)
-    env = jinja2.Environment(loader=loader, trim_blocks=True,
-                             lstrip_blocks=True)
+    env = jinja2.Environment(
+        loader=loader, trim_blocks=True, lstrip_blocks=True
+    )
 
     # manually inspect directories to write into the cache
     if hashes is not None and loaded_list is not None:

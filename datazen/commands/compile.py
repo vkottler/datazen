@@ -1,4 +1,3 @@
-
 """
 datazen - A command implementation for compiling configuration data and
           variables into a single, monolithic output.
@@ -16,8 +15,12 @@ from datazen.compile import str_compile
 LOG = logging.getLogger(__name__)
 
 
-def cmd_compile(config_dirs: List[str], schema_dirs: List[str],
-                variable_dirs: List[str], output_file_path: str) -> bool:
+def cmd_compile(
+    config_dirs: List[str],
+    schema_dirs: List[str],
+    variable_dirs: List[str],
+    output_file_path: str,
+) -> bool:
     """
     Load configuration data by resolving variables and validating provided
     schemas. Write the result to the specified output file, inferring the type
@@ -42,8 +45,9 @@ def cmd_compile(config_dirs: List[str], schema_dirs: List[str],
     # serialize the data
     result = str_compile(configs, ext)
     if not result:
-        LOG.error("can't write '%s' data to '%s', no output", ext,
-                  output_file_path)
+        LOG.error(
+            "can't write '%s' data to '%s', no output", ext, output_file_path
+        )
         return False
 
     # write the output

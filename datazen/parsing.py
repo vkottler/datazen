@@ -1,4 +1,3 @@
-
 """
 datazen - APIs for loading raw data from files.
 """
@@ -22,7 +21,7 @@ LOG = logging.getLogger(__name__)
 
 
 def get_json_data(data_file: TextIO) -> Tuple[dict, bool]:
-    """ Load JSON data from a text stream. """
+    """Load JSON data from a text stream."""
 
     data = {}
     loaded = True
@@ -37,7 +36,7 @@ def get_json_data(data_file: TextIO) -> Tuple[dict, bool]:
 
 
 def get_yaml_data(data_file: TextIO) -> Tuple[dict, bool]:
-    """ Load YAML data from a text stream. """
+    """Load YAML data from a text stream."""
 
     data = {}
     loaded = True
@@ -65,8 +64,11 @@ def load_stream(data_stream: TextIO, data_path: str) -> Tuple[dict, bool]:
     elif ext == "yaml":
         data, result = get_yaml_data(data_stream)
     else:
-        LOG.error("can't load data from '%s' (unknown extension '%s')",
-                  data_path, ext)
+        LOG.error(
+            "can't load data from '%s' (unknown extension '%s')",
+            data_path,
+            ext,
+        )
 
     if not result:
         LOG.error("failed to load '%s'", data_path)
@@ -105,8 +107,12 @@ def merge_dicts(dicts: List[dict], expect_overwrite: bool = False) -> dict:
     return result
 
 
-def merge(dict_a: dict, dict_b: dict, path: List[str] = None,
-          expect_overwrite: bool = False) -> dict:
+def merge(
+    dict_a: dict,
+    dict_b: dict,
+    path: List[str] = None,
+    expect_overwrite: bool = False,
+) -> dict:
     """
     Combine two dictionaries recursively, prefers dict_a in a conflict. For
     values of the same key that are lists, the lists are combined. Otherwise
@@ -128,12 +134,18 @@ def merge(dict_a: dict, dict_b: dict, path: List[str] = None,
             # same leaf value
             if dict_a[key] == dict_b[key]:
                 pass
-            elif isinstance(dict_a[key], dict) and isinstance(dict_b[key],
-                                                              dict):
-                merge(dict_a[key], dict_b[key], path + [str(key)],
-                      expect_overwrite)
-            elif isinstance(dict_a[key], list) and isinstance(dict_b[key],
-                                                              list):
+            elif isinstance(dict_a[key], dict) and isinstance(
+                dict_b[key], dict
+            ):
+                merge(
+                    dict_a[key],
+                    dict_b[key],
+                    path + [str(key)],
+                    expect_overwrite,
+                )
+            elif isinstance(dict_a[key], list) and isinstance(
+                dict_b[key], list
+            ):
                 dict_a[key].extend(dict_b[key])
             elif not isinstance(dict_b[key], type(dict_a[key])):
                 error_str = "Type mismatch at %s" % ".".join(path + [str(key)])
@@ -153,9 +165,12 @@ def merge(dict_a: dict, dict_b: dict, path: List[str] = None,
     return dict_a
 
 
-def load(data_path: str, variables: dict,
-         dict_to_update: dict,
-         expect_overwrite: bool = False) -> Tuple[dict, bool]:
+def load(
+    data_path: str,
+    variables: dict,
+    dict_to_update: dict,
+    expect_overwrite: bool = False,
+) -> Tuple[dict, bool]:
     """
     Load raw file data and meld it into an existing dictionary. Update
     the result as if it's a template using the provided variables.
@@ -170,23 +185,29 @@ def load(data_path: str, variables: dict,
         LOG.error("can't find '%s' to load file data", data_path)
         return ({}, False)
     except jinja2.exceptions.TemplateError as exc:
-        LOG.error("couldn't render '%s': %s (variables: %s)", data_path, exc,
-                  variables)
+        LOG.error(
+            "couldn't render '%s': %s (variables: %s)",
+            data_path,
+            exc,
+            variables,
+        )
         return ({}, False)
 
     new_data, loaded = load_stream(io.StringIO(str_output), data_path)
-    return merge(dict_to_update, new_data,
-                 expect_overwrite=expect_overwrite), loaded
+    return (
+        merge(dict_to_update, new_data, expect_overwrite=expect_overwrite),
+        loaded,
+    )
 
 
 def get_hash(data: str, encoding: str = "utf-8") -> str:
-    """ Get the MD5 of String data. """
+    """Get the MD5 of String data."""
 
     return hashlib.md5(bytes(data, encoding)).hexdigest()
 
 
 def get_file_hash(path: str) -> str:
-    """ Get the MD5 of a file by path. """
+    """Get the MD5 of a file by path."""
 
     with open(path) as data:
         contents = data.read()
@@ -194,7 +215,7 @@ def get_file_hash(path: str) -> str:
 
 
 def set_file_hash(hashes: dict, path: str, set_new: bool = True) -> bool:
-    """ Evaluate a hash dictionary and update it on a miss. """
+    """Evaluate a hash dictionary and update it on a miss."""
 
     str_hash = get_file_hash(path)
     result = True

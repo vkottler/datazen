@@ -1,4 +1,3 @@
-
 """
 datazen - An environment extension that exposes compilation capabilities.
 """
@@ -18,7 +17,7 @@ LOG = logging.getLogger(__name__)
 
 
 class CompileEnvironment(TaskEnvironment):
-    """ Leverages a cache-equipped environment to perform compilations. """
+    """Leverages a cache-equipped environment to perform compilations."""
 
     def __init__(self):
         """
@@ -28,10 +27,14 @@ class CompileEnvironment(TaskEnvironment):
         super().__init__()
         self.handles["compiles"] = self.valid_compile
 
-    def valid_compile(self, entry: dict, namespace: str,
-                      dep_data: dict = None,
-                      deps_changed: List[str] = None) -> Tuple[bool, bool]:
-        """ Perform the compilation specified by the entry. """
+    def valid_compile(
+        self,
+        entry: dict,
+        namespace: str,
+        dep_data: dict = None,
+        deps_changed: List[str] = None,
+    ) -> Tuple[bool, bool]:
+        """Perform the compilation specified by the entry."""
 
         path, output_type = get_compile_output(entry)
 
@@ -53,9 +56,12 @@ class CompileEnvironment(TaskEnvironment):
         self.task_data["compiles"][entry["name"]] = data
 
         # make sure this compilation needs to be performed
-        if self.already_satisfied(entry["name"], path,
-                                  ["configs", "variables", "schemas"],
-                                  deps_changed):
+        if self.already_satisfied(
+            entry["name"],
+            path,
+            ["configs", "variables", "schemas"],
+            deps_changed,
+        ):
             LOG.debug("compile '%s' satisfied, skipping", entry["name"])
             return True, False
 

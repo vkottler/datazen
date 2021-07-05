@@ -1,4 +1,3 @@
-
 """
 datazen - Test the program's entry-point.
 """
@@ -27,7 +26,7 @@ def test_entry_basic():
 
 
 def test_entry():
-    """ Test some basic command-line argument scenarios. """
+    """Test some basic command-line argument scenarios."""
 
     manifest = get_resource("manifest.yaml", True)
     manifest_dir = os.path.dirname(manifest)

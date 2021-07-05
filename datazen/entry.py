@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=1.7.3
-# hash=8a6c0e7fa959b7b10800d57d61c88fd3
+# version=1.7.4
+# hash=4272177a9aa01850ce471770d7ebd6d0
 # =====================================
 
 """
@@ -21,7 +21,7 @@ from datazen.app import entry, add_app_args
 
 
 def main(argv: List[str] = None) -> int:
-    """ Program entry-point. """
+    """Program entry-point."""
 
     result = 0
 
@@ -32,12 +32,24 @@ def main(argv: List[str] = None) -> int:
 
     # initialize argument parsing
     parser = argparse.ArgumentParser(description=DESCRIPTION)
-    parser.add_argument("--version", action="version",
-                        version="%(prog)s {0}".format(VERSION))
-    parser.add_argument("-v", "--verbose", action="store_true",
-                        help="set to increase logging verbosity")
-    parser.add_argument("-C", "--dir", default=os.getcwd(), dest="dir",
-                        help="execute from a specific directory")
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="%(prog)s {0}".format(VERSION),
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="set to increase logging verbosity",
+    )
+    parser.add_argument(
+        "-C",
+        "--dir",
+        default=os.getcwd(),
+        dest="dir",
+        help="execute from a specific directory",
+    )
     starting_dir = os.getcwd()
 
     add_app_args(parser)
@@ -50,9 +62,10 @@ def main(argv: List[str] = None) -> int:
 
         # initialize logging
         log_level = logging.DEBUG if args.verbose else logging.INFO
-        logging.basicConfig(level=log_level,
-                            format=("%(name)-36s - %(levelname)-6s - "
-                                    "%(message)s"))
+        logging.basicConfig(
+            level=log_level,
+            format="%(name)-36s - %(levelname)-6s - %(message)s",
+        )
 
         # change to the specified directory
         os.chdir(args.dir)

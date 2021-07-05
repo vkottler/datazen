@@ -1,4 +1,3 @@
-
 """
 datazen - Tests for the 'render' command interface.
 """
@@ -13,7 +12,7 @@ from ..resources import get_test_templates, get_tempfile
 
 
 def test_render():
-    """ Test the 'render' command entry. """
+    """Test the 'render' command entry."""
 
     # compile monolithic yaml
     config_out = get_tempfile(".yaml")
@@ -21,8 +20,9 @@ def test_render():
         config_file.write(str_compile(ENV.get_configs(True), "yaml"))
 
     # render yaml from yaml configs
-    assert cmd_render(get_test_templates(True), "a", config_out,
-                      get_tempfile(".yaml"))
+    assert cmd_render(
+        get_test_templates(True), "a", config_out, get_tempfile(".yaml")
+    )
 
     # compile monolithic json
     config_out = get_tempfile(".json")
@@ -30,5 +30,6 @@ def test_render():
         config_file.write(str_compile(ENV.get_configs(True), "json"))
 
     # render json from json configs
-    assert cmd_render(get_test_templates(True), "a", config_out,
-                      get_tempfile(".json"))
+    assert cmd_render(
+        get_test_templates(True), "a", config_out, get_tempfile(".json")
+    )

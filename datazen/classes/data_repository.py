@@ -1,4 +1,3 @@
-
 """
 datazen - An interface for managing on-disk data by loading it and making
           discrete changes.
@@ -30,7 +29,7 @@ class DataRepository:
     """
 
     def __init__(self, root_dir: str, out_type: str = "yaml") -> None:
-        """ Construct a new data repository. """
+        """Construct a new data repository."""
 
         self.root: str = os.path.realpath(root_dir)
         self.out_type = out_type
@@ -41,8 +40,9 @@ class DataRepository:
         self.lock = threading.RLock()
 
     @contextmanager
-    def meld(self, data: dict, root_rel: str = ".",
-             expect_overwrite: bool = False) -> Iterator[git.Repo]:
+    def meld(
+        self, data: dict, root_rel: str = ".", expect_overwrite: bool = False
+    ) -> Iterator[git.Repo]:
         """
         Update the data at some root-relative path, write it to disk and then
         provided the repository object still within a locked context.
@@ -51,16 +51,18 @@ class DataRepository:
         with self.lock:
             # update data with contents provided
             with self.loaded(root_rel) as curr_data:
-                self.data = merge(curr_data, data,
-                                  expect_overwrite=expect_overwrite)
+                self.data = merge(
+                    curr_data, data, expect_overwrite=expect_overwrite
+                )
 
             # yield the repository after we've written disk but before
             # releasing the lock
             yield self.repo
 
     @contextmanager
-    def loaded(self, root_rel: str = ".",
-               write_back: bool = True) -> Iterator[dict]:
+    def loaded(
+        self, root_rel: str = ".", write_back: bool = True
+    ) -> Iterator[dict]:
         """
         Load a data directory, yield it to the caller and write it back when
         complete inside a locked context for this repository.

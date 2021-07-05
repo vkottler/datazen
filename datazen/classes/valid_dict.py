@@ -1,4 +1,3 @@
-
 """
 datazen - A dict wrapper that enables simpler schema validation.
 """
@@ -8,7 +7,7 @@ import logging
 from collections import UserDict
 
 # third-party
-from cerberus import Validator  # type: ignore
+from cerberus import Validator
 
 LOG = logging.getLogger(__name__)
 
@@ -20,7 +19,7 @@ class ValidDict(UserDict):
     """
 
     def __init__(self, name: str, data: dict, schema: Validator):
-        """ Initialize a named, ValidDict. """
+        """Initialize a named, ValidDict."""
 
         # initialize the dict
         if not isinstance(data, dict):
@@ -31,7 +30,10 @@ class ValidDict(UserDict):
         self.validator = schema
         self.valid = self.validator.validate(self.data)
         if not self.valid:
-            LOG.error("validation error(s) for '%s': %s", self.name,
-                      self.validator.errors)
+            LOG.error(
+                "validation error(s) for '%s': %s",
+                self.name,
+                self.validator.errors,
+            )
             LOG.error("data: %s", data)
             LOG.error("schema: %s", schema.schema)

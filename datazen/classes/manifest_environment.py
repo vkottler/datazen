@@ -1,4 +1,3 @@
-
 """
 datazen - A class for adding manifest-loading to environments.
 """
@@ -10,7 +9,7 @@ from io import StringIO
 from typing import List, Tuple
 
 # third-party
-from cerberus import Validator  # type: ignore
+from cerberus import Validator
 
 # internal
 from datazen.classes.config_environment import ConfigEnvironment
@@ -25,8 +24,9 @@ from datazen import DEFAULT_DIR, ROOT_NAMESPACE
 LOG = logging.getLogger(__name__)
 
 
-def get_output_dir(data: dict, rel_path: str,
-                   default: str = DEFAULT_DIR) -> str:
+def get_output_dir(
+    data: dict, rel_path: str, default: str = DEFAULT_DIR
+) -> str:
     """
     Get the resolved output directory based on a dictionary containing
     target data.
@@ -39,9 +39,10 @@ def get_output_dir(data: dict, rel_path: str,
     return resolve_dir(out_dir, rel_path)
 
 
-def set_output_dir(data: dict, rel_path: str,
-                   default: str = DEFAULT_DIR) -> None:
-    """ Set the 'output_dir' key correctly on a dictionary. """
+def set_output_dir(
+    data: dict, rel_path: str, default: str = DEFAULT_DIR
+) -> None:
+    """Set the 'output_dir' key correctly on a dictionary."""
 
     out_dir = get_output_dir(data, rel_path, default)
     os.makedirs(out_dir, exist_ok=True)
@@ -54,15 +55,19 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
     """
 
     def __init__(self):
-        """ Add a manifest dictionary to the environment. """
+        """Add a manifest dictionary to the environment."""
 
         super().__init__()
         self.manifest = {}
         self.target_resolver = TargetResolver()
 
-    def load_dirs(self, data: dict, rel_path: str,
-                  namespace: str = ROOT_NAMESPACE,
-                  allow_dup: bool = False) -> None:
+    def load_dirs(
+        self,
+        data: dict,
+        rel_path: str,
+        namespace: str = ROOT_NAMESPACE,
+        allow_dup: bool = False,
+    ) -> None:
         """
         Looks for keys matching types of directories that can be loaded
         into an environment and tries to load them.
@@ -95,9 +100,9 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             result = self.manifest["data"]["default_target"]
         return result
 
-    def load_manifest_reent(self, path: str, manifest_dir: str,
-                            params: dict,
-                            files: List[str]) -> Tuple[dict, bool]:
+    def load_manifest_reent(
+        self, path: str, manifest_dir: str, params: dict, files: List[str]
+    ) -> Tuple[dict, bool]:
         """
         Load a manifest recursively by resolving includes and merging the
         results.
@@ -126,8 +131,9 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         all_manifests = [curr_manifest]
         if "includes" in curr_manifest:
             for include in curr_manifest["includes"]:
-                result = self.load_manifest_reent(include, rel_path, params,
-                                                  files)
+                result = self.load_manifest_reent(
+                    include, rel_path, params, files
+                )
                 if not result[1]:
                     LOG.info("include '%s' failed to load", path)
                     return curr_manifest, False
@@ -139,12 +145,14 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         return curr_manifest, True
 
     def load_manifest(self, path: str = "manifest.yaml") -> bool:
-        """ Attempt to load manifest data from a file. """
+        """Attempt to load manifest data from a file."""
 
         # don't allow double-loading manifests
         if self.manifest:
-            LOG.error("manifest '%s' already loaded for this environment",
-                      self.manifest["path"])
+            LOG.error(
+                "manifest '%s' already loaded for this environment",
+                self.manifest["path"],
+            )
             return False
 
         path = os.path.abspath(path)
@@ -152,9 +160,9 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         self.manifest["path"] = path
         self.manifest["dir"] = manifest_dir
         files: List[str] = []
-        self.manifest["data"], loaded = self.load_manifest_reent(path,
-                                                                 manifest_dir,
-                                                                 {}, files)
+        self.manifest["data"], loaded = self.load_manifest_reent(
+            path, manifest_dir, {}, files
+        )
         self.manifest["files"] = files
 
         # set up target resolver
@@ -184,16 +192,17 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
 
 
 def get_manifest_schema(require_all: bool = True) -> Validator:
-    """ Load the schema for manifest from the package. """
+    """Load the schema for manifest from the package."""
 
     rel_path = os.path.join("schemas", "manifest.yaml")
     schema_str = get_package_data(rel_path)
-    return Validator(load_stream(StringIO(schema_str), rel_path)[0],
-                     require_all=require_all)
+    return Validator(
+        load_stream(StringIO(schema_str), rel_path)[0], require_all=require_all
+    )
 
 
 def validate_manifest(manifest: dict) -> bool:
-    """ Validate manifest data against the package schema. """
+    """Validate manifest data against the package schema."""
 
     custom_schemas = load_types([get_package_dir("schema_types")])
 

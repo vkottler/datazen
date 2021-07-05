@@ -1,4 +1,3 @@
-
 """
 datazen - Top-level APIs for loading and interacting with schema definitions.
 """
@@ -9,7 +8,7 @@ from typing import List, Dict, Iterator
 import logging
 
 # third-party
-from cerberus import Validator, rules_set_registry  # type: ignore
+from cerberus import Validator, rules_set_registry
 
 # internal
 from datazen.load import load_dir
@@ -18,10 +17,13 @@ from datazen.classes.valid_dict import ValidDict
 LOG = logging.getLogger(__name__)
 
 
-def load(directories: List[str], require_all: bool = True,
-         loaded_list: List[str] = None,
-         hashes: Dict[str, dict] = None) -> dict:
-    """ Load schemas from a list of directories. """
+def load(
+    directories: List[str],
+    require_all: bool = True,
+    loaded_list: List[str] = None,
+    hashes: Dict[str, dict] = None,
+) -> dict:
+    """Load schemas from a list of directories."""
 
     result: dict = {}
 
@@ -37,7 +39,7 @@ def load(directories: List[str], require_all: bool = True,
 
 
 def add_global_schemas(schema_data: Dict[str, dict]) -> None:
-    """ Add schema-type registrations, globally. """
+    """Add schema-type registrations, globally."""
 
     for key, schema in schema_data.items():
         LOG.debug("adding '%s' schema type", key)
@@ -45,16 +47,19 @@ def add_global_schemas(schema_data: Dict[str, dict]) -> None:
 
 
 def remove_global_schemas(schema_data: Dict[str, dict]) -> None:
-    """ Remove schema-type registrations by key name. """
+    """Remove schema-type registrations by key name."""
 
     if schema_data:
         LOG.debug("removing schema types '%s'", ", '".join(schema_data.keys()))
         rules_set_registry.remove(*schema_data.keys())
 
 
-def load_types(directories: List[str], loaded_list: List[str] = None,
-               hashes: Dict[str, dict] = None) -> Dict[str, dict]:
-    """ Load schema types and optionally register them. """
+def load_types(
+    directories: List[str],
+    loaded_list: List[str] = None,
+    hashes: Dict[str, dict] = None,
+) -> Dict[str, dict]:
+    """Load schema types and optionally register them."""
 
     schema_data: Dict[str, dict] = {}
 
@@ -85,8 +90,9 @@ def validate(schema_data: Dict[str, Validator], data: dict) -> bool:
 
 
 @contextmanager
-def inject_custom_schemas(schema_data: Dict[str, dict],
-                          should_inject: bool = True) -> Iterator[None]:
+def inject_custom_schemas(
+    schema_data: Dict[str, dict], should_inject: bool = True
+) -> Iterator[None]:
     """
     Allow the user to more easily control adding and removing global schema
     definitions.

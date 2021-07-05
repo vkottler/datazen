@@ -1,4 +1,3 @@
-
 """
 datazen - APIs for working with file paths.
 """
@@ -20,13 +19,13 @@ EXCLUDES = [".git", ".svn", ".gitignore"]
 
 
 def get_file_name(full_path: str) -> str:
-    """ From a full path to a file, get just the name of the file. """
+    """From a full path to a file, get just the name of the file."""
 
     return ".".join(os.path.basename(full_path).split(".")[:-1])
 
 
 def get_file_ext(full_path: str) -> str:
-    """ From a pull path to a file, get just the file's extension. """
+    """From a pull path to a file, get just the file's extension."""
 
     return os.path.basename(full_path).split(".")[-1]
 
@@ -39,11 +38,12 @@ def get_path_list(root_abs_path: str, current_abs_path: str) -> List[str]:
 
     assert len(current_abs_path) >= len(root_abs_path)
     assert root_abs_path in current_abs_path
-    return current_abs_path[len(root_abs_path):].split(os.sep)
+    return current_abs_path[len(root_abs_path) :].split(os.sep)
 
 
-def format_resolve_delims(value: str, fmt_data: dict, delim: str = ".",
-                          delim_replace: str = "_") -> str:
+def format_resolve_delims(
+    value: str, fmt_data: dict, delim: str = ".", delim_replace: str = "_"
+) -> str:
     """
     Attempt to resolve a format String with data, but handle replacements with
     custom delimeters correctly.
@@ -68,14 +68,14 @@ def format_resolve_delims(value: str, fmt_data: dict, delim: str = ".",
     for _ in range(open_len):
         start = tmp_value.index(FMT_OPEN) + 1
         end = tmp_value.index(FMT_CLOSE)
-        fstr += tmp_value[:start - 1]
+        fstr += tmp_value[: start - 1]
         fstr += "{"
         fstr += tmp_value[start:end].replace(delim, delim_replace)
-        tmp_value = tmp_value[end + 1:]
+        tmp_value = tmp_value[end + 1 :]
         fstr += "}"
 
     if len(fstr) < len(value):
-        fstr += value[len(fstr):]
+        fstr += value[len(fstr) :]
 
     return fstr.format(**new_data)
 
@@ -128,7 +128,7 @@ def advance_dict_by_path(path_list: List[str], data: dict) -> dict:
 
 
 def get_package_data(relative_path: str) -> str:
-    """ Load a file from this package's data directory. """
+    """Load a file from this package's data directory."""
 
     rel_path = os.path.join("data", relative_path)
     schema_raw = pkgutil.get_data(PKG_NAME, rel_path)
@@ -137,10 +137,11 @@ def get_package_data(relative_path: str) -> str:
 
 
 def get_package_dir(relative_path: str) -> str:
-    """ Locate the path to a package-data directory. """
+    """Locate the path to a package-data directory."""
 
-    return pkg_resources.resource_filename(__name__,
-                                           os.path.join("data", relative_path))
+    return pkg_resources.resource_filename(
+        __name__, os.path.join("data", relative_path)
+    )
 
 
 def resolve_dir(data: str, rel_base: str = "") -> str:
@@ -157,8 +158,7 @@ def resolve_dir(data: str, rel_base: str = "") -> str:
 
 
 def walk_with_excludes(
-    path: str,
-    excludes: List[str] = None
+    path: str, excludes: List[str] = None
 ) -> Iterator[Tuple[str, List[str], List[str]]]:
     """
     Behaves like os.walk but attempts to skip iterations that would enter

@@ -1,4 +1,3 @@
-
 """
 datazen - An interface for parsing and matching targets.
 """
@@ -11,7 +10,9 @@ from typing import Dict, Tuple, List
 
 # internal
 from datazen.paths import (
-    advance_dict_by_path, unflatten_dict, format_resolve_delims
+    advance_dict_by_path,
+    unflatten_dict,
+    format_resolve_delims,
 )
 from datazen.parsing import merge
 
@@ -42,18 +43,19 @@ def parse_target(name: str) -> Tuple[re.Pattern, List[str]]:
     for _ in range(open_len):
         start = name.index(KW_OPEN) + 1
         end = name.index(KW_CLOSE)
-        pattern += name[:start - 1]
+        pattern += name[: start - 1]
         pattern += "({})".format(KW_PATTERN)
         keys.append(name[start:end])
-        name = name[end + 1:]
+        name = name[end + 1 :]
     pattern += name + "$"
 
     assert len(keys) == open_len
     return re.compile(pattern), keys
 
 
-def parse_targets(targets: List[dict]) -> Tuple[Dict[str, dict],
-                                                Dict[str, dict]]:
+def parse_targets(
+    targets: List[dict],
+) -> Tuple[Dict[str, dict], Dict[str, dict]]:
     """
     From a list of target structures, parse them into a dictionary with keys
     as target names and data initialization to support future interaction.
@@ -76,8 +78,9 @@ def parse_targets(targets: List[dict]) -> Tuple[Dict[str, dict],
     return literals, patterns
 
 
-def match_target(name: str, pattern: re.Pattern,
-                 keys: List[str]) -> Tuple[bool, Dict[str, str]]:
+def match_target(
+    name: str, pattern: re.Pattern, keys: List[str]
+) -> Tuple[bool, Dict[str, str]]:
     """
     From a target name, attempt to match against a pattern and resolve a set
     of key names.
@@ -124,17 +127,21 @@ def resolve_dep_data(entry: dict, data: dict) -> dict:
 
     if "overrides" in entry and "override_path" in entry:
         data = deepcopy(data)
-        to_update = advance_dict_by_path(entry["override_path"].split("."),
-                                         data)
+        to_update = advance_dict_by_path(
+            entry["override_path"].split("."), data
+        )
         if isinstance(to_update, dict):
-            merge(to_update, unflatten_dict(entry["overrides"]),
-                  expect_overwrite=True)
+            merge(
+                to_update,
+                unflatten_dict(entry["overrides"]),
+                expect_overwrite=True,
+            )
 
     return data
 
 
 def resolve_target_data(target_data: dict, match_data: Dict[str, str]) -> dict:
-    """ Resolve matched-target data into a target's data from a manifest. """
+    """Resolve matched-target data into a target's data from a manifest."""
 
     result: dict = {}
 

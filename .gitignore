@@ -12,3 +12,4 @@ htmlcov
 .*.env
 .*_cache
 datazen-out
+*.pyi

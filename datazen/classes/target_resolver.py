@@ -1,4 +1,3 @@
-
 """
 datazen - Orchestrates the "parameterized target" capability.
 """
@@ -20,7 +19,7 @@ class TargetResolver:
     """
 
     def __init__(self) -> None:
-        """ Constuct a new target resolver. """
+        """Constuct a new target resolver."""
 
         self.literals: Dict[str, dict] = {}
         self.patterns: Dict[str, dict] = {}
@@ -58,8 +57,10 @@ class TargetResolver:
 
         # make sure we matched only one target
         if not matches or len(matches) > 1:
-            log_str = ("couldn't match one target for '%s-%s', found " +
-                       "%d candidates")
+            log_str = (
+                "couldn't match one target for '%s-%s', found "
+                + "%d candidates"
+            )
             LOG.error(log_str, group, name, len(matches))
             for match in matches:
                 LOG.error("%s", match[0]["data"]["name"])
@@ -68,8 +69,12 @@ class TargetResolver:
         # create a new target from the template, save it as a new literal so
         # we don't need to re-match it
         new_literal = resolve_target_data(matches[0][0]["data"], matches[0][1])
-        data = {"literal": True, "data": new_literal,
-                "pattern": new_literal["name"], "keys": []}
+        data = {
+            "literal": True,
+            "data": new_literal,
+            "pattern": new_literal["name"],
+            "keys": [],
+        }
         data["data"]["overrides"] = matches[0][1]
         self.literals[group][new_literal["name"]] = data
         return new_literal

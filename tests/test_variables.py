@@ -1,4 +1,3 @@
-
 """
 datazen - Tests for the 'variables' API.
 """
@@ -8,13 +7,13 @@ from . import ENV
 
 
 def test_load_variables():
-    """ Test that the variable data can be loaded. """
+    """Test that the variable data can be loaded."""
 
     assert ENV.get_variables(True)
 
 
 def test_load_invalid_variables():
-    """ Test that invalid data returns False. """
+    """Test that invalid data returns False."""
 
     assert not ENV.get_variables(False)["bad"]
     assert not ENV.get_configs(False)

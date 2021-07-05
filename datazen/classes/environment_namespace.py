@@ -1,4 +1,3 @@
-
 """
 datazen - A data structure for runtime data.
 """
@@ -18,10 +17,10 @@ LOG = logging.getLogger(__name__)
 
 
 class EnvironmentNamespace:
-    """ The base class for management of the environment data structure. """
+    """The base class for management of the environment data structure."""
 
     def __init__(self):
-        """ Base constructor. """
+        """Base constructor."""
 
         self.directories = {}
         for dtype in DataType:
@@ -59,7 +58,7 @@ class EnvironmentNamespace:
         return to_load
 
     def unload(self, dir_type: DataType) -> None:
-        """ Mark all directories for a given type as un-loaded. """
+        """Mark all directories for a given type as un-loaded."""
 
         with self.lock:
             for dir_inst in self.directories[dir_type]:
@@ -67,7 +66,7 @@ class EnvironmentNamespace:
             self.data[dir_type] = {}
 
     def unload_all(self) -> None:
-        """ Mark all directories as unloaded. """
+        """Mark all directories as unloaded."""
 
         for key in self.data:
             self.unload(key)
@@ -84,8 +83,9 @@ class EnvironmentNamespace:
 
             for dir_inst in dir_data:
                 if dir_inst["path"] in to_load:
-                    LOG.debug("loaded '%s' as '%s'", dir_inst["path"],
-                              dir_type.value)
+                    LOG.debug(
+                        "loaded '%s' as '%s'", dir_inst["path"], dir_type.value
+                    )
                     dir_inst["loaded"] = True
                     loaded = loaded + 1
 
@@ -93,9 +93,14 @@ class EnvironmentNamespace:
 
         return loaded
 
-    def add_dir(self, dir_type: DataType, dir_path: str,
-                rel_path: str = ".", allow_dup: bool = False) -> bool:
-        """ Add a directory to be loaded for a given data type. """
+    def add_dir(
+        self,
+        dir_type: DataType,
+        dir_path: str,
+        rel_path: str = ".",
+        allow_dup: bool = False,
+    ) -> bool:
+        """Add a directory to be loaded for a given data type."""
 
         with self.lock:
             dir_list = self.directories[dir_type]
@@ -103,16 +108,24 @@ class EnvironmentNamespace:
 
             for dir_data in dir_list:
                 if dir_path == dir_data["path"]:
+
                     def noop(*_, **__):
                         pass
+
                     log_fn = noop if allow_dup else noop
-                    log_fn("not adding duplicate directory '%s' to '%s'",
-                           dir_path, dir_type.value)
+                    log_fn(
+                        "not adding duplicate directory '%s' to '%s'",
+                        dir_path,
+                        dir_type.value,
+                    )
                     return allow_dup
 
             if not os.path.isdir(dir_path):
-                LOG.error("'%s' isn't a directory, not adding to '%s'",
-                          dir_path, dir_type.value)
+                LOG.error(
+                    "'%s' isn't a directory, not adding to '%s'",
+                    dir_path,
+                    dir_type.value,
+                )
                 return False
 
             dir_list.append({"path": dir_path, "loaded": False})
@@ -120,8 +133,13 @@ class EnvironmentNamespace:
         LOG.debug("added '%s' to '%s'", dir_path, dir_type.value)
         return True
 
-    def add_dirs(self, dir_type: DataType, dir_paths: List[str],
-                 rel_path: str = ".", allow_dup: bool = False) -> int:
+    def add_dirs(
+        self,
+        dir_type: DataType,
+        dir_paths: List[str],
+        rel_path: str = ".",
+        allow_dup: bool = False,
+    ) -> int:
         """
         Add multiple directories for a given data type, return the number of
         directories added.
@@ -134,16 +152,20 @@ class EnvironmentNamespace:
                 dirs_added = dirs_added + 1
 
         if dirs_added != len(dir_paths):
-            LOG.error("only loaded %d / %d directories, marking invalid",
-                      dirs_added, len(dir_paths))
+            LOG.error(
+                "only loaded %d / %d directories, marking invalid",
+                dirs_added,
+                len(dir_paths),
+            )
             self.valid = False
 
         return dirs_added
 
 
-def clone(env: EnvironmentNamespace,
-          update: EnvironmentNamespace) -> EnvironmentNamespace:
-    """ Create a clone (deep copy) of an existing Environment. """
+def clone(
+    env: EnvironmentNamespace, update: EnvironmentNamespace
+) -> EnvironmentNamespace:
+    """Create a clone (deep copy) of an existing Environment."""
 
     with env.lock:
         # all we need to do is copy all of the attributes

@@ -1,4 +1,3 @@
-
 """
 datazen - An interface for turning a dictionary into various serialized forms.
 """
@@ -20,7 +19,7 @@ LOG = logging.getLogger(__name__)
 
 
 def write_dir(directory: str, data: dict, out_type: str = "json") -> None:
-    """ Write dictionary data to the file-system. """
+    """Write dictionary data to the file-system."""
 
     os.makedirs(directory, exist_ok=True)
     for key, val in data.items():
@@ -52,8 +51,9 @@ def str_compile(configs: dict, data_type: str) -> str:
     return result
 
 
-def get_compile_output(entry: dict,
-                       default_type: str = DEFAULT_TYPE) -> Tuple[str, str]:
+def get_compile_output(
+    entry: dict, default_type: str = DEFAULT_TYPE
+) -> Tuple[str, str]:
     """
     Determine the output path and type of a compile target, from the target's
     data.

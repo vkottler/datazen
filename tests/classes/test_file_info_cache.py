@@ -1,4 +1,3 @@
-
 """
 datazen - Tests for the file-info class.
 """
@@ -11,7 +10,7 @@ from datazen.classes.file_info_cache import FileInfoCache, meld, copy
 
 
 def test_cache_meld():
-    """ Test some of the more niche melding behavior of caches. """
+    """Test some of the more niche melding behavior of caches."""
 
     with TemporaryDirectory() as tdir:
         cache_b = FileInfoCache(tdir)

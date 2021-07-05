@@ -30,5 +30,8 @@ example - description
 
 JSON = "json"
 YAML = "yaml"
-TOP_LIST = ['d', 'e', 'f', 'a', 'b', 'c']
-TOP_DICT = {'b': {'b': 'b'}, 'a': {'a': 'a'}}
+
+# quote these because jinja generates with single-quotes and black wants to
+# re-format to double-quotes
+TOP_LIST = "['d', 'e', 'f', 'a', 'b', 'c']"
+TOP_DICT = "{'b': {'b': 'b'}, 'a': {'a': 'a'}}"

@@ -1,4 +1,3 @@
-
 """
 datazen - A module for various package enumerations.
 """
@@ -8,7 +7,7 @@ from enum import Enum
 
 
 class DataType(Enum):
-    """ The discrete types of information that can be loaded. """
+    """The discrete types of information that can be loaded."""
 
     CONFIG = "config"
     SCHEMA = "schema"

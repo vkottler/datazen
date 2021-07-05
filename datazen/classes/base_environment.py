@@ -1,4 +1,3 @@
-
 """
 datazen - A base class to be extended for runtime data loading and storing.
 """
@@ -20,7 +19,7 @@ SLUG_DELIM = "-"
 
 
 def get_dep_slug(operation: str, name: str) -> str:
-    """ Build a key-slug for an operation's target. """
+    """Build a key-slug for an operation's target."""
 
     return "{}{}{}".format(operation, SLUG_DELIM, name)
 
@@ -39,7 +38,7 @@ def dep_slug_unwrap(slug: str, default_op: str) -> Tuple[str, str]:
 
 
 class BaseEnvironment:
-    """ The base class for environment loading-and-storing management. """
+    """The base class for environment loading-and-storing management."""
 
     def __init__(self, default_ns: str = ROOT_NAMESPACE):
         """
@@ -52,7 +51,7 @@ class BaseEnvironment:
         self.lock = threading.RLock()
 
     def add_namespace(self, name: str, clone_root: bool = True) -> None:
-        """ Add a new namespace, optionally clone from the existing root. """
+        """Add a new namespace, optionally clone from the existing root."""
 
         with self.lock:
             self.namespaces[name] = EnvironmentNamespace()
@@ -60,55 +59,73 @@ class BaseEnvironment:
                 clone(self.namespaces[ROOT_NAMESPACE], self.namespaces[name])
 
     def get_valid(self, name: str = ROOT_NAMESPACE) -> bool:
-        """ Get the 'valid' flag for a namespace. """
+        """Get the 'valid' flag for a namespace."""
 
         return self.namespaces[name].valid
 
     def set_valid(self, value: bool, name: str = ROOT_NAMESPACE) -> None:
-        """ Set the 'valid' flag for a namespace. """
+        """Set the 'valid' flag for a namespace."""
 
         self.namespaces[name].valid = value
 
-    def get_to_load(self, dir_type: DataType,
-                    name: str = ROOT_NAMESPACE) -> List[str]:
-        """ Proxy for a namespace's get_to_load. """
+    def get_to_load(
+        self, dir_type: DataType, name: str = ROOT_NAMESPACE
+    ) -> List[str]:
+        """Proxy for a namespace's get_to_load."""
 
         return self.namespaces[name].get_to_load(dir_type)
 
     def get_data(self, dir_type: DataType, name: str = ROOT_NAMESPACE) -> dict:
-        """ Get the raw data for a directory type from a namespace. """
+        """Get the raw data for a directory type from a namespace."""
 
         return self.namespaces[name].data[dir_type]
 
     def unload_all(self, name: str = ROOT_NAMESPACE) -> None:
-        """ Unload all of the directories for a namespace. """
+        """Unload all of the directories for a namespace."""
 
         return self.namespaces[name].unload_all()
 
-    def update_load_state(self, dir_type: DataType, to_load: List[str],
-                          name: str = ROOT_NAMESPACE) -> int:
-        """ Proxy for update_load_state for a namespace. """
+    def update_load_state(
+        self,
+        dir_type: DataType,
+        to_load: List[str],
+        name: str = ROOT_NAMESPACE,
+    ) -> int:
+        """Proxy for update_load_state for a namespace."""
 
         return self.namespaces[name].update_load_state(dir_type, to_load)
 
-    def add_dir(self, dir_type: DataType, dir_path: str,
-                rel_path: str = ".", name: str = ROOT_NAMESPACE,
-                allow_dup: bool = False) -> bool:
-        """ Proxy for add_dir for a namespace. """
+    def add_dir(
+        self,
+        dir_type: DataType,
+        dir_path: str,
+        rel_path: str = ".",
+        name: str = ROOT_NAMESPACE,
+        allow_dup: bool = False,
+    ) -> bool:
+        """Proxy for add_dir for a namespace."""
 
-        return self.namespaces[name].add_dir(dir_type, dir_path, rel_path,
-                                             allow_dup)
+        return self.namespaces[name].add_dir(
+            dir_type, dir_path, rel_path, allow_dup
+        )
 
-    def add_dirs(self, dir_type: DataType, dir_paths: List[str],
-                 rel_path: str = ".", name: str = ROOT_NAMESPACE,
-                 allow_dup: bool = False) -> int:
-        """ Proxy for add_dirs for a namespace. """
+    def add_dirs(
+        self,
+        dir_type: DataType,
+        dir_paths: List[str],
+        rel_path: str = ".",
+        name: str = ROOT_NAMESPACE,
+        allow_dup: bool = False,
+    ) -> int:
+        """Proxy for add_dirs for a namespace."""
 
-        return self.namespaces[name].add_dirs(dir_type, dir_paths, rel_path,
-                                              allow_dup)
+        return self.namespaces[name].add_dirs(
+            dir_type, dir_paths, rel_path, allow_dup
+        )
 
-    def get_namespace(self, key_name: str, target: str,
-                      target_data: dict) -> str:
+    def get_namespace(
+        self, key_name: str, target: str, target_data: dict
+    ) -> str:
         """
         Determine the namespace that a target should use, in general they
         all should be unique unless they don't load anything new.

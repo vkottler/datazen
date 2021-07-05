@@ -1,4 +1,3 @@
-
 """
 datazen - This package's command-line entry-point application.
 """
@@ -12,7 +11,7 @@ from datazen import DEFAULT_MANIFEST
 
 
 def entry(args: argparse.Namespace) -> int:
-    """ Execute the requested task. """
+    """Execute the requested task."""
 
     result = 0
     env = from_manifest(args.manifest)
@@ -33,17 +32,33 @@ def entry(args: argparse.Namespace) -> int:
 
 
 def add_app_args(parser: argparse.ArgumentParser) -> None:
-    """ Add application-specific arguments to the command-line parser. """
+    """Add application-specific arguments to the command-line parser."""
 
-    parser.add_argument("-m", "--manifest", default=DEFAULT_MANIFEST,
-                        help=("manifest to execute tasks from (default: " +
-                              "'%(default)s')"))
-    parser.add_argument("-c", "--clean", action="store_true",
-                        help="clean the manifest's cache and exit")
-    parser.add_argument("--sync", action="store_true",
-                        help=("sync the manifest's cache (write-through) " +
-                              "with the state of the file system before " +
-                              "execution"))
-    parser.add_argument("-d", "--describe", action="store_true",
-                        help="describe the manifest's cache and exit")
+    parser.add_argument(
+        "-m",
+        "--manifest",
+        default=DEFAULT_MANIFEST,
+        help=("manifest to execute tasks from (default: " + "'%(default)s')"),
+    )
+    parser.add_argument(
+        "-c",
+        "--clean",
+        action="store_true",
+        help="clean the manifest's cache and exit",
+    )
+    parser.add_argument(
+        "--sync",
+        action="store_true",
+        help=(
+            "sync the manifest's cache (write-through) "
+            + "with the state of the file system before "
+            + "execution"
+        ),
+    )
+    parser.add_argument(
+        "-d",
+        "--describe",
+        action="store_true",
+        help="describe the manifest's cache and exit",
+    )
     parser.add_argument("targets", nargs="*", help="target(s) to execute")

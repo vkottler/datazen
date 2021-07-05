@@ -1,4 +1,3 @@
-
 """
 datazen - Tests for the 'RenderEnvironment' class mixin.
 """
@@ -14,7 +13,7 @@ from ..resources import get_resource, injected_content, scoped_environment
 
 
 def test_render_simple():
-    """ Test that rendering isn't always necessary. """
+    """Test that rendering isn't always necessary."""
 
     with scoped_environment("manifest.yaml", True) as env:
         assert env.render("test.md") == (True, True)
@@ -56,8 +55,7 @@ def test_render_common_template_dep():
             assert new_env.render("test") == (True, True)
             assert new_env.render("test") == (True, False)
             assert new_env.render("render2") == (True, True)
-            assert new_env.execute_targets(["renders-test",
-                                            "renders-render2"])
+            assert new_env.execute_targets(["renders-test", "renders-render2"])
             assert new_env.group("render_test") == (True, True)
             assert new_env.group("render_test") == (True, False)
 

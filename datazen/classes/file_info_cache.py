@@ -1,4 +1,3 @@
-
 """
 datazen - A class for storing metadata about files that have been loaded.
 """
@@ -20,16 +19,18 @@ from datazen.compile import write_dir
 
 LOG = logging.getLogger(__name__)
 
-DATA_DEFAULT = {"hashes": defaultdict(lambda: defaultdict(dict)),
-                "loaded": defaultdict(list),
-                "meta": {"version": VERSION}}
+DATA_DEFAULT = {
+    "hashes": defaultdict(lambda: defaultdict(dict)),
+    "loaded": defaultdict(list),
+    "meta": {"version": VERSION},
+}
 
 
 class FileInfoCache:
-    """ Provides storage for file hashes and lists that have been loaded. """
+    """Provides storage for file hashes and lists that have been loaded."""
 
     def __init__(self, cache_dir: str = None):
-        """ Construct an empty cache or optionally load from a directory. """
+        """Construct an empty cache or optionally load from a directory."""
 
         self.data: dict = deepcopy(DATA_DEFAULT)
         self.removed_data: Dict[str, List[str]] = defaultdict(list)
@@ -38,28 +39,30 @@ class FileInfoCache:
             self.load(cache_dir)
 
     def load(self, cache_dir: str) -> None:
-        """ Load data from a directory. """
+        """Load data from a directory."""
 
         assert self.cache_dir == ""
         self.cache_dir = cache_dir
         os.makedirs(self.cache_dir, exist_ok=True)
 
         # reject things that don't belong by updating instead of assigning
-        new_data = sync_cache_data(load_dir_only(self.cache_dir, True),
-                                   self.removed_data)
+        new_data = sync_cache_data(
+            load_dir_only(self.cache_dir, True), self.removed_data
+        )
         for key in DATA_DEFAULT:
             self.data[key].update(new_data[key])
 
     def get_hashes(self, sub_dir: str) -> Dict[str, dict]:
-        """ Get the cached, dictionary of file hashes for a certain key. """
+        """Get the cached, dictionary of file hashes for a certain key."""
 
         return self.data["hashes"][sub_dir]
 
-    def check_hit(self, sub_dir: str, path: str,
-                  also_cache: bool = True) -> bool:
+    def check_hit(
+        self, sub_dir: str, path: str, also_cache: bool = True
+    ) -> bool:
         """
         Determine if a given file already exists with its current hash in the
-        cache, if not return False and optionally add it to the cache. """
+        cache, if not return False and optionally add it to the cache."""
 
         abs_path = os.path.abspath(path)
         is_new = set_file_hash(self.get_hashes(sub_dir), abs_path, also_cache)
@@ -72,12 +75,12 @@ class FileInfoCache:
         return not is_new
 
     def get_loaded(self, sub_dir: str) -> List[str]:
-        """ Get the cached, list of loaded files for a certain key. """
+        """Get the cached, list of loaded files for a certain key."""
 
         return self.data["loaded"][sub_dir]
 
     def describe(self) -> None:
-        """ Describe this cache's contents for debugging purposes. """
+        """Describe this cache's contents for debugging purposes."""
 
         curr_dir = os.getcwd()
         for hash_set, hash_data in self.data["hashes"].items():
@@ -86,12 +89,15 @@ class FileInfoCache:
             for filename, hash_item in hash_data.items():
                 total += 1
                 if curr_dir in filename:
-                    filename = filename[len(curr_dir) + 1:]
+                    filename = filename[len(curr_dir) + 1 :]
                 if not self.check_hit(hash_set, filename, False):
                     misses.append((filename, hash_item))
                 else:
-                    LOG.debug("%s (%s) matched", filename,
-                              time_str(hash_item["time"]))
+                    LOG.debug(
+                        "%s (%s) matched",
+                        filename,
+                        time_str(hash_item["time"]),
+                    )
 
             # log all misses / updates
             for miss in misses:
@@ -100,22 +106,28 @@ class FileInfoCache:
                 LOG.info("%s no longer present", removed)
 
             # log a summary
-            LOG.info("%s: %d/%d match", hash_set,
-                     total - (len(misses) + len(self.removed_data[hash_set])),
-                     total)
+            LOG.info(
+                "%s: %d/%d match",
+                hash_set,
+                total - (len(misses) + len(self.removed_data[hash_set])),
+                total,
+            )
 
         # describe metadata
         if "meta" in self.data:
-            LOG.info("version: %s (current: %s)",
-                     self.data["meta"]["version"], VERSION)
+            LOG.info(
+                "version: %s (current: %s)",
+                self.data["meta"]["version"],
+                VERSION,
+            )
 
     def get_data(self, name: str) -> Tuple[List[str], Dict[str, dict]]:
-        """ Get the tuple version of cached data. """
+        """Get the tuple version of cached data."""
 
         return (self.get_loaded(name), self.get_hashes(name))
 
     def clean(self) -> None:
-        """ Remove cached data from the file-system. """
+        """Remove cached data from the file-system."""
 
         self.data = deepcopy(DATA_DEFAULT)
         if self.cache_dir != "":
@@ -124,7 +136,7 @@ class FileInfoCache:
             os.sync()
 
     def write(self, out_type: str = "json") -> None:
-        """ Commit cached data to the file-system. """
+        """Commit cached data to the file-system."""
 
         if self.cache_dir != "":
             data = sync_cache_data(self.data, self.removed_data)
@@ -133,7 +145,7 @@ class FileInfoCache:
 
 
 def copy(cache: FileInfoCache) -> FileInfoCache:
-    """ Copy one cache into a new one. """
+    """Copy one cache into a new one."""
 
     new_cache = FileInfoCache()
 
@@ -146,7 +158,7 @@ def copy(cache: FileInfoCache) -> FileInfoCache:
 
 
 def meld(cache_a: FileInfoCache, cache_b: FileInfoCache) -> None:
-    """ Promote all updates from cache_b into cache_a. """
+    """Promote all updates from cache_b into cache_a."""
 
     # aggregates new files
     a_load = cache_a.data["loaded"]
@@ -172,20 +184,23 @@ def meld(cache_a: FileInfoCache, cache_b: FileInfoCache) -> None:
                 else:
                     a_data = a_hash[key][item]
                     b_data = b_hash[key][item]
-                    if (b_data["hash"] != a_data["hash"] and
-                            b_data["time"] > a_data["time"]):
+                    if (
+                        b_data["hash"] != a_data["hash"]
+                        and b_data["time"] > a_data["time"]
+                    ):
                         a_data["hash"] = b_data["hash"]
                         a_data["time"] = b_data["time"]
 
 
 def time_str(time_s: float) -> str:
-    """ Concert a timestamp to a String. """
+    """Concert a timestamp to a String."""
 
     return time.strftime("%c", time.localtime(time_s))
 
 
-def cmp_loaded_count(cache_a: FileInfoCache, cache_b: FileInfoCache,
-                     name: str) -> int:
+def cmp_loaded_count(
+    cache_a: FileInfoCache, cache_b: FileInfoCache, name: str
+) -> int:
     """
     Compute the total difference in file counts (for a named group)
     between two caches.
@@ -208,8 +223,9 @@ def cmp_loaded_count(cache_a: FileInfoCache, cache_b: FileInfoCache,
     return result
 
 
-def cmp_loaded_count_from_set(cache_a: FileInfoCache, cache_b: FileInfoCache,
-                              name: str, files: List[str]) -> int:
+def cmp_loaded_count_from_set(
+    cache_a: FileInfoCache, cache_b: FileInfoCache, name: str, files: List[str]
+) -> int:
     """
     Count the number of files uniquely loaded to one cache but not the other.
     """
@@ -224,9 +240,12 @@ def cmp_loaded_count_from_set(cache_a: FileInfoCache, cache_b: FileInfoCache,
     return result
 
 
-def cmp_total_loaded(cache_a: FileInfoCache, cache_b: FileInfoCache,
-                     known_types: List[str],
-                     load_checks: Dict[str, List[str]] = None) -> int:
+def cmp_total_loaded(
+    cache_a: FileInfoCache,
+    cache_b: FileInfoCache,
+    known_types: List[str],
+    load_checks: Dict[str, List[str]] = None,
+) -> int:
     """
     Compute the total difference in file counts for a provided set of named
     groups.
@@ -235,11 +254,16 @@ def cmp_total_loaded(cache_a: FileInfoCache, cache_b: FileInfoCache,
     result = 0
     for known in known_types:
         if load_checks is not None and known in load_checks:
-            iter_result = cmp_loaded_count_from_set(cache_a, cache_b, known,
-                                                    load_checks[known])
+            iter_result = cmp_loaded_count_from_set(
+                cache_a, cache_b, known, load_checks[known]
+            )
             if iter_result > 0:
-                LOG.info("%d changes detected for '%s' in '%s'", iter_result,
-                         known, load_checks[known])
+                LOG.info(
+                    "%d changes detected for '%s' in '%s'",
+                    iter_result,
+                    known,
+                    load_checks[known],
+                )
             result += iter_result
         else:
             iter_result = cmp_loaded_count(cache_a, cache_b, known)
@@ -249,8 +273,9 @@ def cmp_total_loaded(cache_a: FileInfoCache, cache_b: FileInfoCache,
     return result
 
 
-def sync_cache_data(cache_data: dict,
-                    removed_data: Dict[str, List[str]]) -> dict:
+def sync_cache_data(
+    cache_data: dict, removed_data: Dict[str, List[str]]
+) -> dict:
     """
     Before writing a cache to disk we want to de-duplicate items in the loaded
     list and remove hash data for files that were removed so that if they
@@ -263,9 +288,10 @@ def sync_cache_data(cache_data: dict,
     return data
 
 
-def remove_missing_hashed_files(data: dict,
-                                removed_data: Dict[str, List[str]]) -> dict:
-    """ Assign new hash data based on the files that are still present. """
+def remove_missing_hashed_files(
+    data: dict, removed_data: Dict[str, List[str]]
+) -> dict:
+    """Assign new hash data based on the files that are still present."""
 
     for category in data.keys():
         new_data = {}

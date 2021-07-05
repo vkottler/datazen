@@ -1,4 +1,3 @@
-
 """
 datazen - A child class for adding schema-data loading capabilities to the
           environment dataset.
@@ -21,9 +20,10 @@ class SchemaEnvironment(BaseEnvironment):
     environment capability to function.
     """
 
-    def load_schema_types(self, sch_loads: LOADTYPE = (None, None),
-                          name: str = ROOT_NAMESPACE) -> dict:
-        """ Load custom schema types and resolve any un-loaded directories. """
+    def load_schema_types(
+        self, sch_loads: LOADTYPE = (None, None), name: str = ROOT_NAMESPACE
+    ) -> dict:
+        """Load custom schema types and resolve any un-loaded directories."""
 
         # determine directories that need to be loaded
         data_type = DataType.SCHEMA_TYPES
@@ -34,17 +34,21 @@ class SchemaEnvironment(BaseEnvironment):
             # load schema data for this namespace
             schema_type_data = self.get_data(data_type, name)
             if to_load:
-                schema_type_data.update(load_types(to_load, sch_loads[0],
-                                        sch_loads[1]))
+                schema_type_data.update(
+                    load_types(to_load, sch_loads[0], sch_loads[1])
+                )
 
         return schema_type_data
 
-    def load_schemas(self, require_all: bool = True,
-                     sch_loads: LOADTYPE = (None, None),
-                     sch_types_loads: LOADTYPE = (None, None),
-                     name: str = ROOT_NAMESPACE,
-                     modify_registry: bool = True) -> dict:
-        """ Load schema data, resolve any un-loaded schema directories. """
+    def load_schemas(
+        self,
+        require_all: bool = True,
+        sch_loads: LOADTYPE = (None, None),
+        sch_types_loads: LOADTYPE = (None, None),
+        name: str = ROOT_NAMESPACE,
+        modify_registry: bool = True,
+    ) -> dict:
+        """Load schema data, resolve any un-loaded schema directories."""
 
         # determine directories that need to be loaded
         data_type = DataType.SCHEMA
@@ -58,16 +62,22 @@ class SchemaEnvironment(BaseEnvironment):
             schema_data = self.get_data(data_type, name)
             if to_load:
                 with inject_custom_schemas(sch_types, modify_registry):
-                    schema_data.update(load_schemas(to_load, require_all,
-                                                    sch_loads[0],
-                                                    sch_loads[1]))
+                    schema_data.update(
+                        load_schemas(
+                            to_load, require_all, sch_loads[0], sch_loads[1]
+                        )
+                    )
 
         return schema_data
 
-    def enforce_schemas(self, data: dict, require_all: bool = True,
-                        sch_loads: LOADTYPE = (None, None),
-                        sch_types_loads: LOADTYPE = (None, None),
-                        name: str = ROOT_NAMESPACE) -> bool:
+    def enforce_schemas(
+        self,
+        data: dict,
+        require_all: bool = True,
+        sch_loads: LOADTYPE = (None, None),
+        sch_types_loads: LOADTYPE = (None, None),
+        name: str = ROOT_NAMESPACE,
+    ) -> bool:
         """
         Perform schema-validation on provided data and return the boolean
         result. Adds (and removes) namespaced types if applicable.
@@ -76,28 +86,42 @@ class SchemaEnvironment(BaseEnvironment):
         with self.lock:
             sch_types = self.load_schema_types(sch_types_loads, name)
             with inject_custom_schemas(sch_types):
-                result = validate(self.load_schemas(require_all, sch_loads,
-                                  sch_types_loads, name, False), data)
+                result = validate(
+                    self.load_schemas(
+                        require_all, sch_loads, sch_types_loads, name, False
+                    ),
+                    data,
+                )
 
         return result
 
-    def add_schema_type_dirs(self, dir_paths: List[str], rel_path: str = ".",
-                             name: str = ROOT_NAMESPACE,
-                             allow_dup: bool = False) -> int:
+    def add_schema_type_dirs(
+        self,
+        dir_paths: List[str],
+        rel_path: str = ".",
+        name: str = ROOT_NAMESPACE,
+        allow_dup: bool = False,
+    ) -> int:
         """
         Add directories containing schema-type data (to be registered at
         runtime).
         """
 
-        return self.add_dirs(DataType.SCHEMA_TYPES, dir_paths, rel_path, name,
-                             allow_dup)
+        return self.add_dirs(
+            DataType.SCHEMA_TYPES, dir_paths, rel_path, name, allow_dup
+        )
 
-    def add_schema_dirs(self, dir_paths: List[str], rel_path: str = ".",
-                        name: str = ROOT_NAMESPACE,
-                        allow_dup: bool = False) -> int:
+    def add_schema_dirs(
+        self,
+        dir_paths: List[str],
+        rel_path: str = ".",
+        name: str = ROOT_NAMESPACE,
+        allow_dup: bool = False,
+    ) -> int:
         """
         Add schema-data directories, return the number of directories added.
         """
 
-        return self.add_dirs(DataType.SCHEMA, dir_paths, rel_path, name,
-                             allow_dup)
+        return self.add_dirs(
+            DataType.SCHEMA, dir_paths, rel_path, name, allow_dup
+        )

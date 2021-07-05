@@ -1,4 +1,3 @@
-
 """
 datazen - Test functions in the 'parsing' module.
 """
@@ -14,7 +13,7 @@ from .resources import get_resource
 
 
 def test_bad_overwrite():
-    """ Test that if we don't want to overwrite, we don't. """
+    """Test that if we don't want to overwrite, we don't."""
 
     dict_a = {"a": "a"}
     dict_b = {"a": "b"}
@@ -23,7 +22,7 @@ def test_bad_overwrite():
 
 
 def test_load_bad_template():
-    """ Test that loading invalid templates returns correctly. """
+    """Test that loading invalid templates returns correctly."""
 
     template = get_resource(os.path.join("templates", "bad.j2"), False)
     assert load(template, {}, {}) == ({}, False)

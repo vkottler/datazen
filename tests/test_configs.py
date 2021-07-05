@@ -1,4 +1,3 @@
-
 """
 datazen - Tests for the 'configs' API.
 """
@@ -8,7 +7,7 @@ from . import ENV
 
 
 def test_load_configs():
-    """ Test that the configuration data can be loaded. """
+    """Test that the configuration data can be loaded."""
 
     config_data = ENV.get_configs(True)
 

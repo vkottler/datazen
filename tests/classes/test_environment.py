@@ -1,4 +1,3 @@
-
 """
 datazen - Tests for the 'Environment' class.
 """
@@ -16,7 +15,7 @@ from ..resources import get_test_configs, get_resource, scoped_environment
 
 
 def test_environment():
-    """ Basic tests for the Environment class, wrapped by EnvironmentMock. """
+    """Basic tests for the Environment class, wrapped by EnvironmentMock."""
 
     env = EnvironmentMock()
     assert env
@@ -40,15 +39,16 @@ def test_bad_include():
     """
 
     # load an invalid manifest (bad include)
-    manifest_path = get_resource(os.path.join("manifests", "bad_include.yaml"),
-                                 False)
+    manifest_path = get_resource(
+        os.path.join("manifests", "bad_include.yaml"), False
+    )
     env = from_manifest(manifest_path)
     assert not env.get_valid()
     env.clean_cache()
 
 
 def test_environment_from_manifest():
-    """ Test scenarios for loading manifest files. """
+    """Test scenarios for loading manifest files."""
 
     # load an invalid manifest (bad schema)
     manifest_path = get_resource(os.path.join("manifests", "test.yaml"), False)
@@ -59,8 +59,9 @@ def test_environment_from_manifest():
     assert not env.load_manifest_with_cache(manifest_path)
 
     # load an invalid manifest (bad content)
-    manifest_path = get_resource(os.path.join("manifests", "invalid.yaml"),
-                                 False)
+    manifest_path = get_resource(
+        os.path.join("manifests", "invalid.yaml"), False
+    )
     env = from_manifest(manifest_path)
     assert not env.get_valid()
     assert env.compile("a") == (False, False)
@@ -68,7 +69,7 @@ def test_environment_from_manifest():
 
 
 def test_operations():
-    """ Test some 'compile' and 'render' scenarios. """
+    """Test some 'compile' and 'render' scenarios."""
 
     with scoped_environment("manifest.yaml", True) as env:
         assert env.manifest_changed
@@ -94,7 +95,7 @@ def test_operations():
 
 
 def test_load_manifest():
-    """ Test a nominal manifest-loading scenario. """
+    """Test a nominal manifest-loading scenario."""
 
     with scoped_environment("manifest.yaml", True) as env:
         cfg_data1 = env.cached_load_configs()

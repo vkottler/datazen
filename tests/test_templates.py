@@ -1,4 +1,3 @@
-
 """
 datazen - Tests for the 'templates' API.
 """
@@ -8,7 +7,7 @@ from . import ENV
 
 
 def test_load_templates():
-    """ Test that the templates can be loaded. """
+    """Test that the templates can be loaded."""
 
     template_keys = ["a", "b", "c"]
     templates = ENV.get_templates(True)

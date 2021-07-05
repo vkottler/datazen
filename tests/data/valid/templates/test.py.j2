@@ -5,5 +5,8 @@ example - description
 
 JSON = "{{json}}"
 YAML = "{{yaml}}"
-TOP_LIST = {{top_list}}
-TOP_DICT = {{top_dict}}
+
+# quote these because jinja generates with single-quotes and black wants to
+# re-format to double-quotes
+TOP_LIST = "{{top_list}}"
+TOP_DICT = "{{top_dict}}"

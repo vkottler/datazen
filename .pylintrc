@@ -3,4 +3,4 @@ max-parents=13
 max-args=6
 
 [MESSAGES CONTROL]
-disable=subprocess-run-check
+disable=subprocess-run-check,duplicate-code

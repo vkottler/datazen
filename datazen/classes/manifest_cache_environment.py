@@ -1,4 +1,3 @@
-
 """
 datazen - A class for adding caching to the manifest-loading environment.
 """
@@ -23,7 +22,7 @@ LOG = logging.getLogger(__name__)
 
 
 def manifest_cache_dir(path: str, manifest: dict) -> str:
-    """ Find a manifest cache (path) from its path and data. """
+    """Find a manifest cache (path) from its path and data."""
 
     cache_name = ".{}{}".format(get_file_name(path), CACHE_SUFFIX)
     default_cache_dir = os.path.join(manifest["dir"], cache_name)
@@ -36,10 +35,10 @@ def manifest_cache_dir(path: str, manifest: dict) -> str:
 
 
 class ManifestCacheEnvironment(ManifestEnvironment):
-    """ A wrapper for the cache functionality for an environment. """
+    """A wrapper for the cache functionality for an environment."""
 
     def __init__(self):
-        """ Extend the environment with a notion of the cache being loaded. """
+        """Extend the environment with a notion of the cache being loaded."""
 
         super().__init__()
         self.cache = None
@@ -75,7 +74,7 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         return result and self.cache is not None
 
     def clean_cache(self, purge_data: bool = True) -> None:
-        """ Remove cached data from the file-system. """
+        """Remove cached data from the file-system."""
 
         if purge_data:
             for name in self.namespaces:
@@ -85,67 +84,80 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         self.manifest_changed = True
 
     def write_cache(self) -> None:
-        """ Commit cached data to the file-system. """
+        """Commit cached data to the file-system."""
 
         if self.cache is not None:
             meld_cache(self.aggregate_cache, self.cache)
             self.aggregate_cache.write()
 
     def describe_cache(self) -> None:
-        """ Describe the [initial] cache for debugging purposes. """
+        """Describe the [initial] cache for debugging purposes."""
 
         self.initial_cache.describe()
 
     def restore_cache(self) -> None:
-        """ Return the cache to its initially-loaded state. """
+        """Return the cache to its initially-loaded state."""
 
         if self.cache is not None:
             meld_cache(self.aggregate_cache, self.cache)
             self.cache = copy_cache(self.initial_cache)
 
-    def get_new_loaded(self, types: List[str],
-                       load_checks: Dict[str, List[str]] = None) -> int:
+    def get_new_loaded(
+        self, types: List[str], load_checks: Dict[str, List[str]] = None
+    ) -> int:
         """
         Compute the number of new files loaded (since the initial load)
         for a set of types;
         """
 
-        return cmp_total_loaded(self.cache, self.initial_cache, types,
-                                load_checks)
+        return cmp_total_loaded(
+            self.cache, self.initial_cache, types, load_checks
+        )
 
     def cached_load_variables(self, name: str = ROOT_NAMESPACE) -> dict:
-        """ Load variables, proxied through the cache. """
+        """Load variables, proxied through the cache."""
 
         return self.load_variables(self.cache.get_data("variables"), name)
 
-    def cached_load_schemas(self, require_all: bool = True,
-                            name: str = ROOT_NAMESPACE) -> dict:
-        """ Load schemas, proxied through the cache. """
+    def cached_load_schemas(
+        self, require_all: bool = True, name: str = ROOT_NAMESPACE
+    ) -> dict:
+        """Load schemas, proxied through the cache."""
 
-        return self.load_schemas(require_all, self.cache.get_data("schemas"),
-                                 self.cache.get_data("schema_types"), name)
+        return self.load_schemas(
+            require_all,
+            self.cache.get_data("schemas"),
+            self.cache.get_data("schema_types"),
+            name,
+        )
 
-    def cached_enforce_schemas(self, data: dict,
-                               require_all: bool = True,
-                               name: str = ROOT_NAMESPACE) -> bool:
-        """ Enforce schemas, proxied through the cache. """
+    def cached_enforce_schemas(
+        self, data: dict, require_all: bool = True, name: str = ROOT_NAMESPACE
+    ) -> bool:
+        """Enforce schemas, proxied through the cache."""
 
-        return self.enforce_schemas(data, require_all,
-                                    self.cache.get_data("schemas"),
-                                    self.cache.get_data("schema_types"), name)
+        return self.enforce_schemas(
+            data,
+            require_all,
+            self.cache.get_data("schemas"),
+            self.cache.get_data("schema_types"),
+            name,
+        )
 
     def cached_load_configs(self, name: str = ROOT_NAMESPACE) -> dict:
-        """ Load configs, proxied through the cache. """
+        """Load configs, proxied through the cache."""
 
-        return self.load_configs(self.cache.get_data("configs"),
-                                 self.cache.get_data("variables"),
-                                 self.cache.get_data("schemas"),
-                                 self.cache.get_data("schema_types"), name)
+        return self.load_configs(
+            self.cache.get_data("configs"),
+            self.cache.get_data("variables"),
+            self.cache.get_data("schemas"),
+            self.cache.get_data("schema_types"),
+            name,
+        )
 
     def cached_load_templates(
-        self,
-        name: str = ROOT_NAMESPACE
+        self, name: str = ROOT_NAMESPACE
     ) -> Dict[str, jinja2.Template]:
-        """ Load templates, proxied through the cache. """
+        """Load templates, proxied through the cache."""
 
         return self.load_templates(self.cache.get_data("templates"), name)

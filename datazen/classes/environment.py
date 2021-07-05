@@ -1,4 +1,3 @@
-
 """
 datazen - A centralized store for runtime data.
 """
@@ -20,20 +19,22 @@ from datazen.classes.command_environment import CommandEnvironment
 LOG = logging.getLogger(__name__)
 
 
-class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment,
-                  CommandEnvironment):
-    """ A wrapper for inheriting all environment-loading capabilities. """
+class Environment(
+    CompileEnvironment, RenderEnvironment, GroupEnvironment, CommandEnvironment
+):
+    """A wrapper for inheriting all environment-loading capabilities."""
 
     def __init__(self):
-        """ Add a notion of 'visited' targets to the environment data. """
+        """Add a notion of 'visited' targets to the environment data."""
 
         super().__init__()
         self.visited = defaultdict(bool)
         self.default = "compiles"
 
-    def execute(self, target: str = "",
-                should_cache: bool = True) -> Tuple[bool, bool]:
-        """ Execute an arbitrary target. """
+    def execute(
+        self, target: str = "", should_cache: bool = True
+    ) -> Tuple[bool, bool]:
+        """Execute an arbitrary target."""
 
         # resolve a default target if one wasn't provided
         data = self.manifest["data"]
@@ -71,29 +72,30 @@ class Environment(CompileEnvironment, RenderEnvironment, GroupEnvironment,
         return True
 
     def group(self, target: str) -> Tuple[bool, bool]:
-        """ Attempt to satisfy a 'group' target. """
+        """Attempt to satisfy a 'group' target."""
 
         return self.handle_task("groups", target)
 
     def compile(self, target: str) -> Tuple[bool, bool]:
-        """ Execute a named 'compile' target from the manifest. """
+        """Execute a named 'compile' target from the manifest."""
 
         return self.handle_task("compiles", target)
 
     def render(self, target: str) -> Tuple[bool, bool]:
-        """ Execute a named 'render' target from the manifest. """
+        """Execute a named 'render' target from the manifest."""
 
         return self.handle_task("renders", target)
 
     def command(self, target: str) -> Tuple[bool, bool]:
-        """ Execute a named 'command' target from the manifest. """
+        """Execute a named 'command' target from the manifest."""
 
         return self.handle_task("commands", target)
 
 
-def from_manifest(manifest_path: str,
-                  data_cache_name: str = "task_data") -> Environment:
-    """ Load an environment object from a schema definition on disk. """
+def from_manifest(
+    manifest_path: str, data_cache_name: str = "task_data"
+) -> Environment:
+    """Load an environment object from a schema definition on disk."""
 
     env = Environment()
 

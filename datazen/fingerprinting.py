@@ -1,4 +1,3 @@
-
 """
 datazen - Reading and writing a known header signature to output files.
 """
@@ -14,15 +13,18 @@ from datazen.parsing import get_hash
 BARRIER = "="
 
 
-def get_comment_data(file_data: str,
-                     dynamic: bool = True) -> List[Tuple[str, str]]:
+def get_comment_data(
+    file_data: str, dynamic: bool = True
+) -> List[Tuple[str, str]]:
     """
     Get tuples (key-value pairs) of data to write into the file fingerprint.
     """
 
-    line_data = [(False, ("generator", PKG_NAME)),
-                 (True, ("version", VERSION)),
-                 (False, ("hash", get_hash(file_data)))]
+    line_data = [
+        (False, ("generator", PKG_NAME)),
+        (True, ("version", VERSION)),
+        (False, ("hash", get_hash(file_data))),
+    ]
 
     # filter out any possibly undesired data
     resolved = []
@@ -68,8 +70,9 @@ def resolve_encapsulation(comment_lines: List[str], file_ext: str) -> str:
     return os.linesep.join(new_lines)
 
 
-def build_fingerprint(file_data: str, file_ext: str,
-                      char: str = BARRIER, dynamic: bool = True) -> str:
+def build_fingerprint(
+    file_data: str, file_ext: str, char: str = BARRIER, dynamic: bool = True
+) -> str:
     """
     Build a String that should be prepended to the final file output for
     user awareness and automated interpretation.

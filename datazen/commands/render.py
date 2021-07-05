@@ -1,4 +1,3 @@
-
 """
 datazen - A command implementation for rendering configuration data (that has
           optionally been resolved from variables) based on provided and
@@ -20,7 +19,7 @@ LOG = logging.getLogger(__name__)
 
 
 def str_render(template: jinja2.Template, config_data_path: str) -> str:
-    """ Load configuration data and render a jinja2 template with it. """
+    """Load configuration data and render a jinja2 template with it."""
 
     # load the configuration data from file
     with open(config_data_path) as stream:
@@ -29,9 +28,13 @@ def str_render(template: jinja2.Template, config_data_path: str) -> str:
     return template.render(config_data)
 
 
-def cmd_render(template_dirs: List[str], template_name: str,
-               config_data_path: str, output_file_path: str) -> bool:
-    """ Render the desired template from loaded configuration data. """
+def cmd_render(
+    template_dirs: List[str],
+    template_name: str,
+    config_data_path: str,
+    output_file_path: str,
+) -> bool:
+    """Render the desired template from loaded configuration data."""
 
     env = Environment()
 
@@ -45,7 +48,11 @@ def cmd_render(template_dirs: List[str], template_name: str,
     with open(output_file_path, "w") as output:
         output.write(str_render(template, config_data_path))
 
-    LOG.info("'%s' rendered from '%s' (template: '%s')", output_file_path,
-             config_data_path, template_name)
+    LOG.info(
+        "'%s' rendered from '%s' (template: '%s')",
+        output_file_path,
+        config_data_path,
+        template_name,
+    )
 
     return True
