@@ -28,6 +28,7 @@ def meld_and_resolve(
     variables: dict,
     globals_added: bool = False,
     expect_overwrite: bool = False,
+    is_template: bool = True,
 ) -> bool:
     """
     Meld dictionary data from a file into an existing dictionary, assume
@@ -55,7 +56,7 @@ def meld_and_resolve(
             global_add_success = True
 
     _, loaded = load_raw_resolve(
-        full_path, variables, data_dict, expect_overwrite
+        full_path, variables, data_dict, expect_overwrite, is_template
     )
 
     if global_add_success:
@@ -71,6 +72,7 @@ def load_dir(
     loaded_list: List[str] = None,
     hashes: Dict[str, dict] = None,
     expect_overwrite: bool = False,
+    are_templates: bool = True,
 ) -> dict:
     """Load a directory tree into a dictionary, optionally meld."""
 
@@ -98,8 +100,10 @@ def load_dir(
             variable_data[GLOBAL_KEY] = variables
             added_globals = True
         else:
-            msg = "can't add 'global' data to '%s', key was already found"
-            LOG.info(msg, root)
+            LOG.info(
+                "can't add 'global' data to '%s', key was already found",
+                root,
+            )
 
         # extend the provided list of files that were newly loaded, or at
         # least have new content
@@ -110,6 +114,7 @@ def load_dir(
                 (iter_data, variable_data, added_globals),
                 hashes,
                 expect_overwrite,
+                are_templates,
             )
         )
 
@@ -119,14 +124,24 @@ def load_dir(
     return existing_data
 
 
-def load_dir_only(path: str, expect_overwrite: bool = False) -> dict:
+def load_dir_only(
+    path: str,
+    expect_overwrite: bool = False,
+    are_templates: bool = True,
+) -> dict:
     """
     A convenient wrapper for loading just directory data from a path without
     worrying about melding data, resolving variables, enforcing schemas, etc.
     """
 
     return load_dir(
-        path, defaultdict(dict), None, None, None, expect_overwrite
+        path,
+        defaultdict(dict),
+        None,
+        None,
+        None,
+        expect_overwrite,
+        are_templates,
     )
 
 
@@ -136,6 +151,7 @@ def load_files(
     meld_data: Tuple[dict, dict, bool],
     hashes: Dict[str, dict],
     expect_overwrite: bool = False,
+    are_templates: bool = True,
 ) -> List[str]:
     """
     Load files into a dictionary and return a list of the files that are
@@ -155,6 +171,7 @@ def load_files(
                 meld_data[1],
                 meld_data[2],
                 expect_overwrite,
+                are_templates,
             )
             and set_file_hash(hashes, full_path)
         ):

@@ -1,24 +1,14 @@
-.PHONY: lint sa test clean clean-venv view all venv todo host-coverage dist \
-        sync upload test-single
-
-.DEFAULT_GOAL  := all
-
-PY_EXTRA_LINT_ARGS += $($(PROJ)_DIR)/setup.py
-
-lint: $(PY_PREFIX)lint
-sa: $(PY_PREFIX)sa
-test: $(PY_PREFIX)test
-test-single: $(PY_PREFIX)test-test_entry_basic
-view: $(PY_PREFIX)view
-host-coverage: $(PY_PREFIX)host-coverage
-dist: $(PY_PREFIX)dist
-upload: sync $(PYPI_PREFIX)upload
-sync: $(EDITABLE_CONC) $(DZ_PREFIX)sync
-
-all: sync lint sa test dist todo
-
-todo:
-	-cd $($(PROJ)_DIR) && ack -i todo $(PROJ) tests
-
-clean: $(PY_PREFIX)editable $(DZ_PREFIX)clean $(PY_PREFIX)clean
-	@rm -rf $(BUILD_DIR)
+# =====================================
+# generator=datazen
+# version=1.6.1
+# hash=9f51ee84fc4074d84a64f7dcae923c31
+# =====================================
+###############################################################################
+MK_INFO := https://pypi.org/project/vmklib
+ifeq (,$(shell which mk))
+$(warning "No 'mk' in $(PATH), install 'vmklib' with 'pip' ($(MK_INFO))")
+endif
+ifndef MK_AUTO
+$(error target this Makefile with 'mk', not '$(MAKE)' ($(MK_INFO)))
+endif
+###############################################################################

@@ -170,6 +170,7 @@ def load(
     variables: dict,
     dict_to_update: dict,
     expect_overwrite: bool = False,
+    is_template: bool = True,
 ) -> Tuple[dict, bool]:
     """
     Load raw file data and meld it into an existing dictionary. Update
@@ -179,8 +180,11 @@ def load(
     # read the raw file and interpret it as a template, resolve 'variables'
     try:
         with open(data_path) as config_file:
-            template = jinja2.Template(config_file.read())
-            str_output = template.render(variables)
+            if is_template:
+                template = jinja2.Template(config_file.read())
+                str_output = template.render(variables)
+            else:
+                str_output = config_file.read()
     except FileNotFoundError:
         LOG.error("can't find '%s' to load file data", data_path)
         return ({}, False)

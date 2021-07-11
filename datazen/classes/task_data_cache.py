@@ -29,7 +29,7 @@ class TaskDataCache:
         """Read new data from the cache directory and update state."""
 
         os.makedirs(load_dir, exist_ok=True)
-        self.data.update(load_dir_only(load_dir))
+        self.data.update(load_dir_only(load_dir, are_templates=False))
 
     def save(self, out_type: str = "json") -> None:
         """Write cache data to disk."""
