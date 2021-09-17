@@ -6,7 +6,7 @@ datazen - This package's command-line entry-point application.
 import argparse
 
 # internal
-from datazen.classes.environment import from_manifest
+from datazen.environment.integrated import from_manifest
 from datazen import DEFAULT_MANIFEST
 
 

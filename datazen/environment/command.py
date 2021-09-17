@@ -10,7 +10,7 @@ import subprocess
 from typing import List, Tuple
 
 # internal
-from datazen.classes.task_environment import TaskEnvironment, get_path
+from datazen.environment.task import TaskEnvironment, get_path
 
 LOG = logging.getLogger(__name__)
 

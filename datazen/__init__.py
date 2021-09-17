@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=1.7.8
-# hash=4323e332c0dde4258568b9a64f17ad18
+# version=1.7.9
+# hash=9bc8e934320ea75dfbd1cdfcbc1151fc
 # =====================================
 
 """
@@ -13,8 +13,8 @@ VERSION = "1.7.9"
 DESCRIPTION = "Compile and render schema-validated configuration data."
 
 DEFAULT_TYPE = "yaml"
-DEFAULT_MANIFEST = "manifest.{}".format(DEFAULT_TYPE)
-DEFAULT_DIR = "{}-out".format(PKG_NAME)
+DEFAULT_MANIFEST = f"manifest.{DEFAULT_TYPE}"
+DEFAULT_DIR = f"{PKG_NAME}-out"
 CACHE_SUFFIX = "_cache"
 GLOBAL_KEY = "global"
 ROOT_NAMESPACE = "__root__"

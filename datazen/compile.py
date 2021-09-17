@@ -23,8 +23,8 @@ def write_dir(directory: str, data: dict, out_type: str = "json") -> None:
 
     os.makedirs(directory, exist_ok=True)
     for key, val in data.items():
-        key_path = os.path.join(directory, "{}.{}".format(key, out_type))
-        with open(key_path, "w") as key_file:
+        key_path = os.path.join(directory, f"{key}.{out_type}")
+        with open(key_path, "w", encoding="utf-8") as key_file:
             key_file.write(str_compile(val, out_type))
     os.sync()
 
@@ -65,5 +65,5 @@ def get_compile_output(
         output_type = entry["output_type"]
 
     # write the output
-    filename = "{}.{}".format(entry["name"], output_type)
+    filename = f"{entry['name']}.{output_type}"
     return os.path.join(entry["output_dir"], filename), output_type

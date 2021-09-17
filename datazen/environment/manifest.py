@@ -12,9 +12,9 @@ from typing import List, Tuple
 from cerberus import Validator
 
 # internal
-from datazen.classes.config_environment import ConfigEnvironment
+from datazen.environment.config import ConfigEnvironment
 from datazen.classes.target_resolver import TargetResolver
-from datazen.classes.template_environment import TemplateEnvironment
+from datazen.environment.template import TemplateEnvironment
 from datazen.parsing import load as load_raw
 from datazen.parsing import load_stream, merge_dicts
 from datazen.paths import get_package_data, get_package_dir, resolve_dir

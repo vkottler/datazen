@@ -12,7 +12,7 @@ import jinja2
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
-from datazen.classes.base_environment import BaseEnvironment, LOADTYPE
+from datazen.environment.base import BaseEnvironment, LOADTYPE
 from datazen.templates import load as load_templates
 
 

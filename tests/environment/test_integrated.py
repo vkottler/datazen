@@ -6,8 +6,8 @@ datazen - Tests for the 'Environment' class.
 import os
 
 # module under test
-from datazen.classes.base_environment import DataType
-from datazen.classes.environment import from_manifest
+from datazen.environment.base import DataType
+from datazen.environment.integrated import from_manifest
 
 # internal
 from ..environment import EnvironmentMock

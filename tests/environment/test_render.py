@@ -6,7 +6,7 @@ datazen - Tests for the 'RenderEnvironment' class mixin.
 import os
 
 # module under test
-from datazen.classes.environment import from_manifest
+from datazen.environment.integrated import from_manifest
 
 # internal
 from ..resources import get_resource, injected_content, scoped_environment

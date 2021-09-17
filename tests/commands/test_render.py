@@ -16,7 +16,7 @@ def test_render():
 
     # compile monolithic yaml
     config_out = get_tempfile(".yaml")
-    with open(config_out, "w") as config_file:
+    with open(config_out, "w", encoding="utf-8") as config_file:
         config_file.write(str_compile(ENV.get_configs(True), "yaml"))
 
     # render yaml from yaml configs
@@ -26,7 +26,7 @@ def test_render():
 
     # compile monolithic json
     config_out = get_tempfile(".json")
-    with open(config_out, "w") as config_file:
+    with open(config_out, "w", encoding="utf-8") as config_file:
         config_file.write(str_compile(ENV.get_configs(True), "json"))
 
     # render json from json configs

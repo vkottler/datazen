@@ -148,13 +148,11 @@ def merge(
             ):
                 dict_a[key].extend(dict_b[key])
             elif not isinstance(dict_b[key], type(dict_a[key])):
-                error_str = "Type mismatch at %s" % ".".join(path + [str(key)])
-                LOG.error(error_str)
+                LOG.error("Type mismatch at '%s'", ".".join(path + [str(key)]))
                 LOG.error("left:  %s (%s)", type(dict_a[key]), dict_a[key])
                 LOG.error("right: %s (%s)", type(dict_b[key]), dict_b[key])
             elif not expect_overwrite:
-                error_str = "Conflict at %s" % ".".join(path + [str(key)])
-                LOG.error(error_str)
+                LOG.error("Conflict at '%s'", ".".join(path + [str(key)]))
                 LOG.error("left:  %s", dict_a[key])
                 LOG.error("right: %s", dict_b[key])
             else:
@@ -179,7 +177,7 @@ def load(
 
     # read the raw file and interpret it as a template, resolve 'variables'
     try:
-        with open(data_path) as config_file:
+        with open(data_path, encoding="utf-8") as config_file:
             if is_template:
                 template = jinja2.Template(config_file.read())
                 str_output = template.render(variables)
@@ -213,7 +211,7 @@ def get_hash(data: str, encoding: str = "utf-8") -> str:
 def get_file_hash(path: str) -> str:
     """Get the MD5 of a file by path."""
 
-    with open(path) as data:
+    with open(path, encoding="utf-8") as data:
         contents = data.read()
     return get_hash(contents)
 

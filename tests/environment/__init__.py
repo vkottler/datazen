@@ -10,10 +10,10 @@ from typing import Dict
 import jinja2
 
 # modules under test
-from datazen.classes.environment import from_manifest
+from datazen.environment.integrated import from_manifest
 
 # internal
-from .resources import get_resource
+from tests.resources import get_resource
 
 
 class EnvironmentMock:

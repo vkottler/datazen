@@ -11,7 +11,7 @@ from typing import List, Dict
 import jinja2
 
 # internal
-from datazen.classes.manifest_environment import ManifestEnvironment
+from datazen.environment.manifest import ManifestEnvironment
 from datazen.paths import get_file_name
 from datazen import DEFAULT_MANIFEST, CACHE_SUFFIX, ROOT_NAMESPACE
 from datazen.classes.file_info_cache import FileInfoCache, cmp_total_loaded
@@ -24,7 +24,7 @@ LOG = logging.getLogger(__name__)
 def manifest_cache_dir(path: str, manifest: dict) -> str:
     """Find a manifest cache (path) from its path and data."""
 
-    cache_name = ".{}{}".format(get_file_name(path), CACHE_SUFFIX)
+    cache_name = f".{get_file_name(path)}{CACHE_SUFFIX}"
     default_cache_dir = os.path.join(manifest["dir"], cache_name)
 
     # set 'cache_dir' to the default if it wasn't set already

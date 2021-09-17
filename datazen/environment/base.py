@@ -11,7 +11,7 @@ import threading
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
-from datazen.classes.environment_namespace import EnvironmentNamespace, clone
+from datazen.environment import EnvironmentNamespace, clone
 
 LOADTYPE = Tuple[Optional[List[str]], Optional[Dict[str, dict]]]
 LOG = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ SLUG_DELIM = "-"
 def get_dep_slug(operation: str, name: str) -> str:
     """Build a key-slug for an operation's target."""
 
-    return "{}{}{}".format(operation, SLUG_DELIM, name)
+    return f"{operation}{SLUG_DELIM}{name}"
 
 
 def dep_slug_unwrap(slug: str, default_op: str) -> Tuple[str, str]:

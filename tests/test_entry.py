@@ -45,9 +45,9 @@ def test_entry():
 
     # change a file to test describe's miss detection
     data_file = get_resource(os.path.join("configs", "a.yaml"), True)
-    with open(data_file) as manifest_file:
+    with open(data_file, encoding="utf-8") as manifest_file:
         manifest_data = manifest_file.read()
-    with open(data_file, "w") as manifest_file:
+    with open(data_file, "w", encoding="utf-8") as manifest_file:
         manifest_file.write("a: {{a}}")
 
     assert datazen_main(args + ["-d"]) == 0
@@ -57,7 +57,7 @@ def test_entry():
     assert datazen_main(args + ["-d"]) == 0
 
     # restore the changed file
-    with open(data_file, "w") as manifest_file:
+    with open(data_file, "w", encoding="utf-8") as manifest_file:
         manifest_data = manifest_file.write(manifest_data)
 
     assert datazen_main(args + ["-c"]) == 0

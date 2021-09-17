@@ -8,7 +8,7 @@ import logging
 from typing import List
 
 # internal
-from datazen.classes.environment import Environment
+from datazen.environment.integrated import Environment
 from datazen.parsing import get_file_ext
 from datazen.compile import str_compile
 
@@ -51,7 +51,7 @@ def cmd_compile(
         return False
 
     # write the output
-    with open(output_file_path, "w") as output:
+    with open(output_file_path, "w", encoding="utf-8") as output:
         output.write(result)
     LOG.info("wrote '%s' configuration data to '%s'", ext, output_file_path)
 

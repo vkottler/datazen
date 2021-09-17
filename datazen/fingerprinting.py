@@ -81,6 +81,6 @@ def build_fingerprint(
     comment_lines = []
     line_data = get_comment_data(file_data, dynamic)
     for line in line_data:
-        comment_lines.append("{}={}".format(line[0], line[1]))
+        comment_lines.append(f"{line[0]}={line[1]}")
     apply_barriers(comment_lines, char)
     return resolve_encapsulation(comment_lines, file_ext)

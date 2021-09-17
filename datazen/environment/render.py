@@ -12,8 +12,8 @@ import jinja2
 
 # internal
 from datazen import GLOBAL_KEY
-from datazen.classes.base_environment import dep_slug_unwrap
-from datazen.classes.task_environment import TaskEnvironment, get_path
+from datazen.environment.base import dep_slug_unwrap
+from datazen.environment.task import TaskEnvironment, get_path
 from datazen.fingerprinting import build_fingerprint
 from datazen.paths import get_file_ext
 from datazen.targets import resolve_dep_data
@@ -130,7 +130,7 @@ class RenderEnvironment(TaskEnvironment):
 
             # don't write a file, if requested
             if path is not None:
-                with open(path, "w") as render_out:
+                with open(path, "w", encoding="utf-8") as render_out:
                     render_out.write(fprint + render_str + os.linesep)
                 os.sync()
 

@@ -13,7 +13,7 @@ import pkg_resources
 import git
 
 # module under test
-from datazen.classes.environment import Environment, from_manifest
+from datazen.environment.integrated import Environment, from_manifest
 
 
 def get_resource(resource_name: str, valid: bool) -> str:
@@ -50,14 +50,14 @@ def injected_content(resource_name: str, valid: bool) -> Iterator[TextIO]:
     """
 
     path = get_resource(resource_name, valid)
-    with open(path) as resource:
+    with open(path, encoding="utf-8") as resource:
         contents = resource.read()
 
     try:
-        with open(path, "w") as resource:
+        with open(path, "w", encoding="utf-8") as resource:
             yield resource
     finally:
-        with open(path, "w") as resource:
+        with open(path, "w", encoding="utf-8") as resource:
             resource.write(contents)
 
 

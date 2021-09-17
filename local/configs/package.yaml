@@ -6,8 +6,8 @@ setup_args:
 init_local: |
 
   DEFAULT_TYPE = "yaml"
-  DEFAULT_MANIFEST = "manifest.{}".format(DEFAULT_TYPE)
-  DEFAULT_DIR = "{}-out".format(PKG_NAME)
+  DEFAULT_MANIFEST = f"manifest.{DEFAULT_TYPE}"
+  DEFAULT_DIR = f"{PKG_NAME}-out"
   CACHE_SUFFIX = "_cache"
   GLOBAL_KEY = "global"
   ROOT_NAMESPACE = "__root__"

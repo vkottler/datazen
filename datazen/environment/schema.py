@@ -9,7 +9,7 @@ from typing import List
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
-from datazen.classes.base_environment import BaseEnvironment, LOADTYPE
+from datazen.environment.base import BaseEnvironment, LOADTYPE
 from datazen.schemas import load as load_schemas
 from datazen.schemas import validate, load_types, inject_custom_schemas
 

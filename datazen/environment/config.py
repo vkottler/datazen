@@ -10,9 +10,9 @@ from typing import List
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
-from datazen.classes.base_environment import LOADTYPE
-from datazen.classes.variable_environment import VariableEnvironment
-from datazen.classes.schema_environment import SchemaEnvironment
+from datazen.environment.base import LOADTYPE
+from datazen.environment.variable import VariableEnvironment
+from datazen.environment.schema import SchemaEnvironment
 from datazen.configs import load as load_configs
 
 LOG = logging.getLogger(__name__)

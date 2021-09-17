@@ -44,7 +44,7 @@ def parse_target(name: str) -> Tuple[re.Pattern, List[str]]:
         start = name.index(KW_OPEN) + 1
         end = name.index(KW_CLOSE)
         pattern += name[: start - 1]
-        pattern += "({})".format(KW_PATTERN)
+        pattern += f"({KW_PATTERN})"
         keys.append(name[start:end])
         name = name[end + 1 :]
     pattern += name + "$"

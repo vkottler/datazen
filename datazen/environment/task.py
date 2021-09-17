@@ -11,9 +11,9 @@ from typing import List, Tuple, Dict, Optional
 
 # internal
 from datazen import ROOT_NAMESPACE
-from datazen.classes.manifest_environment import set_output_dir
-from datazen.classes.base_environment import get_dep_slug, dep_slug_unwrap
-from datazen.classes.manifest_cache_environment import ManifestCacheEnvironment
+from datazen.environment.base import get_dep_slug, dep_slug_unwrap
+from datazen.environment.manifest import set_output_dir
+from datazen.environment.manifest_cache import ManifestCacheEnvironment
 from datazen.classes.task_data_cache import TaskDataCache
 
 LOG = logging.getLogger(__name__)

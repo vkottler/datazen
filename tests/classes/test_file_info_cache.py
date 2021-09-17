@@ -20,7 +20,7 @@ def test_cache_meld():
         # add some initial files
         time = 0
         for _ in range(10):
-            fname = "file_{}".format(time)
+            fname = f"file_{time}"
             loaded.append(fname)
             hashes[fname] = {"hash": time, "time": time}
             time += 1
@@ -29,14 +29,14 @@ def test_cache_meld():
 
         # add some new files
         for _ in range(5):
-            fname = "file_{}".format(time)
+            fname = f"file_{time}"
             loaded.append(fname)
             hashes[fname] = {"hash": time, "time": time}
             time += 1
 
         # update some existing files
         for i in range(5):
-            fname = "file_{}".format(i)
+            fname = f"file_{i}"
             hashes[fname] = {"hash": time, "time": time}
             time += 1
 

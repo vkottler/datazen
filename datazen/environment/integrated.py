@@ -10,11 +10,11 @@ from typing import List, Tuple
 
 # internal
 from datazen import CACHE_SUFFIX
-from datazen.classes.base_environment import dep_slug_unwrap
-from datazen.classes.compile_environment import CompileEnvironment
-from datazen.classes.group_environment import GroupEnvironment
-from datazen.classes.render_environment import RenderEnvironment
-from datazen.classes.command_environment import CommandEnvironment
+from datazen.environment.base import dep_slug_unwrap
+from datazen.environment.command import CommandEnvironment
+from datazen.environment.group import GroupEnvironment
+from datazen.environment.compile import CompileEnvironment
+from datazen.environment.render import RenderEnvironment
 
 LOG = logging.getLogger(__name__)
 
@@ -103,7 +103,7 @@ def from_manifest(
     if not env.load_manifest_with_cache(manifest_path):
         LOG.error("couldn't load manifest at '%s'", manifest_path)
     else:
-        data_cache = ".{}{}".format(data_cache_name, CACHE_SUFFIX)
+        data_cache = f".{data_cache_name}{CACHE_SUFFIX}"
         path = os.path.join(os.path.dirname(env.cache.cache_dir), data_cache)
         env.init_cache(os.path.abspath(path))
 

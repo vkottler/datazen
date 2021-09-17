@@ -6,7 +6,7 @@ datazen - A target-type for grouping other target-tasks together.
 from typing import List, Tuple
 
 # internal
-from datazen.classes.task_environment import TaskEnvironment
+from datazen.environment.task import TaskEnvironment
 
 
 class GroupEnvironment(TaskEnvironment):
