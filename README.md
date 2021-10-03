@@ -1,12 +1,12 @@
 <!--
     =====================================
     generator=datazen
-    version=1.7.9
-    hash=dd544728d64208885eea4f71be4b3028
+    version=1.7.11
+    hash=13b6248b14f94d4226eb96c1d4b50dac
     =====================================
 -->
 
-# datazen ([1.7.10](https://pypi.org/project/datazen/))
+# datazen ([1.7.11](https://pypi.org/project/datazen/))
 
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
 ![Build Status](https://github.com/vkottler/datazen/workflows/Python%20package/badge.svg)
@@ -127,6 +127,8 @@ compiles:
       override_path:
         type: string
       output_type:
+        type: string
+      output_path:
         type: string
       output_dir:
         type: string

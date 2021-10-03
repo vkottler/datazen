@@ -60,10 +60,8 @@ def get_compile_output(
     """
 
     # determine the output type
-    output_type = default_type
-    if "output_type" in entry:
-        output_type = entry["output_type"]
+    output_type = entry.get("output_type", default_type)
 
     # write the output
-    filename = f"{entry['name']}.{output_type}"
+    filename = entry.get("output_path", entry["name"]) + f".{output_type}"
     return os.path.join(entry["output_dir"], filename), output_type

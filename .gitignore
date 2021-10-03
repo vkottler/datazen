@@ -13,3 +13,4 @@ htmlcov
 .*_cache
 datazen-out
 *.pyi
+tags

@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=1.7.9
-# hash=f1c6169e8b83ba3b614efd113976a4d3
+# version=1.7.10
+# hash=b5923b6a1bb936e6895898675d9f88b1
 # =====================================
 includes: paths
 
@@ -37,6 +37,8 @@ compiles:
       override_path:
         type: string
       output_type:
+        type: string
+      output_path:
         type: string
       output_dir:
         type: string

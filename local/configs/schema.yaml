@@ -60,6 +60,8 @@ entries:
             type: string
           output_type:
             type: string
+          output_path:
+            type: string
           output_dir:
             type: string
           index_path:
