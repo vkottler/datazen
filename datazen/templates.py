@@ -10,13 +10,12 @@ from typing import Dict, List
 import jinja2
 
 # internal
+from datazen.load import LoadedFiles, DEFAULT_LOADS
 from datazen.paths import get_file_name, get_file_ext
 from datazen.parsing import set_file_hash
 
 
-def update_cache_primitives(
-    dir_path: str, loaded_list: List[str], hashes: Dict[str, dict]
-) -> None:
+def update_cache_primitives(dir_path: str, loads: LoadedFiles) -> None:
     """
     From a directory path, update the 'loaded_list' and 'hashes' primitives
     that belong to an upstream cache.
@@ -25,14 +24,15 @@ def update_cache_primitives(
     for path in os.listdir(dir_path):
         fpath = os.path.abspath(os.path.join(dir_path, path))
         if os.path.isfile(fpath):
-            if set_file_hash(hashes, fpath):
-                loaded_list.append(fpath)
+            if loads.file_data is not None:
+                if set_file_hash(loads.file_data, fpath):
+                    assert loads.files is not None
+                    loads.files.append(fpath)
 
 
 def load(
     template_dirs: List[str],
-    loaded_list: List[str] = None,
-    hashes: Dict[str, dict] = None,
+    loads: LoadedFiles = DEFAULT_LOADS,
 ) -> Dict[str, jinja2.Template]:
     """
     Load jinja2 templates from a list of directories where templates can be
@@ -48,9 +48,8 @@ def load(
     )
 
     # manually inspect directories to write into the cache
-    if hashes is not None and loaded_list is not None:
-        for template_dir in template_dirs:
-            update_cache_primitives(template_dir, loaded_list, hashes)
+    for template_dir in template_dirs:
+        update_cache_primitives(template_dir, loads)
 
     # load templates into a dictionary
     for template in env.list_templates():
