@@ -15,7 +15,7 @@ from ..resources import get_resource, injected_content, scoped_environment
 def test_render_simple():
     """Test that rendering isn't always necessary."""
 
-    with scoped_environment("manifest.yaml", True) as env:
+    with scoped_environment() as env:
         assert env.render("test.md") == (True, True)
         assert env.render("test.py") == (True, True)
         env.write_cache()
@@ -29,8 +29,15 @@ def test_render_children():
     Test render targets used to validate behavior of the 'children' key.
     """
 
-    with scoped_environment("manifest.yaml", True) as env:
+    with scoped_environment() as env:
         assert env.group("test-children") == (True, True)
+
+
+def test_render_template_inheritance():
+    """Test that templates leveraging 'extends' capability works."""
+
+    with scoped_environment() as env:
+        assert env.group("render-inheritance") == (True, True)
 
 
 def test_render_common_template_dep():
@@ -39,7 +46,7 @@ def test_render_common_template_dep():
     for other tasks that depend on that same change.
     """
 
-    with scoped_environment("manifest.yaml", True) as env:
+    with scoped_environment() as env:
         # perform renders
         assert env.render("test") == (True, True)
         assert env.render("render2") == (True, True)

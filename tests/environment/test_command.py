@@ -12,14 +12,14 @@ from ..resources import get_resource, scoped_environment
 def test_command_duplicate_matches():
     """Test a scenario where two target patterns match a String."""
 
-    with scoped_environment("manifest.yaml", True) as env:
+    with scoped_environment() as env:
         assert env.command("bad-pattern-test-asdf") == (False, False)
 
 
 def test_command_basic():
     """Test basic commanding functionality."""
 
-    with scoped_environment("manifest.yaml", True) as env:
+    with scoped_environment() as env:
         # run a command
         assert env.command("a") == (True, True)
         assert env.command("b") == (True, True)

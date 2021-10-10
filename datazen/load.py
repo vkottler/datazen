@@ -4,9 +4,10 @@ datazen - APIs for loading data from directory trees.
 
 # built-in
 from collections import defaultdict
+from contextlib import contextmanager
 import logging
 import os
-from typing import Dict, List, Tuple, NamedTuple, Optional
+from typing import Any, Dict, List, Tuple, NamedTuple, Optional, Iterator
 
 # internal
 from datazen import GLOBAL_KEY
@@ -33,6 +34,20 @@ class LoadedFiles(NamedTuple):
 
 
 DEFAULT_LOADS = LoadedFiles()
+
+
+@contextmanager
+def data_added(key: Any, value: Any, data: dict = None) -> Iterator[dict]:
+    """Inject a key-value pair into a dictionary, in a context."""
+
+    if data is None:
+        data = {}
+
+    data[key] = value
+    try:
+        yield data
+    finally:
+        del data[key]
 
 
 def meld_and_resolve(

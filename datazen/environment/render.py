@@ -5,16 +5,17 @@ datazen - An environment extension that exposes rendering capabilities.
 # built-in
 import logging
 import os
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 # third-party
 import jinja2
 
 # internal
-from datazen import GLOBAL_KEY
+from datazen import GLOBAL_KEY, to_private
 from datazen.environment.base import dep_slug_unwrap, TaskResult
 from datazen.environment.task import TaskEnvironment, get_path
 from datazen.fingerprinting import build_fingerprint
+from datazen.load import data_added
 from datazen.paths import get_file_ext
 from datazen.targets import resolve_dep_data
 
@@ -101,6 +102,7 @@ class RenderEnvironment(TaskEnvironment):
     def perform_render(
         self,
         template: jinja2.Template,
+        all_templates: Dict[str, jinja2.Template],
         path: Optional[str],
         entry: dict,
         data: dict = None,
@@ -112,9 +114,18 @@ class RenderEnvironment(TaskEnvironment):
 
         try:
             out_data: dict = {}
-            render_str = get_render_str(
-                template, entry["name"], entry["indent"], data, out_data
-            )
+
+            # add template objects to render context
+            with data_added(
+                to_private("templates"), all_templates, data
+            ) as render_data:
+                render_str = get_render_str(
+                    template,
+                    entry["name"],
+                    entry["indent"],
+                    render_data,
+                    out_data,
+                )
 
             # determine if the caller wanted a dynamic fingerprint or not,
             # if an indent is set, also disable it
@@ -225,4 +236,4 @@ class RenderEnvironment(TaskEnvironment):
             logger.debug("render '%s' satisfied, skipping", entry["name"])
             return TaskResult(True, False)
 
-        return self.perform_render(template, path, entry, dep_data)
+        return self.perform_render(template, templates, path, entry, dep_data)

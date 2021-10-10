@@ -77,3 +77,4 @@ groups:
 
 includes:
 - "subdir/compiles.yaml"
+- "subdir/render_inheritance.yaml"

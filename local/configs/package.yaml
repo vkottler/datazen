@@ -10,4 +10,12 @@ init_local: |
   DEFAULT_DIR = f"{PKG_NAME}-out"
   CACHE_SUFFIX = "_cache"
   GLOBAL_KEY = "global"
-  ROOT_NAMESPACE = "__root__"
+
+
+  def to_private(input_str: str) -> str:
+      """Convert some input to a 'private' String."""
+
+      return f"__{input_str}__"
+
+
+  ROOT_NAMESPACE = to_private("root")

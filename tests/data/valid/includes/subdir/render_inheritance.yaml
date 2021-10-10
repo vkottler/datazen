@@ -1,0 +1,7 @@
+renders:
+- name: "child.html"
+
+groups:
+- name: "render-inheritance"
+  dependencies:
+  - "renders-child.html"

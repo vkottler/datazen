@@ -71,7 +71,7 @@ def test_environment_from_manifest():
 def test_operations():
     """Test some 'compile' and 'render' scenarios."""
 
-    with scoped_environment("manifest.yaml", True) as env:
+    with scoped_environment() as env:
         assert env.manifest_changed
 
         assert env.render("a") == (True, True)
@@ -97,7 +97,7 @@ def test_operations():
 def test_load_manifest():
     """Test a nominal manifest-loading scenario."""
 
-    with scoped_environment("manifest.yaml", True) as env:
+    with scoped_environment() as env:
         cfg_data1 = env.cached_load_configs()
         assert cfg_data1
         assert env.cached_load_configs()

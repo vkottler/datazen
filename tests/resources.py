@@ -26,7 +26,7 @@ def get_resource(resource_name: str, valid: bool) -> str:
 
 @contextmanager
 def scoped_environment(
-    resource_name: str, valid: bool
+    resource_name: str = "manifest.yaml", valid: bool = True
 ) -> Iterator[Environment]:
     """
     Provide an environment that's guaranteed to be instantiated with a clean
