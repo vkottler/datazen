@@ -26,10 +26,11 @@ def write_dir(directory: str, data: dict, out_type: str = "json") -> None:
         key_path = os.path.join(directory, f"{key}.{out_type}")
         with open(key_path, "w", encoding="utf-8") as key_file:
             key_file.write(str_compile(val, out_type))
-    os.sync()
 
 
-def str_compile(configs: dict, data_type: str) -> str:
+def str_compile(
+    configs: dict, data_type: str, logger: logging.Logger = LOG
+) -> str:
     """
     Serialize dictionary data into the String-form of a specific,
     serializeable type.
@@ -45,7 +46,7 @@ def str_compile(configs: dict, data_type: str) -> str:
         raw_result = ostream.getvalue()
         result = raw_result if raw_result else ""
     else:
-        LOG.error("can't serialize '%s' data (unknown type)", data_type)
+        logger.error("can't serialize '%s' data (unknown type)", data_type)
         return ""
 
     return result

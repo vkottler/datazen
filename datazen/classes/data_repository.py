@@ -19,8 +19,6 @@ from datazen.load import load_dir_only
 from datazen.parsing import merge
 from datazen.paths import EXCLUDES
 
-LOG = logging.getLogger(__name__)
-
 
 class DataRepository:
     """
@@ -28,7 +26,12 @@ class DataRepository:
     serialization formats supported by this package.
     """
 
-    def __init__(self, root_dir: str, out_type: str = "yaml") -> None:
+    def __init__(
+        self,
+        root_dir: str,
+        out_type: str = "yaml",
+        logger: logging.Logger = logging.getLogger(__name__),
+    ) -> None:
         """Construct a new data repository."""
 
         self.root: str = os.path.realpath(root_dir)
@@ -38,6 +41,7 @@ class DataRepository:
         # we may even want to split out the git stuff into its own class
         self.data: dict = {}
         self.lock = threading.RLock()
+        self.logger = logger
 
     @contextmanager
     def meld(
@@ -72,7 +76,7 @@ class DataRepository:
         assert os.path.isdir(to_load)
         with self.lock:
             self.data = load_dir_only(to_load)
-            LOG.info("loading '%s'", to_load)
+            self.logger.info("loading '%s'", to_load)
             yield self.data
             if write_back:
                 # remove items that contain data but not others
@@ -80,4 +84,4 @@ class DataRepository:
                     if item not in EXCLUDES:
                         os.remove(os.path.join(to_load, item))
                 write_dir(to_load, self.data, self.out_type)
-                LOG.info("writing '%s'", to_load)
+                self.logger.info("writing '%s'", to_load)

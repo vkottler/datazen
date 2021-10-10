@@ -5,14 +5,14 @@ datazen - An environment extension that exposes rendering capabilities.
 # built-in
 import logging
 import os
-from typing import List, Tuple, Optional
+from typing import List, Optional
 
 # third-party
 import jinja2
 
 # internal
 from datazen import GLOBAL_KEY
-from datazen.environment.base import dep_slug_unwrap
+from datazen.environment.base import dep_slug_unwrap, TaskResult
 from datazen.environment.task import TaskEnvironment, get_path
 from datazen.fingerprinting import build_fingerprint
 from datazen.paths import get_file_ext
@@ -104,7 +104,8 @@ class RenderEnvironment(TaskEnvironment):
         path: Optional[str],
         entry: dict,
         data: dict = None,
-    ) -> Tuple[bool, bool]:
+        logger: logging.Logger = LOG,
+    ) -> TaskResult:
         """
         Render a template to the requested path using the provided data.
         """
@@ -132,19 +133,18 @@ class RenderEnvironment(TaskEnvironment):
             if path is not None:
                 with open(path, "w", encoding="utf-8") as render_out:
                     render_out.write(fprint + render_str + os.linesep)
-                os.sync()
 
             # save the output into a dict for consistency
             self.store_render(entry, out_data)
         except jinja2.exceptions.TemplateError as exc:
-            LOG.error(
+            logger.error(
                 "couldn't render '%s' to '%s': %s", entry["name"], path, exc
             )
-            return False, False
+            return TaskResult(False, False)
 
-        LOG.info("(%s) rendered '%s'", entry["name"], path)
+        logger.info("(%s) rendered '%s'", entry["name"], path)
 
-        return True, True
+        return TaskResult(True, True)
 
     def store_render(self, entry: dict, data: dict) -> None:
         """Store data from the current render."""
@@ -162,7 +162,8 @@ class RenderEnvironment(TaskEnvironment):
         namespace: str,
         dep_data: dict = None,
         deps_changed: List[str] = None,
-    ) -> Tuple[bool, bool]:
+        logger: logging.Logger = LOG,
+    ) -> TaskResult:
         """Perform the render specified by the entry."""
 
         # determine the output that will be produced
@@ -181,12 +182,12 @@ class RenderEnvironment(TaskEnvironment):
             temp_name = entry["key"]
 
         if temp_name not in templates:
-            LOG.error(
+            logger.error(
                 "no template for key '%s' found, options: %s",
                 entry["name"],
                 list(templates.keys()),
             )
-            return False, False
+            return TaskResult(False, False)
 
         template = templates[temp_name]
 
@@ -196,7 +197,7 @@ class RenderEnvironment(TaskEnvironment):
         if not dep_data and "dependencies" not in entry:
             dep_data = self.cached_load_configs(namespace)
             change_criteria.append("configs")
-            LOG.debug(
+            logger.debug(
                 "no dependencies loaded for '%s', using config data",
                 entry["name"],
             )
@@ -221,7 +222,7 @@ class RenderEnvironment(TaskEnvironment):
         if self.already_satisfied(
             entry["name"], path, change_criteria, deps_changed, load_checks
         ):
-            LOG.debug("render '%s' satisfied, skipping", entry["name"])
-            return True, False
+            logger.debug("render '%s' satisfied, skipping", entry["name"])
+            return TaskResult(True, False)
 
         return self.perform_render(template, path, entry, dep_data)

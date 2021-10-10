@@ -6,7 +6,7 @@ datazen - APIs for loading data from directory trees.
 from collections import defaultdict
 import logging
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, NamedTuple, Optional
 
 # internal
 from datazen import GLOBAL_KEY
@@ -20,6 +20,19 @@ from datazen.parsing import load as load_raw_resolve
 from datazen.parsing import set_file_hash
 
 LOG = logging.getLogger(__name__)
+
+
+class LoadedFiles(NamedTuple):
+    """
+    A collection of data for files loaded at runtime (or, a continuation of
+    this information loaded from a cache).
+    """
+
+    files: Optional[List[str]] = None
+    file_data: Optional[Dict[str, dict]] = None
+
+
+DEFAULT_LOADS = LoadedFiles()
 
 
 def meld_and_resolve(
@@ -69,29 +82,21 @@ def load_dir(
     path: str,
     existing_data: dict,
     variables: dict = None,
-    loaded_list: List[str] = None,
-    hashes: Dict[str, dict] = None,
+    loads: LoadedFiles = DEFAULT_LOADS,
     expect_overwrite: bool = False,
     are_templates: bool = True,
+    logger: logging.Logger = LOG,
 ) -> dict:
     """Load a directory tree into a dictionary, optionally meld."""
 
     if variables is None:
         variables = {}
 
-    if loaded_list is None:
-        loaded_list = []
-
-    if hashes is None:
-        hashes = defaultdict(dict)
-
     root_abs = os.path.abspath(path)
-    os.sync()
     for root, _, files in walk_with_excludes(path):
-        LOG.debug("loading '%s'", root)
+        logger.debug("loading '%s'", root)
 
         path_list = get_path_list(root_abs, root)
-        iter_data = advance_dict_by_path(path_list, existing_data)
         variable_data = advance_dict_by_path(path_list, variables)
 
         # expose data globally, if it was provided
@@ -100,23 +105,27 @@ def load_dir(
             variable_data[GLOBAL_KEY] = variables
             added_globals = True
         else:
-            LOG.info(
+            logger.info(
                 "can't add 'global' data to '%s', key was already found",
                 root,
             )
 
         # extend the provided list of files that were newly loaded, or at
         # least have new content
-        loaded_list.extend(
-            load_files(
-                files,
-                root,
-                (iter_data, variable_data, added_globals),
-                hashes,
-                expect_overwrite,
-                are_templates,
-            )
+        new = load_files(
+            files,
+            root,
+            (
+                advance_dict_by_path(path_list, existing_data),
+                variable_data,
+                added_globals,
+            ),
+            loads.file_data,
+            expect_overwrite,
+            are_templates,
         )
+        if loads.files is not None:
+            loads.files.extend(new)
 
         if added_globals:
             del variable_data[GLOBAL_KEY]
@@ -128,6 +137,7 @@ def load_dir_only(
     path: str,
     expect_overwrite: bool = False,
     are_templates: bool = True,
+    logger: logging.Logger = LOG,
 ) -> dict:
     """
     A convenient wrapper for loading just directory data from a path without
@@ -138,10 +148,10 @@ def load_dir_only(
         path,
         defaultdict(dict),
         None,
-        None,
-        None,
+        DEFAULT_LOADS,
         expect_overwrite,
         are_templates,
+        logger,
     )
 
 
@@ -149,7 +159,7 @@ def load_files(
     file_paths: List[str],
     root: str,
     meld_data: Tuple[dict, dict, bool],
-    hashes: Dict[str, dict],
+    hashes: Dict[str, dict] = None,
     expect_overwrite: bool = False,
     are_templates: bool = True,
 ) -> List[str]:
@@ -164,17 +174,17 @@ def load_files(
     for name in file_paths:
         full_path = os.path.join(root, name)
         assert os.path.isabs(full_path)
-        if (
-            meld_and_resolve(
-                full_path,
-                meld_data[0],
-                meld_data[1],
-                meld_data[2],
-                expect_overwrite,
-                are_templates,
-            )
-            and set_file_hash(hashes, full_path)
-        ):
+        success = meld_and_resolve(
+            full_path,
+            meld_data[0],
+            meld_data[1],
+            meld_data[2],
+            expect_overwrite,
+            are_templates,
+        )
+        if success and hashes is not None:
+            success = set_file_hash(hashes, full_path)
+        if success:
             new_or_changed.append(full_path)
 
     return new_or_changed

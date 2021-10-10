@@ -12,7 +12,8 @@ import jinja2
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
-from datazen.environment.base import BaseEnvironment, LOADTYPE
+from datazen.environment.base import BaseEnvironment
+from datazen.load import LoadedFiles, DEFAULT_LOADS
 from datazen.templates import load as load_templates
 
 
@@ -24,7 +25,7 @@ class TemplateEnvironment(BaseEnvironment):
 
     def load_templates(
         self,
-        template_loads: LOADTYPE = (None, None),
+        template_loads: LoadedFiles = DEFAULT_LOADS,
         name: str = ROOT_NAMESPACE,
     ) -> Dict[str, jinja2.Template]:
         """Load templates, resolve any un-loaded template directories."""
@@ -40,7 +41,7 @@ class TemplateEnvironment(BaseEnvironment):
             if to_load:
                 template_data.update(
                     load_templates(
-                        to_load, template_loads[0], template_loads[1]
+                        to_load, template_loads.files, template_loads.file_data
                     )
                 )
                 self.update_load_state(data_type, to_load, name)

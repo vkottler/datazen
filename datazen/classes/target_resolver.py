@@ -7,9 +7,12 @@ import logging
 from typing import Dict, List, Tuple, Optional
 
 # internal
-from datazen.targets import parse_targets, match_target, resolve_target_data
-
-LOG = logging.getLogger(__name__)
+from datazen.targets import (
+    parse_targets,
+    match_target,
+    resolve_target_data,
+    MatchData,
+)
 
 
 class TargetResolver:
@@ -18,11 +21,14 @@ class TargetResolver:
     definitions.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self, logger: logging.Logger = logging.getLogger(__name__)
+    ) -> None:
         """Constuct a new target resolver."""
 
         self.literals: Dict[str, dict] = {}
         self.patterns: Dict[str, dict] = {}
+        self.logger = logger
 
     def clear(self) -> None:
         """
@@ -49,11 +55,11 @@ class TargetResolver:
             return None
 
         # attempt to match this target to any of our patterns for this group
-        matches: List[Tuple[dict, Dict[str, str]]] = []
+        matches: List[Tuple[dict, MatchData]] = []
         for pattern in self.patterns[group].values():
             result = match_target(name, pattern["pattern"], pattern["keys"])
-            if result[0]:
-                matches.append((pattern, result[1]))
+            if result.found:
+                matches.append((pattern, result.substitutions))
 
         # make sure we matched only one target
         if not matches or len(matches) > 1:
@@ -61,9 +67,9 @@ class TargetResolver:
                 "couldn't match one target for '%s-%s', found "
                 + "%d candidates"
             )
-            LOG.error(log_str, group, name, len(matches))
+            self.logger.error(log_str, group, name, len(matches))
             for match in matches:
-                LOG.error("%s", match[0]["data"]["name"])
+                self.logger.error("%s", match[0]["data"]["name"])
             return None
 
         # create a new target from the template, save it as a new literal so
@@ -85,6 +91,4 @@ class TargetResolver:
         providing its target datset.
         """
 
-        parsed = parse_targets(targets)
-        self.literals[name] = parsed[0]
-        self.patterns[name] = parsed[1]
+        self.literals[name], self.patterns[name] = parse_targets(targets)

@@ -46,7 +46,9 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         self.initial_cache = None
         self.manifest_changed = True
 
-    def load_manifest_with_cache(self, path: str = DEFAULT_MANIFEST) -> bool:
+    def load_manifest_with_cache(
+        self, path: str = DEFAULT_MANIFEST, logger: logging.Logger = LOG
+    ) -> bool:
         """
         Load a manifest and its cache, or set up a new cache if one doesn't
         exist.
@@ -69,7 +71,7 @@ class ManifestCacheEnvironment(ManifestEnvironment):
             # save a copy of the initial cache, so that we can use it to
             # determine if state has changed when evaluating targets
             self.initial_cache = copy_cache(self.cache)
-            LOG.debug("cache-environment loaded from '%s'", path)
+            logger.debug("cache-environment loaded from '%s'", path)
 
         return result and self.cache is not None
 

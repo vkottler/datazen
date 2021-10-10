@@ -24,12 +24,13 @@ class Environment(
 ):
     """A wrapper for inheriting all environment-loading capabilities."""
 
-    def __init__(self):
+    def __init__(self, logger: logging.Logger = LOG):
         """Add a notion of 'visited' targets to the environment data."""
 
         super().__init__()
         self.visited = defaultdict(bool)
         self.default = "compiles"
+        self.logger = logger
 
     def execute(
         self, target: str = "", should_cache: bool = True
@@ -41,10 +42,10 @@ class Environment(
         if not target:
             if "default_target" in data:
                 target = data["default_target"]
-                LOG.info("using default target '%s'", target)
+                self.logger.info("using default target '%s'", target)
             elif self.default in data and data[self.default]:
                 target = data[self.default][0]["name"]
-                LOG.info("resolving first target '%s'", target)
+                self.logger.info("resolving first target '%s'", target)
 
         slug = dep_slug_unwrap(target, self.default)
         return self.handle_task(slug[0], slug[1], should_cache=should_cache)
@@ -62,10 +63,10 @@ class Environment(
         for target in targets:
             task_result = self.execute(target, False)
             if not task_result[0]:
-                LOG.error("target '%s' failed", target)
+                self.logger.error("target '%s' failed", target)
                 return False
             if not task_result[1]:
-                LOG.info("'%s' already satisfied", target)
+                self.logger.info("'%s' already satisfied", target)
 
         # write the cache at the end, if we were totally successful
         self.write_cache()
@@ -93,15 +94,17 @@ class Environment(
 
 
 def from_manifest(
-    manifest_path: str, data_cache_name: str = "task_data"
+    manifest_path: str,
+    data_cache_name: str = "task_data",
+    logger: logging.Logger = LOG,
 ) -> Environment:
     """Load an environment object from a schema definition on disk."""
 
-    env = Environment()
+    env = Environment(logger)
 
     # load the manifest
     if not env.load_manifest_with_cache(manifest_path):
-        LOG.error("couldn't load manifest at '%s'", manifest_path)
+        logger.error("couldn't load manifest at '%s'", manifest_path)
     else:
         data_cache = f".{data_cache_name}{CACHE_SUFFIX}"
         path = os.path.join(os.path.dirname(env.cache.cache_dir), data_cache)

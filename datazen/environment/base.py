@@ -5,7 +5,7 @@ datazen - A base class to be extended for runtime data loading and storing.
 # built-in
 from collections import defaultdict
 import logging
-from typing import Dict, List, Tuple, Optional
+from typing import List, NamedTuple
 import threading
 
 # internal
@@ -13,27 +13,44 @@ from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
 from datazen.environment import EnvironmentNamespace, clone
 
-LOADTYPE = Tuple[Optional[List[str]], Optional[Dict[str, dict]]]
 LOG = logging.getLogger(__name__)
 SLUG_DELIM = "-"
 
 
-def get_dep_slug(operation: str, name: str) -> str:
-    """Build a key-slug for an operation's target."""
+class Task(NamedTuple):
+    """Parameters identifying a task."""
 
-    return f"{operation}{SLUG_DELIM}{name}"
+    variant: str
+    name: str
+
+    @property
+    def slug(self) -> str:
+        """Convert this task into its 'slug' form."""
+
+        return f"{self.variant}{SLUG_DELIM}{self.name}"
 
 
-def dep_slug_unwrap(slug: str, default_op: str) -> Tuple[str, str]:
+class TaskResult(NamedTuple):
+    """
+    Return value for a task, express whether or not the task succeeded and if
+    this tasks' result should be considered 'new' from the last time it was
+    evaluated.
+    """
+
+    success: bool
+    fresh: bool
+
+
+def dep_slug_unwrap(slug: str, default_op: str) -> Task:
     """
     From a slug String, determine the operation + target pair, if the
     operation isn't specified use a default.
     """
 
-    result = (default_op, slug)
+    result = Task(default_op, slug)
     if SLUG_DELIM in slug:
         split = slug.split(SLUG_DELIM, 1)
-        result = (split[0], split[1])
+        result = Task(split[0], split[1])
     return result
 
 
@@ -47,14 +64,14 @@ class BaseEnvironment:
         """
 
         self.namespaces = {}
-        self.namespaces[default_ns] = EnvironmentNamespace()
+        self.namespaces[default_ns] = EnvironmentNamespace(default_ns)
         self.lock = threading.RLock()
 
     def add_namespace(self, name: str, clone_root: bool = True) -> None:
         """Add a new namespace, optionally clone from the existing root."""
 
         with self.lock:
-            self.namespaces[name] = EnvironmentNamespace()
+            self.namespaces[name] = EnvironmentNamespace(name)
             if clone_root and name != ROOT_NAMESPACE:
                 clone(self.namespaces[ROOT_NAMESPACE], self.namespaces[name])
 
@@ -142,7 +159,7 @@ class BaseEnvironment:
         load_dep_list = load_deps[key_name]
         for load_dep in load_dep_list:
             if load_dep in target_data:
-                namespace = get_dep_slug(key_name, target)
+                namespace = Task(key_name, target).slug
                 self.add_namespace(namespace)
                 return namespace
 

@@ -6,7 +6,7 @@ datazen - An interface for parsing and matching targets.
 from collections import defaultdict
 from copy import deepcopy
 import re
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, NamedTuple
 
 # internal
 from datazen.paths import (
@@ -29,7 +29,17 @@ def target_is_literal(name: str) -> bool:
     return name.count(KW_OPEN) == name.count(KW_CLOSE) == 0
 
 
-def parse_target(name: str) -> Tuple[re.Pattern, List[str]]:
+class ParseResult(NamedTuple):
+    """
+    An encapsulation for a regular expression and the in-order keywords that
+    can be mapped to 'group' indices.
+    """
+
+    pattern: re.Pattern
+    keys: List[str]
+
+
+def parse_target(name: str) -> ParseResult:
     """
     From a target name, provide a compiled pattern and an in-order list of
     the names of the keyword arguments that will appear (group order).
@@ -50,7 +60,7 @@ def parse_target(name: str) -> Tuple[re.Pattern, List[str]]:
     pattern += name + "$"
 
     assert len(keys) == open_len
-    return re.compile(pattern), keys
+    return ParseResult(re.compile(pattern), keys)
 
 
 def parse_targets(
@@ -71,34 +81,48 @@ def parse_targets(
         dest_set = literals if data["literal"] else patterns
         data["data"] = target
         parsed = parse_target(target["name"])
-        data["pattern"] = parsed[0]
-        data["keys"] = parsed[1]
+        data["pattern"] = parsed.pattern
+        data["keys"] = parsed.keys
         dest_set[target["name"]] = data
 
     return literals, patterns
 
 
+MatchData = Dict[str, str]
+
+
+class TargetMatch(NamedTuple):
+    """
+    An encapsulation of results when attempting to patch a target name to a
+    pattern. If a target was matched and had keyword substitutions, the actual
+    values used will be set as match data.
+    """
+
+    found: bool
+    substitutions: MatchData
+
+
 def match_target(
     name: str, pattern: re.Pattern, keys: List[str]
-) -> Tuple[bool, Dict[str, str]]:
+) -> TargetMatch:
     """
     From a target name, attempt to match against a pattern and resolve a set
     of key names.
     """
 
-    data: Dict[str, str] = defaultdict(str)
+    data: MatchData = defaultdict(str)
     result = pattern.fullmatch(name)
 
     if result is None:
-        return False, data
+        return TargetMatch(False, data)
 
     for idx, key in enumerate(keys):
         data[key] = result.group(1 + idx)
 
-    return True, data
+    return TargetMatch(True, data)
 
 
-def resolve_target_list(target_list: list, match_data: Dict[str, str]) -> list:
+def resolve_target_list(target_list: list, match_data: MatchData) -> list:
     """
     Resovle matched-target data into a list form of target data from a
     manifest.
@@ -140,7 +164,7 @@ def resolve_dep_data(entry: dict, data: dict) -> dict:
     return data
 
 
-def resolve_target_data(target_data: dict, match_data: Dict[str, str]) -> dict:
+def resolve_target_data(target_data: dict, match_data: MatchData) -> dict:
     """Resolve matched-target data into a target's data from a manifest."""
 
     result: dict = {}

@@ -10,12 +10,10 @@ from typing import List
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
-from datazen.environment.base import LOADTYPE
 from datazen.environment.variable import VariableEnvironment
 from datazen.environment.schema import SchemaEnvironment
 from datazen.configs import load as load_configs
-
-LOG = logging.getLogger(__name__)
+from datazen.load import LoadedFiles, DEFAULT_LOADS
 
 
 class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
@@ -32,11 +30,12 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
 
     def load_configs(
         self,
-        cfg_loads: LOADTYPE = (None, None),
-        var_loads: LOADTYPE = (None, None),
-        sch_loads: LOADTYPE = (None, None),
-        sch_types_loads: LOADTYPE = (None, None),
+        cfg_loads: LoadedFiles = DEFAULT_LOADS,
+        var_loads: LoadedFiles = DEFAULT_LOADS,
+        sch_loads: LoadedFiles = DEFAULT_LOADS,
+        sch_types_loads: LoadedFiles = DEFAULT_LOADS,
         name: str = ROOT_NAMESPACE,
+        logger: logging.Logger = logging.getLogger(__name__),
     ) -> dict:
         """
         Load configuration data, resolve any un-loaded configuration
@@ -55,16 +54,14 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
             config_data = self.get_data(data_type, name)
             if to_load:
                 vdata = self.load_variables(var_loads, name)
-                config_data.update(
-                    load_configs(to_load, vdata, cfg_loads[0], cfg_loads[1])
-                )
+                config_data.update(load_configs(to_load, vdata, cfg_loads))
                 self.update_load_state(data_type, to_load, name)
 
         # enforce schemas
         if not self.enforce_schemas(
             config_data, True, sch_loads, sch_types_loads, name
         ):
-            LOG.error("schema validation failed, returning an empty dict")
+            logger.error("schema validation failed, returning an empty dict")
             return {}
 
         self.configs_valid = True

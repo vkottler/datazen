@@ -18,12 +18,16 @@ from datazen.parsing import load_stream
 LOG = logging.getLogger(__name__)
 
 
-def str_render(template: jinja2.Template, config_data_path: str) -> str:
+def str_render(
+    template: jinja2.Template,
+    config_data_path: str,
+    logger: logging.Logger = LOG,
+) -> str:
     """Load configuration data and render a jinja2 template with it."""
 
     # load the configuration data from file
     with open(config_data_path, encoding="utf-8") as stream:
-        config_data = load_stream(stream, config_data_path)[0]
+        config_data = load_stream(stream, config_data_path, logger).data
 
     return template.render(config_data)
 
@@ -33,6 +37,7 @@ def cmd_render(
     template_name: str,
     config_data_path: str,
     output_file_path: str,
+    logger: logging.Logger = LOG,
 ) -> bool:
     """Render the desired template from loaded configuration data."""
 
@@ -46,9 +51,9 @@ def cmd_render(
 
     # render the template to the output file, using the new data
     with open(output_file_path, "w", encoding="utf-8") as output:
-        output.write(str_render(template, config_data_path))
+        output.write(str_render(template, config_data_path, logger))
 
-    LOG.info(
+    logger.info(
         "'%s' rendered from '%s' (template: '%s')",
         output_file_path,
         config_data_path,

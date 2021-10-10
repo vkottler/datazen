@@ -4,11 +4,11 @@ datazen - An environment extension that exposes compilation capabilities.
 
 # built-in
 import logging
-import os
-from typing import List, Tuple
+from typing import List
 
 # internal
 from datazen.compile import str_compile, get_compile_output
+from datazen.environment.base import TaskResult
 from datazen.environment.task import TaskEnvironment
 from datazen.paths import advance_dict_by_path
 from datazen.targets import resolve_dep_data
@@ -33,7 +33,8 @@ class CompileEnvironment(TaskEnvironment):
         namespace: str,
         dep_data: dict = None,
         deps_changed: List[str] = None,
-    ) -> Tuple[bool, bool]:
+        logger: logging.Logger = LOG,
+    ) -> TaskResult:
         """Perform the compilation specified by the entry."""
 
         path, output_type = get_compile_output(entry)
@@ -62,13 +63,12 @@ class CompileEnvironment(TaskEnvironment):
             ["configs", "variables", "schemas"],
             deps_changed,
         ):
-            LOG.debug("compile '%s' satisfied, skipping", entry["name"])
-            return True, False
+            logger.debug("compile '%s' satisfied, skipping", entry["name"])
+            return TaskResult(True, False)
 
         mode = "a" if "append" in entry and entry["append"] else "w"
         with open(path, mode, encoding="utf-8") as out_file:
             out_file.write(str_compile(data, output_type))
-            LOG.info("compiled '%s' data to '%s'", output_type, path)
-        os.sync()
+            logger.info("compiled '%s' data to '%s'", output_type, path)
 
-        return True, True
+        return TaskResult(True, True)

@@ -7,7 +7,7 @@ import hashlib
 import io
 import json
 import logging
-from typing import TextIO, List, Tuple
+from typing import TextIO, List, NamedTuple
 import time
 
 # third-party
@@ -20,7 +20,20 @@ from datazen.paths import get_file_ext
 LOG = logging.getLogger(__name__)
 
 
-def get_json_data(data_file: TextIO) -> Tuple[dict, bool]:
+class LoadResult(NamedTuple):
+    """
+    An encapsulation of the result of loading raw data, the data collected and
+    whether or not it succeeded.
+    """
+
+    data: dict
+    success: bool
+
+
+def get_json_data(
+    data_file: TextIO,
+    logger: logging.Logger = LOG,
+) -> LoadResult:
     """Load JSON data from a text stream."""
 
     data = {}
@@ -31,11 +44,14 @@ def get_json_data(data_file: TextIO) -> Tuple[dict, bool]:
             data = {}
     except json.decoder.JSONDecodeError as exc:
         loaded = False
-        LOG.error("json-load error: %s", exc)
-    return data, loaded
+        logger.error("json-load error: %s", exc)
+    return LoadResult(data, loaded)
 
 
-def get_yaml_data(data_file: TextIO) -> Tuple[dict, bool]:
+def get_yaml_data(
+    data_file: TextIO,
+    logger: logging.Logger = LOG,
+) -> LoadResult:
     """Load YAML data from a text stream."""
 
     data = {}
@@ -46,34 +62,37 @@ def get_yaml_data(data_file: TextIO) -> Tuple[dict, bool]:
             data = {}
     except (scanner.ScannerError, parser.ParserError) as exc:
         loaded = False
-        LOG.error("yaml-load error: %s", exc)
-    return data, loaded
+        logger.error("yaml-load error: %s", exc)
+    return LoadResult(data, loaded)
 
 
-def load_stream(data_stream: TextIO, data_path: str) -> Tuple[dict, bool]:
+def load_stream(
+    data_stream: TextIO,
+    data_path: str,
+    logger: logging.Logger = LOG,
+) -> LoadResult:
     """
     Load arbitrary data from a text stream, update an existing dictionary.
     """
 
     # update the dictionary
     ext = get_file_ext(data_path)
-    data: dict = {}
-    result = False
+    result = LoadResult({}, False)
     if ext == "json":
-        data, result = get_json_data(data_stream)
+        result = get_json_data(data_stream, logger)
     elif ext == "yaml":
-        data, result = get_yaml_data(data_stream)
+        result = get_yaml_data(data_stream, logger)
     else:
-        LOG.error(
+        logger.error(
             "can't load data from '%s' (unknown extension '%s')",
             data_path,
             ext,
         )
 
-    if not result:
-        LOG.error("failed to load '%s'", data_path)
+    if not result.success:
+        logger.error("failed to load '%s'", data_path)
 
-    return data, result
+    return result
 
 
 def dedup_dict_lists(data: dict) -> dict:
@@ -112,6 +131,7 @@ def merge(
     dict_b: dict,
     path: List[str] = None,
     expect_overwrite: bool = False,
+    logger: logging.Logger = LOG,
 ) -> dict:
     """
     Combine two dictionaries recursively, prefers dict_a in a conflict. For
@@ -148,13 +168,15 @@ def merge(
             ):
                 dict_a[key].extend(dict_b[key])
             elif not isinstance(dict_b[key], type(dict_a[key])):
-                LOG.error("Type mismatch at '%s'", ".".join(path + [str(key)]))
-                LOG.error("left:  %s (%s)", type(dict_a[key]), dict_a[key])
-                LOG.error("right: %s (%s)", type(dict_b[key]), dict_b[key])
+                logger.error(
+                    "Type mismatch at '%s'", ".".join(path + [str(key)])
+                )
+                logger.error("left:  %s (%s)", type(dict_a[key]), dict_a[key])
+                logger.error("right: %s (%s)", type(dict_b[key]), dict_b[key])
             elif not expect_overwrite:
-                LOG.error("Conflict at '%s'", ".".join(path + [str(key)]))
-                LOG.error("left:  %s", dict_a[key])
-                LOG.error("right: %s", dict_b[key])
+                logger.error("Conflict at '%s'", ".".join(path + [str(key)]))
+                logger.error("left:  %s", dict_a[key])
+                logger.error("right: %s", dict_b[key])
             else:
                 dict_a[key] = dict_b[key]
         else:
@@ -169,11 +191,14 @@ def load(
     dict_to_update: dict,
     expect_overwrite: bool = False,
     is_template: bool = True,
-) -> Tuple[dict, bool]:
+    logger: logging.Logger = LOG,
+) -> LoadResult:
     """
     Load raw file data and meld it into an existing dictionary. Update
     the result as if it's a template using the provided variables.
     """
+
+    result = LoadResult({}, False)
 
     # read the raw file and interpret it as a template, resolve 'variables'
     try:
@@ -184,19 +209,19 @@ def load(
             else:
                 str_output = config_file.read()
     except FileNotFoundError:
-        LOG.error("can't find '%s' to load file data", data_path)
-        return ({}, False)
+        logger.error("can't find '%s' to load file data", data_path)
+        return result
     except jinja2.exceptions.TemplateError as exc:
-        LOG.error(
+        logger.error(
             "couldn't render '%s': %s (variables: %s)",
             data_path,
             exc,
             variables,
         )
-        return ({}, False)
+        return result
 
-    new_data, loaded = load_stream(io.StringIO(str_output), data_path)
-    return (
+    new_data, loaded = load_stream(io.StringIO(str_output), data_path, logger)
+    return LoadResult(
         merge(dict_to_update, new_data, expect_overwrite=expect_overwrite),
         loaded,
     )

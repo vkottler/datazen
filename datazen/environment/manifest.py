@@ -101,7 +101,12 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         return result
 
     def load_manifest_reent(
-        self, path: str, manifest_dir: str, params: dict, files: List[str]
+        self,
+        path: str,
+        manifest_dir: str,
+        params: dict,
+        files: List[str],
+        logger: logging.Logger = LOG,
     ) -> Tuple[dict, bool]:
         """
         Load a manifest recursively by resolving includes and merging the
@@ -132,10 +137,10 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         if "includes" in curr_manifest:
             for include in curr_manifest["includes"]:
                 result = self.load_manifest_reent(
-                    include, rel_path, params, files
+                    include, rel_path, params, files, logger
                 )
                 if not result[1]:
-                    LOG.info("include '%s' failed to load", path)
+                    logger.info("include '%s' failed to load", path)
                     return curr_manifest, False
                 all_manifests.append(result[0])
 
@@ -144,12 +149,14 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
 
         return curr_manifest, True
 
-    def load_manifest(self, path: str = "manifest.yaml") -> bool:
+    def load_manifest(
+        self, path: str = "manifest.yaml", logger: logging.Logger = LOG
+    ) -> bool:
         """Attempt to load manifest data from a file."""
 
         # don't allow double-loading manifests
         if self.manifest:
-            LOG.error(
+            logger.error(
                 "manifest '%s' already loaded for this environment",
                 self.manifest["path"],
             )
@@ -161,7 +168,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         self.manifest["dir"] = manifest_dir
         files: List[str] = []
         self.manifest["data"], loaded = self.load_manifest_reent(
-            path, manifest_dir, {}, files
+            path, manifest_dir, {}, files, logger
         )
         self.manifest["files"] = files
 
@@ -179,7 +186,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             return self.get_valid()
 
         # enforce the manifest schema
-        if not validate_manifest(self.manifest["data"]):
+        if not validate_manifest(self.manifest["data"], logger):
             self.set_valid(False)
             return self.get_valid()
 
@@ -191,26 +198,30 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         return self.get_valid()
 
 
-def get_manifest_schema(require_all: bool = True) -> Validator:
+def get_manifest_schema(
+    require_all: bool = True,
+    logger: logging.Logger = LOG,
+) -> Validator:
     """Load the schema for manifest from the package."""
 
     rel_path = os.path.join("schemas", "manifest.yaml")
     schema_str = get_package_data(rel_path)
     return Validator(
-        load_stream(StringIO(schema_str), rel_path)[0], require_all=require_all
+        load_stream(StringIO(schema_str), rel_path, logger).data,
+        require_all=require_all,
     )
 
 
-def validate_manifest(manifest: dict) -> bool:
+def validate_manifest(manifest: dict, logger: logging.Logger = LOG) -> bool:
     """Validate manifest data against the package schema."""
 
     custom_schemas = load_types([get_package_dir("schema_types")])
 
     with inject_custom_schemas(custom_schemas):
-        schema = get_manifest_schema(False)
+        schema = get_manifest_schema(False, logger)
         result = schema.validate(manifest)
 
     if not result:
-        LOG.error("invalid manifest: %s", schema.errors)
+        logger.error("invalid manifest: %s", schema.errors)
 
     return result

@@ -7,12 +7,11 @@ from collections import defaultdict
 import logging
 import os
 import subprocess
-from typing import List, Tuple
+from typing import List
 
 # internal
+from datazen.environment.base import TaskResult
 from datazen.environment.task import TaskEnvironment, get_path
-
-LOG = logging.getLogger(__name__)
 
 
 class CommandEnvironment(TaskEnvironment):
@@ -30,7 +29,8 @@ class CommandEnvironment(TaskEnvironment):
         _: str,
         __: dict = None,
         deps_changed: List[str] = None,
-    ) -> Tuple[bool, bool]:
+        logger: logging.Logger = logging.getLogger(__name__),
+    ) -> TaskResult:
         """Perform the command specified by the entry."""
 
         cmd = [entry["command"]]
@@ -47,7 +47,7 @@ class CommandEnvironment(TaskEnvironment):
         if not force and (
             not deps_changed and file_exists and entry["name"] in task_data
         ):
-            return True, False
+            return TaskResult(True, False)
 
         result = subprocess.run(cmd, capture_output=True)
 
@@ -60,12 +60,12 @@ class CommandEnvironment(TaskEnvironment):
 
         # log information about failures
         if result.returncode != 0:
-            LOG.error("command '%s' failed!", entry["command"])
-            LOG.error("args: %s", ", ".join(result.args))
-            LOG.error("exit: %d", result.returncode)
-            LOG.error("stdout:")
+            logger.error("command '%s' failed!", entry["command"])
+            logger.error("args: %s", ", ".join(result.args))
+            logger.error("exit: %d", result.returncode)
+            logger.error("stdout:")
             print(data["stdout"])
-            LOG.error("stderr:")
+            logger.error("stderr:")
             print(data["stderr"])
 
-        return result.returncode == 0, True
+        return TaskResult(result.returncode == 0, True)

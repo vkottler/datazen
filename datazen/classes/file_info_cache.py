@@ -9,12 +9,12 @@ import logging
 import os
 import shutil
 import time
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 # internal
 from datazen import VERSION
 from datazen.parsing import set_file_hash, dedup_dict_lists
-from datazen.load import load_dir_only
+from datazen.load import load_dir_only, LoadedFiles
 from datazen.compile import write_dir
 
 LOG = logging.getLogger(__name__)
@@ -29,7 +29,11 @@ DATA_DEFAULT = {
 class FileInfoCache:
     """Provides storage for file hashes and lists that have been loaded."""
 
-    def __init__(self, cache_dir: str = None):
+    def __init__(
+        self,
+        cache_dir: str = None,
+        logger: logging.Logger = LOG,
+    ) -> None:
         """Construct an empty cache or optionally load from a directory."""
 
         self.data: dict = deepcopy(DATA_DEFAULT)
@@ -37,6 +41,7 @@ class FileInfoCache:
         self.cache_dir: str = ""
         if cache_dir is not None:
             self.load(cache_dir)
+        self.logger = logger
 
     def load(self, cache_dir: str) -> None:
         """Load data from a directory."""
@@ -93,7 +98,7 @@ class FileInfoCache:
                 if not self.check_hit(hash_set, filename, False):
                     misses.append((filename, hash_item))
                 else:
-                    LOG.debug(
+                    self.logger.debug(
                         "%s (%s) matched",
                         filename,
                         time_str(hash_item["time"]),
@@ -101,12 +106,14 @@ class FileInfoCache:
 
             # log all misses / updates
             for miss in misses:
-                LOG.info("%s (%s) updated", miss[0], time_str(miss[1]["time"]))
+                self.logger.info(
+                    "%s (%s) updated", miss[0], time_str(miss[1]["time"])
+                )
             for removed in self.removed_data[hash_set]:
-                LOG.info("%s no longer present", removed)
+                self.logger.info("%s no longer present", removed)
 
             # log a summary
-            LOG.info(
+            self.logger.info(
                 "%s: %d/%d match",
                 hash_set,
                 total - (len(misses) + len(self.removed_data[hash_set])),
@@ -115,16 +122,16 @@ class FileInfoCache:
 
         # describe metadata
         if "meta" in self.data:
-            LOG.info(
+            self.logger.info(
                 "version: %s (current: %s)",
                 self.data["meta"]["version"],
                 VERSION,
             )
 
-    def get_data(self, name: str) -> Tuple[List[str], Dict[str, dict]]:
+    def get_data(self, name: str) -> LoadedFiles:
         """Get the tuple version of cached data."""
 
-        return (self.get_loaded(name), self.get_hashes(name))
+        return LoadedFiles(self.get_loaded(name), self.get_hashes(name))
 
     def clean(self) -> None:
         """Remove cached data from the file-system."""
@@ -132,8 +139,7 @@ class FileInfoCache:
         self.data = deepcopy(DATA_DEFAULT)
         if self.cache_dir != "":
             shutil.rmtree(self.cache_dir)
-            LOG.info("cleaning cache at '%s'", self.cache_dir)
-            os.sync()
+            self.logger.info("cleaning cache at '%s'", self.cache_dir)
 
     def write(self, out_type: str = "json") -> None:
         """Commit cached data to the file-system."""
@@ -141,7 +147,7 @@ class FileInfoCache:
         if self.cache_dir != "":
             data = sync_cache_data(self.data, self.removed_data)
             write_dir(self.cache_dir, data, out_type)
-            LOG.debug("wrote cache to '%s'", self.cache_dir)
+            self.logger.debug("wrote cache to '%s'", self.cache_dir)
 
 
 def copy(cache: FileInfoCache) -> FileInfoCache:
@@ -245,6 +251,7 @@ def cmp_total_loaded(
     cache_b: FileInfoCache,
     known_types: List[str],
     load_checks: Dict[str, List[str]] = None,
+    logger: logging.Logger = LOG,
 ) -> int:
     """
     Compute the total difference in file counts for a provided set of named
@@ -258,7 +265,7 @@ def cmp_total_loaded(
                 cache_a, cache_b, known, load_checks[known]
             )
             if iter_result > 0:
-                LOG.info(
+                logger.info(
                     "%d changes detected for '%s' in '%s'",
                     iter_result,
                     known,
@@ -268,7 +275,7 @@ def cmp_total_loaded(
         else:
             iter_result = cmp_loaded_count(cache_a, cache_b, known)
             if iter_result > 0:
-                LOG.info("%d changes detected for '%s'", iter_result, known)
+                logger.info("%d changes detected for '%s'", iter_result, known)
             result += iter_result
     return result
 

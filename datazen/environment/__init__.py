@@ -7,30 +7,28 @@ from copy import copy, deepcopy
 import logging
 import os
 import threading
-from typing import List
+from typing import Dict, List
 
 # internal
 from datazen.paths import resolve_dir
 from datazen.enums import DataType
 
-LOG = logging.getLogger(__name__)
-
 
 class EnvironmentNamespace:
     """The base class for management of the environment data structure."""
 
-    def __init__(self):
+    def __init__(self, name: str):
         """Base constructor."""
 
-        self.directories = {}
+        self.directories: Dict[DataType, List[dict]] = {}
         for dtype in DataType:
             self.directories[dtype] = []
 
-        self.data = {}
+        self.data: Dict[DataType, dict] = {}
         for dtype in DataType:
             self.data[dtype] = {}
 
-        self.data_clone_strategy = {
+        self.data_clone_strategy: Dict[DataType, dict] = {
             DataType.CONFIG: {"should": True, "method": deepcopy},
             DataType.SCHEMA: {"should": True, "method": deepcopy},
             DataType.SCHEMA_TYPES: {"should": False},
@@ -40,6 +38,7 @@ class EnvironmentNamespace:
 
         self.valid = True
         self.lock = threading.Lock()
+        self.logger = logging.getLogger(f"namespace.{name}")
 
     def get_to_load(self, dir_type: DataType) -> List[str]:
         """
@@ -83,13 +82,15 @@ class EnvironmentNamespace:
 
             for dir_inst in dir_data:
                 if dir_inst["path"] in to_load:
-                    LOG.debug(
+                    self.logger.debug(
                         "loaded '%s' as '%s'", dir_inst["path"], dir_type.value
                     )
                     dir_inst["loaded"] = True
                     loaded = loaded + 1
 
-        LOG.debug("loaded %d new directories for '%s'", loaded, dir_type.value)
+        self.logger.debug(
+            "loaded %d new directories for '%s'", loaded, dir_type.value
+        )
 
         return loaded
 
@@ -121,7 +122,7 @@ class EnvironmentNamespace:
                     return allow_dup
 
             if not os.path.isdir(dir_path):
-                LOG.error(
+                self.logger.error(
                     "'%s' isn't a directory, not adding to '%s'",
                     dir_path,
                     dir_type.value,
@@ -130,7 +131,7 @@ class EnvironmentNamespace:
 
             dir_list.append({"path": dir_path, "loaded": False})
 
-        LOG.debug("added '%s' to '%s'", dir_path, dir_type.value)
+        self.logger.debug("added '%s' to '%s'", dir_path, dir_type.value)
         return True
 
     def add_dirs(
@@ -152,7 +153,7 @@ class EnvironmentNamespace:
                 dirs_added = dirs_added + 1
 
         if dirs_added != len(dir_paths):
-            LOG.error(
+            self.logger.error(
                 "only loaded %d / %d directories, marking invalid",
                 dirs_added,
                 len(dir_paths),

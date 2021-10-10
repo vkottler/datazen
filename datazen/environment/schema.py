@@ -9,7 +9,8 @@ from typing import List
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
-from datazen.environment.base import BaseEnvironment, LOADTYPE
+from datazen.environment.base import BaseEnvironment
+from datazen.load import LoadedFiles, DEFAULT_LOADS
 from datazen.schemas import load as load_schemas
 from datazen.schemas import validate, load_types, inject_custom_schemas
 
@@ -21,7 +22,9 @@ class SchemaEnvironment(BaseEnvironment):
     """
 
     def load_schema_types(
-        self, sch_loads: LOADTYPE = (None, None), name: str = ROOT_NAMESPACE
+        self,
+        sch_loads: LoadedFiles = DEFAULT_LOADS,
+        name: str = ROOT_NAMESPACE,
     ) -> dict:
         """Load custom schema types and resolve any un-loaded directories."""
 
@@ -34,17 +37,15 @@ class SchemaEnvironment(BaseEnvironment):
             # load schema data for this namespace
             schema_type_data = self.get_data(data_type, name)
             if to_load:
-                schema_type_data.update(
-                    load_types(to_load, sch_loads[0], sch_loads[1])
-                )
+                schema_type_data.update(load_types(to_load, sch_loads))
 
         return schema_type_data
 
     def load_schemas(
         self,
         require_all: bool = True,
-        sch_loads: LOADTYPE = (None, None),
-        sch_types_loads: LOADTYPE = (None, None),
+        sch_loads: LoadedFiles = DEFAULT_LOADS,
+        sch_types_loads: LoadedFiles = DEFAULT_LOADS,
         name: str = ROOT_NAMESPACE,
         modify_registry: bool = True,
     ) -> dict:
@@ -63,9 +64,7 @@ class SchemaEnvironment(BaseEnvironment):
             if to_load:
                 with inject_custom_schemas(sch_types, modify_registry):
                     schema_data.update(
-                        load_schemas(
-                            to_load, require_all, sch_loads[0], sch_loads[1]
-                        )
+                        load_schemas(to_load, require_all, sch_loads)
                     )
 
         return schema_data
@@ -74,8 +73,8 @@ class SchemaEnvironment(BaseEnvironment):
         self,
         data: dict,
         require_all: bool = True,
-        sch_loads: LOADTYPE = (None, None),
-        sch_types_loads: LOADTYPE = (None, None),
+        sch_loads: LoadedFiles = DEFAULT_LOADS,
+        sch_types_loads: LoadedFiles = DEFAULT_LOADS,
         name: str = ROOT_NAMESPACE,
     ) -> bool:
         """

@@ -20,6 +20,7 @@ def cmd_compile(
     schema_dirs: List[str],
     variable_dirs: List[str],
     output_file_path: str,
+    logger: logging.Logger = LOG,
 ) -> bool:
     """
     Load configuration data by resolving variables and validating provided
@@ -45,7 +46,7 @@ def cmd_compile(
     # serialize the data
     result = str_compile(configs, ext)
     if not result:
-        LOG.error(
+        logger.error(
             "can't write '%s' data to '%s', no output", ext, output_file_path
         )
         return False
@@ -53,6 +54,6 @@ def cmd_compile(
     # write the output
     with open(output_file_path, "w", encoding="utf-8") as output:
         output.write(result)
-    LOG.info("wrote '%s' configuration data to '%s'", ext, output_file_path)
+    logger.info("wrote '%s' configuration data to '%s'", ext, output_file_path)
 
     return True

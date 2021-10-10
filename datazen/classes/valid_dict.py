@@ -9,8 +9,6 @@ from collections import UserDict
 # third-party
 from cerberus import Validator
 
-LOG = logging.getLogger(__name__)
-
 
 class ValidDict(UserDict):
     """
@@ -18,7 +16,13 @@ class ValidDict(UserDict):
     enforced.
     """
 
-    def __init__(self, name: str, data: dict, schema: Validator):
+    def __init__(
+        self,
+        name: str,
+        data: dict,
+        schema: Validator,
+        logger: logging.Logger = logging.getLogger(__name__),
+    ) -> None:
         """Initialize a named, ValidDict."""
 
         # initialize the dict
@@ -29,11 +33,12 @@ class ValidDict(UserDict):
         self.name = name
         self.validator = schema
         self.valid = self.validator.validate(self.data)
+        self.logger = logger
         if not self.valid:
-            LOG.error(
+            self.logger.error(
                 "validation error(s) for '%s': %s",
                 self.name,
                 self.validator.errors,
             )
-            LOG.error("data: %s", data)
-            LOG.error("schema: %s", schema.schema)
+            self.logger.error("data: %s", data)
+            self.logger.error("schema: %s", schema.schema)

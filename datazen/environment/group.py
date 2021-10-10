@@ -3,9 +3,11 @@ datazen - A target-type for grouping other target-tasks together.
 """
 
 # built-in
-from typing import List, Tuple
+import logging
+from typing import List
 
 # internal
+from datazen.environment.base import TaskResult
 from datazen.environment.task import TaskEnvironment
 
 
@@ -24,9 +26,13 @@ class GroupEnvironment(TaskEnvironment):
         _: str,
         dep_data: dict = None,
         deps_changed: List[str] = None,
-    ) -> Tuple[bool, bool]:
+        logger: logging.Logger = logging.getLogger(__name__),
+    ) -> TaskResult:
         """Stub task to group other tasks."""
 
         if dep_data is not None:
             self.task_data["groups"][entry["name"]] = dep_data
-        return (True, bool(deps_changed))
+        changed = bool(deps_changed)
+        if changed:
+            logger.info("group '%s' updated", entry["name"])
+        return TaskResult(True, changed)
