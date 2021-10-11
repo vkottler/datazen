@@ -66,6 +66,9 @@ entries:
             type: string
           index_path:
             type: string
+          merge_deps:
+            type: boolean
+            default: false
           append:
             type: boolean
 

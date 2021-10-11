@@ -10,6 +10,7 @@ from typing import List
 from datazen.compile import str_compile, get_compile_output
 from datazen.environment.base import TaskResult
 from datazen.environment.task import TaskEnvironment
+from datazen.parsing import merge_dicts
 from datazen.paths import advance_dict_by_path
 from datazen.targets import resolve_dep_data
 
@@ -44,7 +45,13 @@ class CompileEnvironment(TaskEnvironment):
 
         # update this dict with the dependency data
         if dep_data is not None:
-            data.update(dep_data)
+            if entry.get("merge_deps", False):
+                data = merge_dicts([{}, data, dep_data], logger=logger)
+
+            # this isn't a good default behavior in practice, but older code
+            # (and tests) rely on it
+            else:
+                data.update(dep_data)
 
         # advance the dict if it was requested
         if "index_path" in entry:

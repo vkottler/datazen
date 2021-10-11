@@ -32,6 +32,10 @@ compiles:
   override_path: "test"
   dependencies:
   - "{a.b.c}"
+- name: comp4
+  merge_deps: true
+  index_path: a
+  dependencies: [a, b, c]
 - name: "g"
   dependencies:
   - "noop-test"

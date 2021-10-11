@@ -87,7 +87,9 @@ def get_render_children(
         assert slug[1] in dep_data
         assert isinstance(dep_data[slug[1]], str)
         result.append(dep_data[slug[1]])
-    dep_data["__children__"] = indent_str(delimeter.join(result), indent)
+    dep_data[to_private("children")] = indent_str(
+        delimeter.join(result), indent
+    )
 
 
 class RenderEnvironment(TaskEnvironment):

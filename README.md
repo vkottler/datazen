@@ -1,12 +1,12 @@
 <!--
     =====================================
     generator=datazen
-    version=1.8.0
-    hash=1fc2193b8d61560e053aae87cc5b76aa
+    version=1.8.1
+    hash=8ac4d427759139dd90156ebb396cb7c8
     =====================================
 -->
 
-# datazen ([1.8.0](https://pypi.org/project/datazen/))
+# datazen ([1.8.1](https://pypi.org/project/datazen/))
 
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
 ![Build Status](https://github.com/vkottler/datazen/workflows/Python%20package/badge.svg)
@@ -134,6 +134,9 @@ compiles:
         type: string
       index_path:
         type: string
+      merge_deps:
+        type: boolean
+        default: false
       append:
         type: boolean
 ```

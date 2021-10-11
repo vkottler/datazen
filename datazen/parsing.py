@@ -114,7 +114,11 @@ def dedup_dict_lists(data: dict) -> dict:
     return data
 
 
-def merge_dicts(dicts: List[dict], expect_overwrite: bool = False) -> dict:
+def merge_dicts(
+    dicts: List[dict],
+    expect_overwrite: bool = False,
+    logger: logging.Logger = LOG,
+) -> dict:
     """
     Merge a list of dictionary data into a single set (mutates the first
     element).
@@ -122,7 +126,12 @@ def merge_dicts(dicts: List[dict], expect_overwrite: bool = False) -> dict:
 
     result = dicts[0]
     for right_dict in dicts[1:]:
-        result = merge(result, right_dict, expect_overwrite=expect_overwrite)
+        result = merge(
+            result,
+            right_dict,
+            expect_overwrite=expect_overwrite,
+            logger=logger,
+        )
     return result
 
 

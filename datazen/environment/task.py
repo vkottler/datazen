@@ -15,6 +15,7 @@ from datazen.environment.base import dep_slug_unwrap, Task, TaskResult
 from datazen.environment.manifest import set_output_dir
 from datazen.environment.manifest_cache import ManifestCacheEnvironment
 from datazen.classes.task_data_cache import TaskDataCache
+from datazen.parsing import merge
 
 LOG = logging.getLogger(__name__)
 
@@ -127,7 +128,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         they've saved.
         """
 
-        dep_data = {}
+        dep_data: dict = {}
 
         # flatten all of the tasks' data into a single dict
         for dep in dep_list:
@@ -137,7 +138,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
                 curr_data = self.task_data[task.variant][task.name]
 
             if isinstance(curr_data, dict):
-                dep_data.update(curr_data)
+                dep_data = merge(dep_data, curr_data)
 
         return dep_data
 
