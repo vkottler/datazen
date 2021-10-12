@@ -127,6 +127,10 @@ entries:
             type: boolean
           indent:
             type: integer
+          template_dependencies:
+            type: list
+            schema:
+              type: string
 
 - name: "Groups"
   description: |

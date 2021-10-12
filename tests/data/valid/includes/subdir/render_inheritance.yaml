@@ -1,5 +1,7 @@
 renders:
 - name: "child.html"
+  template_dependencies:
+  - "base.html"
 
 groups:
 - name: "render-inheritance"

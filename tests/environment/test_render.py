@@ -38,6 +38,19 @@ def test_render_template_inheritance():
 
     with scoped_environment() as env:
         assert env.group("render-inheritance") == (True, True)
+        assert env.render("child.html") == (True, False)
+
+        # Ensure that an update to an inherited template results in a fresh
+        # render.
+        path = os.path.join("templates", "base.html.j2")
+        with injected_content(path) as base:
+            base.write("empty" + os.linesep)
+            new_env = from_manifest(get_resource("manifest.yaml"))
+            assert new_env.render("child.html") == (True, True)
+
+        # Render again so the correct output persists.
+        new_env = from_manifest(get_resource("manifest.yaml"))
+        assert new_env.render("child.html") == (True, True)
 
 
 def test_render_common_template_dep():

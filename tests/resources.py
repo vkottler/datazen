@@ -16,7 +16,7 @@ import git
 from datazen.environment.integrated import Environment, from_manifest
 
 
-def get_resource(resource_name: str, valid: bool) -> str:
+def get_resource(resource_name: str, valid: bool = True) -> str:
     """Locate the path to a test resource."""
 
     valid_str = "valid" if valid else "invalid"
@@ -43,7 +43,9 @@ def scoped_environment(
 
 
 @contextmanager
-def injected_content(resource_name: str, valid: bool) -> Iterator[TextIO]:
+def injected_content(
+    resource_name: str, valid: bool = True
+) -> Iterator[TextIO]:
     """
     Provide a test resource as a context manager such that the original
     contents are preserved on exit.

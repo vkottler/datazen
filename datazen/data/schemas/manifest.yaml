@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=1.8.0
-# hash=5a38bddf9790f815c3a8f2018d6788b0
+# version=1.8.1
+# hash=ce45149869ac73705747637d57e33d0d
 # =====================================
 includes: paths
 
@@ -96,6 +96,10 @@ renders:
         type: boolean
       indent:
         type: integer
+      template_dependencies:
+        type: list
+        schema:
+          type: string
 
 groups:
   type: list

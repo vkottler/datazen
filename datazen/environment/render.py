@@ -5,7 +5,7 @@ datazen - An environment extension that exposes rendering capabilities.
 # built-in
 import logging
 import os
-from typing import Dict, List, Optional
+from typing import cast, Dict, List, Optional
 
 # third-party
 import jinja2
@@ -231,7 +231,13 @@ class RenderEnvironment(TaskEnvironment):
 
         # determine if we need to perform this render
         assert template.filename is not None
-        load_checks = {"templates": [template.filename]}
+        load_checks = {
+            "templates": [template.filename]
+            + [
+                cast(str, templates[x].filename)
+                for x in entry.get("template_dependencies", [])
+            ]
+        }
         if self.already_satisfied(
             entry["name"], path, change_criteria, deps_changed, load_checks
         ):
