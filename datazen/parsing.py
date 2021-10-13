@@ -171,6 +171,7 @@ def merge(
                     dict_b[key],
                     path + [str(key)],
                     expect_overwrite,
+                    logger,
                 )
             elif isinstance(dict_a[key], list) and isinstance(
                 dict_b[key], list

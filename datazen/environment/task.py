@@ -5,6 +5,7 @@ datazen - A class for exposing the capability to run concrete tasks against
 
 # built-in
 from collections import defaultdict
+from copy import deepcopy
 import logging
 import os
 from typing import Callable, List, Tuple, Dict, Optional
@@ -122,7 +123,11 @@ class TaskEnvironment(ManifestCacheEnvironment):
         if dep != curr_target and (not is_resolved or is_new):
             task_stack.append(task)
 
-    def get_dep_data(self, dep_list: List[str]) -> dict:
+    def get_dep_data(
+        self,
+        dep_list: List[str],
+        logger: logging.Logger = LOG,
+    ) -> dict:
         """
         From a list of dependencies, create a dictionary with any task data
         they've saved.
@@ -135,10 +140,10 @@ class TaskEnvironment(ManifestCacheEnvironment):
             task = dep_slug_unwrap(dep, self.default)
 
             with self.lock:
-                curr_data = self.task_data[task.variant][task.name]
+                curr_data = deepcopy(self.task_data[task.variant][task.name])
 
             if isinstance(curr_data, dict):
-                dep_data = merge(dep_data, curr_data)
+                dep_data = merge(dep_data, curr_data, logger=logger)
 
         return dep_data
 
@@ -182,6 +187,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         dep_list: List[str],
         task_stack: List[Task],
         target: str,
+        logger: logging.Logger = LOG,
     ) -> Tuple[bool, dict, List[str]]:
         """
         Execute the entire chain of dependencies for a task, return the
@@ -209,7 +215,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
                     deps_changed.append(task.slug)
 
         # provide dependency data as "flattened"
-        return True, self.get_dep_data(dep_list), deps_changed
+        return True, self.get_dep_data(dep_list, logger), deps_changed
 
     def get_manifest_entry(self, category: str, name: str) -> dict:
         """Get an entry from the manifest."""
@@ -262,7 +268,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         # push dependencies
         dep_result = self.resolve_dependencies(
-            get_dep_list(data), task_stack, target
+            get_dep_list(data), task_stack, target, logger
         )
         if not dep_result[0]:
             return TaskResult(False, False)

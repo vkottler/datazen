@@ -46,7 +46,7 @@ class CompileEnvironment(TaskEnvironment):
         # update this dict with the dependency data
         if dep_data is not None:
             if entry.get("merge_deps", False):
-                data = merge_dicts([{}, data, dep_data], logger=logger)
+                data = merge_dicts([data, dep_data], logger=logger)
 
             # this isn't a good default behavior in practice, but older code
             # (and tests) rely on it
