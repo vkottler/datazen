@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=1.8.2
-# hash=ce45149869ac73705747637d57e33d0d
+# version=1.8.3
+# hash=619e217eb9c9908fe073f104d4a829bc
 # =====================================
 includes: paths
 
@@ -30,6 +30,7 @@ compiles:
     schema:
       configs: paths
       schemas: paths
+      schema_types: paths
       variables: paths
       dependencies: deps
       name:

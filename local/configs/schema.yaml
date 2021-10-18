@@ -52,6 +52,7 @@ entries:
         schema:
           configs: paths
           schemas: paths
+          schema_types: paths
           variables: paths
           dependencies: deps
           name:

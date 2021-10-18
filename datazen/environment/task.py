@@ -205,6 +205,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
                 result = self.handle_task(
                     task.variant, task.name, task_stack, False
                 )
+                self.logger = self.logger_init
 
                 # if a dependency failed, propagate it up
                 if not result.success:
@@ -243,7 +244,9 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         task = Task(key_name, target)
         slug = task.slug
+
         logger = logging.getLogger(slug)
+        self.logger = logger
 
         # fall back on default behavior if the manifest doesn't even have
         # an entry for this key

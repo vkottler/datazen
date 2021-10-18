@@ -32,8 +32,8 @@ def load(
 
     # interpret all top-level keys as schemas
     schemas = {}
-    for item in result.items():
-        schemas[item[0]] = Validator(item[1], require_all=require_all)
+    for key, schema in result.items():
+        schemas[key] = Validator(schema, require_all=require_all)
     return schemas
 
 
@@ -83,10 +83,9 @@ def validate(
     provided data.
     """
 
-    for item in schema_data.items():
-        key = item[0]
+    for key, schema in schema_data.items():
         if key in data:
-            if not ValidDict(key, data[key], item[1], logger).valid:
+            if not ValidDict(key, data[key], schema, logger).valid:
                 return False
 
     # warn if anything wasn't validated

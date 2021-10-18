@@ -90,6 +90,7 @@ class SchemaEnvironment(BaseEnvironment):
                         require_all, sch_loads, sch_types_loads, name, False
                     ),
                     data,
+                    self.logger,
                 )
 
         return result

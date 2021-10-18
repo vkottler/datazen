@@ -13,7 +13,6 @@ from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
 from datazen.environment import EnvironmentNamespace, clone
 
-LOG = logging.getLogger(__name__)
 SLUG_DELIM = "-"
 
 
@@ -57,7 +56,11 @@ def dep_slug_unwrap(slug: str, default_op: str) -> Task:
 class BaseEnvironment:
     """The base class for environment loading-and-storing management."""
 
-    def __init__(self, default_ns: str = ROOT_NAMESPACE):
+    def __init__(
+        self,
+        default_ns: str = ROOT_NAMESPACE,
+        logger: logging.Logger = logging.getLogger(__name__),
+    ) -> None:
         """
         Manage environments by names, set up a dictionary with a root
         namespace.
@@ -66,6 +69,8 @@ class BaseEnvironment:
         self.namespaces = {}
         self.namespaces[default_ns] = EnvironmentNamespace(default_ns)
         self.lock = threading.RLock()
+        self.logger = logger
+        self.logger_init = self.logger
 
     def add_namespace(self, name: str, clone_root: bool = True) -> None:
         """Add a new namespace, optionally clone from the existing root."""

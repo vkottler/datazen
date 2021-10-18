@@ -16,21 +16,18 @@ from datazen.environment.group import GroupEnvironment
 from datazen.environment.compile import CompileEnvironment
 from datazen.environment.render import RenderEnvironment
 
-LOG = logging.getLogger(__name__)
-
 
 class Environment(
     CompileEnvironment, RenderEnvironment, GroupEnvironment, CommandEnvironment
 ):
     """A wrapper for inheriting all environment-loading capabilities."""
 
-    def __init__(self, logger: logging.Logger = LOG):
+    def __init__(self):
         """Add a notion of 'visited' targets to the environment data."""
 
         super().__init__()
         self.visited = defaultdict(bool)
         self.default = "compiles"
-        self.logger = logger
 
     def execute(
         self, target: str = "", should_cache: bool = True
@@ -96,11 +93,11 @@ class Environment(
 def from_manifest(
     manifest_path: str,
     data_cache_name: str = "task_data",
-    logger: logging.Logger = LOG,
+    logger: logging.Logger = logging.getLogger(__name__),
 ) -> Environment:
     """Load an environment object from a schema definition on disk."""
 
-    env = Environment(logger)
+    env = Environment()
 
     # load the manifest
     if not env.load_manifest_with_cache(manifest_path):
