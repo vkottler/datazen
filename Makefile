@@ -12,3 +12,7 @@ ifndef MK_AUTO
 $(error target this Makefile with 'mk', not '$(MAKE)' ($(MK_INFO)))
 endif
 ###############################################################################
+
+.PHONY: edit
+
+edit: $(PY_PREFIX)edit

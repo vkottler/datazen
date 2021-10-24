@@ -37,6 +37,8 @@ class CommandEnvironment(TaskEnvironment):
         if "arguments" in entry and entry["arguments"]:
             cmd += entry["arguments"]
 
+        if entry["name"] not in self.task_data["commands"]:
+            self.task_data["commands"][entry["name"]] = {}
         task_data = self.task_data["commands"][entry["name"]]
 
         # determine if the command needs to run
