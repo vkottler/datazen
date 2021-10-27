@@ -1,3 +1,4 @@
+---
 default_target: "groups-all"
 
 params:
@@ -6,42 +7,42 @@ params:
   entry: "dz"
 
 includes:
-- "config/includes/python.yaml"
-- "config/includes/help.yaml"
+  - "config/includes/python.yaml"
+  - "config/includes/help.yaml"
 
 configs:
-- "local/configs"
+  - "local/configs"
 
 templates:
-- "local/templates"
+  - "local/templates"
 
 variables:
-- "local/variables"
+  - "local/variables"
 
 compiles:
-- name: "local"
+  - name: "local"
 
 renders:
-- name: "manifest.yaml"
-  output_dir: "{{project}}/data/schemas"
-  dependencies:
-  - "compiles-local"
-- name: "README.md"
-  output_dir: "."
-  dependencies:
-  - "compiles-local"
-  - "commands-help"
-  - "renders-python_readme_header.md"
-- name: "LICENSE"
-  key: "LICENSE_MIT"
-  output_dir: "."
-  dependencies:
-  - "compiles-local"
+  - name: "manifest.yaml"
+    output_dir: "{{project}}/data/schemas"
+    dependencies:
+      - "compiles-local"
+  - name: "README.md"
+    output_dir: "."
+    dependencies:
+      - "compiles-local"
+      - "commands-help"
+      - "renders-python_readme_header.md"
+  - name: "LICENSE"
+    key: "LICENSE_MIT"
+    output_dir: "."
+    dependencies:
+      - "compiles-local"
 
 groups:
-- name: "all"
-  dependencies:
-  - "renders-LICENSE"
-  - "renders-README.md"
-  - "renders-manifest.yaml"
-  - "groups-python"
+  - name: "all"
+    dependencies:
+      - "renders-LICENSE"
+      - "renders-README.md"
+      - "renders-manifest.yaml"
+      - "groups-python"

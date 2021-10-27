@@ -6,6 +6,12 @@ the complexity of managing configuration data scales with its complexity.
 This package simplifies data curation and partitioning for uses in rendering
 templates, or just rendering final sets of serialized data.
 
+# Manifest Schema Reference
+
+{% for schema in schema["entries"] %}
+* [{{schema["name"]}}](#{{schema["slug"]}})
+{% endfor %}
+
 # Usage
 
 ```

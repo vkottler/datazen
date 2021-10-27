@@ -5,6 +5,7 @@ datazen - An interface for retrieving and interacting with test data.
 # built-in
 from contextlib import contextmanager
 import os
+from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import List, TextIO, Iterator
 import pkg_resources
@@ -16,30 +17,57 @@ import git
 from datazen.environment.integrated import Environment, from_manifest
 
 
-def get_resource(resource_name: str, valid: bool = True) -> str:
+def get_resource(
+    resource_name: str, valid: bool = True, pkg: str = __name__
+) -> str:
     """Locate the path to a test resource."""
 
     valid_str = "valid" if valid else "invalid"
     resource_path = os.path.join("data", valid_str, resource_name)
-    return pkg_resources.resource_filename(__name__, resource_path)
+    return pkg_resources.resource_filename(pkg, resource_path)
+
+
+def get_scenario_manifest(
+    scenario: str, manifest: str = "manifest.yaml", pkg: str = __name__
+) -> Path:
+    """Get the path to a manifest in a given test scenario."""
+
+    resource = os.path.join("data", "scenarios", scenario, manifest)
+    return Path(pkg_resources.resource_filename(pkg, resource))
+
+
+@contextmanager
+def scoped_manifest(manifest: Path) -> Iterator[Environment]:
+    """
+    Provide an environment that's guaranteed to be instantiated with a clean
+    cache, and will clean the cache again on exit.
+    """
+
+    env = from_manifest(str(manifest))
+    env.clean_cache()
+    env = from_manifest(str(manifest))
+    try:
+        yield env
+    finally:
+        env.clean_cache()
+
+
+@contextmanager
+def scoped_scenario(scenario: str) -> Iterator[Environment]:
+    """Another scoped-manifest interface."""
+
+    with scoped_manifest(get_scenario_manifest(scenario)) as manifest:
+        yield manifest
 
 
 @contextmanager
 def scoped_environment(
     resource_name: str = "manifest.yaml", valid: bool = True
 ) -> Iterator[Environment]:
-    """
-    Provide an environment that's guaranteed to be instantiated with a clean
-    cache, and will clean the cache again on exit.
-    """
+    """Another scoped-manifest interface."""
 
-    env = from_manifest(get_resource(resource_name, valid))
-    env.clean_cache()
-    env = from_manifest(get_resource(resource_name, valid))
-    try:
-        yield env
-    finally:
-        env.clean_cache()
+    with scoped_manifest(Path(get_resource(resource_name, valid))) as manifest:
+        yield manifest
 
 
 @contextmanager

@@ -1,0 +1,12 @@
+---
+compiles:
+  - name: "single-{key}"
+    output_dir: out
+    configs:
+      - good_configs
+    output_type: ini
+    key: "{key}"
+  - name: bad
+    output_dir: out
+    configs:
+      - bad_configs

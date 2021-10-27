@@ -1,8 +1,9 @@
+---
 name: datazen
-version: {{major}}.{{minor}}.{{patch}}
+version: "{{major}}.{{minor}}.{{patch}}"
 description: "Compile and render schema-validated configuration data."
 setup_args:
-- entry_override="dz"
+  - entry_override="dz"
 init_local: |
 
   DEFAULT_TYPE = "yaml"

@@ -13,6 +13,8 @@ $(error target this Makefile with 'mk', not '$(MAKE)' ($(MK_INFO)))
 endif
 ###############################################################################
 
-.PHONY: edit
+.PHONY: edit yaml
 
 edit: $(PY_PREFIX)edit
+
+yaml: $(YAML_PREFIX)lint-local $(YAML_PREFIX)lint-manifest.yaml

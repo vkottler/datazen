@@ -3,17 +3,14 @@ datazen - An interface for turning a dictionary into various serialized forms.
 """
 
 # built-in
-import io
-import json
+from io import StringIO
 import logging
 import os
 from typing import Tuple
 
-# third-party
-from ruamel.yaml import YAML
-
 # internal
 from datazen import DEFAULT_TYPE
+from datazen.code import ARBITER
 
 LOG = logging.getLogger(__name__)
 
@@ -36,20 +33,13 @@ def str_compile(
     serializeable type.
     """
 
-    ostream = io.StringIO()
-
-    # serialize the data
-    if data_type == "json":
-        result = json.dumps(configs, indent=4, sort_keys=True)
-    elif data_type == "yaml":
-        YAML(typ="safe").dump(configs, ostream)
-        raw_result = ostream.getvalue()
-        result = raw_result if raw_result else ""
-    else:
+    ostream = StringIO()
+    encoder = ARBITER.encoder(data_type)
+    if encoder is None:
         logger.error("can't serialize '%s' data (unknown type)", data_type)
-        return ""
-
-    return result
+    else:
+        encoder(configs, ostream)
+    return ostream.getvalue()
 
 
 def get_compile_output(

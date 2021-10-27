@@ -1,12 +1,12 @@
 <!--
     =====================================
     generator=datazen
-    version=1.8.5
-    hash=c8b7193660d6ce2f909be17239ff23ff
+    version=1.9.0
+    hash=a094d462155635fa502d0036a285512a
     =====================================
 -->
 
-# datazen ([1.8.5](https://pypi.org/project/datazen/))
+# datazen ([1.9.0](https://pypi.org/project/datazen/))
 
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
 ![Build Status](https://github.com/vkottler/datazen/workflows/Python%20package/badge.svg)
@@ -19,6 +19,19 @@ the complexity of managing configuration data scales with its complexity.
 
 This package simplifies data curation and partitioning for uses in rendering
 templates, or just rendering final sets of serialized data.
+
+# Manifest Schema Reference
+
+* [Manifest Includes](#manifest-includes)
+* [Output Directory](#output-directory)
+* [Cache Directory](#cache-directory)
+* [Global Loads](#global-loads)
+* [Manifest Parameters](#manifest-parameters)
+* [Default Target](#default-target)
+* [Compiles](#compiles)
+* [Commands](#commands)
+* [Renders](#renders)
+* [Groups](#groups)
 
 # Usage
 
@@ -125,6 +138,8 @@ compiles:
       dependencies: deps
       name:
         type: string
+      key:
+        type: string
       override_path:
         type: string
       output_type:
@@ -164,9 +179,9 @@ commands:
 ```
 ## Renders
 
-Target definitions for render tasks. Renders can create output files based
-on [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates, or just
-String data to be used as a dependency for another task.
+Target definitions for render tasks. Renders can create output files
+based on [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates,
+or just String data to be used as a dependency for another task.
 
 
 ```

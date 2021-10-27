@@ -6,11 +6,11 @@ datazen - A centralized store for runtime data.
 from collections import defaultdict
 import logging
 import os
-from typing import List, Tuple
+from typing import List
 
 # internal
 from datazen import CACHE_SUFFIX
-from datazen.environment.base import dep_slug_unwrap
+from datazen.environment.base import dep_slug_unwrap, TaskResult
 from datazen.environment.command import CommandEnvironment
 from datazen.environment.group import GroupEnvironment
 from datazen.environment.compile import CompileEnvironment
@@ -31,7 +31,7 @@ class Environment(
 
     def execute(
         self, target: str = "", should_cache: bool = True
-    ) -> Tuple[bool, bool]:
+    ) -> TaskResult:
         """Execute an arbitrary target."""
 
         # resolve a default target if one wasn't provided
@@ -69,22 +69,22 @@ class Environment(
         self.write_cache()
         return True
 
-    def group(self, target: str) -> Tuple[bool, bool]:
+    def group(self, target: str) -> TaskResult:
         """Attempt to satisfy a 'group' target."""
 
         return self.handle_task("groups", target)
 
-    def compile(self, target: str) -> Tuple[bool, bool]:
+    def compile(self, target: str) -> TaskResult:
         """Execute a named 'compile' target from the manifest."""
 
         return self.handle_task("compiles", target)
 
-    def render(self, target: str) -> Tuple[bool, bool]:
+    def render(self, target: str) -> TaskResult:
         """Execute a named 'render' target from the manifest."""
 
         return self.handle_task("renders", target)
 
-    def command(self, target: str) -> Tuple[bool, bool]:
+    def command(self, target: str) -> TaskResult:
         """Execute a named 'command' target from the manifest."""
 
         return self.handle_task("commands", target)

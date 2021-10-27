@@ -1,148 +1,163 @@
+---
 entries:
-- name: "Manifest Includes"
-  description: |
-    Include additional files to build the final, root manifest with.
-    This same schema applies to included files.
-  content: |
-    includes: paths
+  - name: "Manifest Includes"
+    slug: manifest-includes
+    description: |
+      Include additional files to build the final, root manifest with.
+      This same schema applies to included files.
+    content: |
+      includes: paths
 
-- name: "Output Directory"
-  description: "Override the default output directory (i.e. `datazen-out`)."
-  content: |
-    output_dir:
-      type: string
+  - name: "Output Directory"
+    slug: output-directory
+    description: "Override the default output directory (i.e. `datazen-out`)."
+    content: |
+      output_dir:
+        type: string
 
-- name: "Cache Directory"
-  description: "Override the default cache directory (i.e. `.manifest_cache`)."
-  content: |
-    cache_dir:
-      type: string
+  - name: "Cache Directory"
+    slug: cache-directory
+    description: >-
+      Override the default cache directory (i.e. `.manifest_cache`).
+    content: |
+      cache_dir:
+        type: string
 
-- name: "Global Loads"
-  description: "For each of these keys, add paths that should be loaded globally."
-  content: |
-    configs:      paths
-    schemas:      paths
-    schema_types: paths
-    templates:    paths
-    variables:    paths
+  - name: "Global Loads"
+    slug: global-loads
+    description: >-
+      For each of these keys, add paths that should be loaded globally.
+    content: |
+      configs:      paths
+      schemas:      paths
+      schema_types: paths
+      templates:    paths
+      variables:    paths
 
-- name: "Manifest Parameters"
-  description: |
-    Manifests themselves are
-    [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates that are
-    rendered with the data contained in this key.
-  content: |
-    params:
-      type: dict
-
-- name: "Default Target"
-  description: "The target to execute by default if none is provided."
-  content: |
-    default_target:
-      type: string
-
-- name: "Compiles"
-  description: "Target definitions for compilation tasks."
-  content: |
-    compiles:
-      type: list
-      schema:
+  - name: "Manifest Parameters"
+    slug: manifest-parameters
+    description: |
+      Manifests themselves are
+      [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates that are
+      rendered with the data contained in this key.
+    content: |
+      params:
         type: dict
-        schema:
-          configs: paths
-          schemas: paths
-          schema_types: paths
-          variables: paths
-          dependencies: deps
-          name:
-            type: string
-          override_path:
-            type: string
-          output_type:
-            type: string
-          output_path:
-            type: string
-          output_dir:
-            type: string
-          index_path:
-            type: string
-          merge_deps:
-            type: boolean
-            default: false
-          append:
-            type: boolean
 
-- name: "Commands"
-  description: "Target definitions for command-line command tasks."
-  content: |
-    commands:
-      type: list
-      schema:
-        type: dict
-        schema:
-          file:
-            type: string
-          name:
-            type: string
-          command:
-            type: string
-          force:
-            type: boolean
-          arguments: deps
-          dependencies: deps
+  - name: "Default Target"
+    slug: default-target
+    description: "The target to execute by default if none is provided."
+    content: |
+      default_target:
+        type: string
 
-- name: "Renders"
-  description: |
-    Target definitions for render tasks. Renders can create output files based
-    on [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates, or just
-    String data to be used as a dependency for another task.
-  content: |
-    renders:
-      type: list
-      schema:
-        type: dict
+  - name: "Compiles"
+    slug: compiles
+    description: "Target definitions for compilation tasks."
+    content: |
+      compiles:
+        type: list
         schema:
-          templates: paths
-          children: deps
-          child_delimeter:
-            type: string
-          child_indent:
-            type: integer
-          dependencies: deps
-          name:
-            type: string
-          override_path:
-            type: string
-          as:
-            type: string
-          key:
-            type: string
-          output_dir:
-            type: string
-          output_path:
-            type: string
-          no_dynamic_fingerprint:
-            type: boolean
-          no_file:
-            type: boolean
-          indent:
-            type: integer
-          template_dependencies:
-            type: list
-            schema:
+          type: dict
+          schema:
+            configs: paths
+            schemas: paths
+            schema_types: paths
+            variables: paths
+            dependencies: deps
+            name:
               type: string
+            key:
+              type: string
+            override_path:
+              type: string
+            output_type:
+              type: string
+            output_path:
+              type: string
+            output_dir:
+              type: string
+            index_path:
+              type: string
+            merge_deps:
+              type: boolean
+              default: false
+            append:
+              type: boolean
 
-- name: "Groups"
-  description: |
-    Target definitions for group tasks. Groups declare a set of dependencies
-    and nothing else. Groups can be used as dependencies for any other target.
-  content: |
-    groups:
-      type: list
-      schema:
-        type: dict
+  - name: "Commands"
+    slug: commands
+    description: "Target definitions for command-line command tasks."
+    content: |
+      commands:
+        type: list
         schema:
-          name:
-            type: string
-          dependencies: deps
+          type: dict
+          schema:
+            file:
+              type: string
+            name:
+              type: string
+            command:
+              type: string
+            force:
+              type: boolean
+            arguments: deps
+            dependencies: deps
+
+  - name: "Renders"
+    slug: renders
+    description: |
+      Target definitions for render tasks. Renders can create output files
+      based on [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates,
+      or just String data to be used as a dependency for another task.
+    content: |
+      renders:
+        type: list
+        schema:
+          type: dict
+          schema:
+            templates: paths
+            children: deps
+            child_delimeter:
+              type: string
+            child_indent:
+              type: integer
+            dependencies: deps
+            name:
+              type: string
+            override_path:
+              type: string
+            as:
+              type: string
+            key:
+              type: string
+            output_dir:
+              type: string
+            output_path:
+              type: string
+            no_dynamic_fingerprint:
+              type: boolean
+            no_file:
+              type: boolean
+            indent:
+              type: integer
+            template_dependencies:
+              type: list
+              schema:
+                type: string
+
+  - name: "Groups"
+    slug: groups
+    description: |
+      Target definitions for group tasks. Groups declare a set of dependencies
+      and nothing else. Groups can be used as dependencies for any other target.
+    content: |
+      groups:
+        type: list
+        schema:
+          type: dict
+          schema:
+            name:
+              type: string
+            dependencies: deps

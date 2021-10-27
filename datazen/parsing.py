@@ -5,65 +5,18 @@ datazen - APIs for loading raw data from files.
 # built-in
 import hashlib
 import io
-import json
 import logging
-from typing import TextIO, List, NamedTuple
+from typing import TextIO, List
 import time
 
 # third-party
 import jinja2
-from ruamel.yaml import YAML, scanner, parser
 
 # internal
+from datazen.code import ARBITER, LoadResult
 from datazen.paths import get_file_ext
 
 LOG = logging.getLogger(__name__)
-
-
-class LoadResult(NamedTuple):
-    """
-    An encapsulation of the result of loading raw data, the data collected and
-    whether or not it succeeded.
-    """
-
-    data: dict
-    success: bool
-
-
-def get_json_data(
-    data_file: TextIO,
-    logger: logging.Logger = LOG,
-) -> LoadResult:
-    """Load JSON data from a text stream."""
-
-    data = {}
-    loaded = True
-    try:
-        data = json.load(data_file)
-        if not data:
-            data = {}
-    except json.decoder.JSONDecodeError as exc:
-        loaded = False
-        logger.error("json-load error: %s", exc)
-    return LoadResult(data, loaded)
-
-
-def get_yaml_data(
-    data_file: TextIO,
-    logger: logging.Logger = LOG,
-) -> LoadResult:
-    """Load YAML data from a text stream."""
-
-    data = {}
-    loaded = True
-    try:
-        data = YAML(typ="safe").load(data_file)
-        if not data:
-            data = {}
-    except (scanner.ScannerError, parser.ParserError) as exc:
-        loaded = False
-        logger.error("yaml-load error: %s", exc)
-    return LoadResult(data, loaded)
 
 
 def load_stream(
@@ -78,16 +31,16 @@ def load_stream(
     # update the dictionary
     ext = get_file_ext(data_path)
     result = LoadResult({}, False)
-    if ext == "json":
-        result = get_json_data(data_stream, logger)
-    elif ext == "yaml":
-        result = get_yaml_data(data_stream, logger)
-    else:
+
+    decoder = ARBITER.decoder(ext)
+    if decoder is None:
         logger.error(
             "can't load data from '%s' (unknown extension '%s')",
             data_path,
             ext,
         )
+    else:
+        result = decoder(data_stream, logger)
 
     if not result.success:
         logger.error("failed to load '%s'", data_path)

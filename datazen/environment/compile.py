@@ -75,6 +75,8 @@ class CompileEnvironment(TaskEnvironment):
 
         mode = "a" if "append" in entry and entry["append"] else "w"
         with open(path, mode, encoding="utf-8") as out_file:
+            if "key" in entry:
+                data = data.get(entry["key"], {})
             out_file.write(str_compile(data, output_type))
             logger.info("compiled '%s' data to '%s'", output_type, path)
 
