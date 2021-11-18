@@ -2,13 +2,14 @@
 datazen - Tests for the 'render' command interface.
 """
 
+from datazen.commands.compile import str_compile
+
 # module under test
 from datazen.commands.render import cmd_render
-from datazen.commands.compile import str_compile
 
 # internal
 from .. import ENV
-from ..resources import get_test_templates, get_tempfile
+from ..resources import get_tempfile, get_test_templates
 
 
 def test_render():

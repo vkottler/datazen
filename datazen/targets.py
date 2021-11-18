@@ -6,15 +6,15 @@ datazen - An interface for parsing and matching targets.
 from collections import defaultdict
 from copy import deepcopy
 import re
-from typing import Dict, Tuple, List, NamedTuple
+from typing import Dict, List, NamedTuple, Tuple
 
 # internal
+from datazen.parsing import merge
 from datazen.paths import (
     advance_dict_by_path,
-    unflatten_dict,
     format_resolve_delims,
+    unflatten_dict,
 )
-from datazen.parsing import merge
 
 KW_OPEN = "{"
 KW_CLOSE = "}"

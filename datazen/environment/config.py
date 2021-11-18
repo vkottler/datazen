@@ -9,11 +9,11 @@ from typing import List
 
 # internal
 from datazen import ROOT_NAMESPACE
-from datazen.enums import DataType
-from datazen.environment.variable import VariableEnvironment
-from datazen.environment.schema import SchemaEnvironment
 from datazen.configs import load as load_configs
-from datazen.load import LoadedFiles, DEFAULT_LOADS
+from datazen.enums import DataType
+from datazen.environment.schema import SchemaEnvironment
+from datazen.environment.variable import VariableEnvironment
+from datazen.load import DEFAULT_LOADS, LoadedFiles
 
 
 class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):

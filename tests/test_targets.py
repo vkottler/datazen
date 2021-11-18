@@ -4,7 +4,7 @@ datazen - Test functions in the 'targets' module.
 
 # module under test
 from datazen.paths import unflatten_dict
-from datazen.targets import parse_target, match_target, resolve_target_data
+from datazen.targets import match_target, parse_target, resolve_target_data
 
 
 def test_parse_target_hiera():

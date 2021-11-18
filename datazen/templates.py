@@ -10,9 +10,9 @@ from typing import Dict, List
 import jinja2
 
 # internal
-from datazen.load import LoadedFiles, DEFAULT_LOADS
-from datazen.paths import get_file_name, get_file_ext
+from datazen.load import DEFAULT_LOADS, LoadedFiles
 from datazen.parsing import set_file_hash
+from datazen.paths import get_file_ext, get_file_name
 
 
 def update_cache_primitives(dir_path: str, loads: LoadedFiles) -> None:

@@ -5,8 +5,8 @@ datazen - A base class to be extended for runtime data loading and storing.
 # built-in
 from collections import defaultdict
 import logging
-from typing import List, NamedTuple
 import threading
+from typing import List, NamedTuple
 
 # internal
 from datazen import ROOT_NAMESPACE

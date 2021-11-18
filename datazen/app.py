@@ -6,8 +6,8 @@ datazen - This package's command-line entry-point application.
 import argparse
 
 # internal
-from datazen.environment.integrated import from_manifest
 from datazen import DEFAULT_MANIFEST
+from datazen.environment.integrated import from_manifest
 
 
 def entry(args: argparse.Namespace) -> int:

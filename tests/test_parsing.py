@@ -6,7 +6,7 @@ datazen - Test functions in the 'parsing' module.
 import os
 
 # module under test
-from datazen.parsing import merge, load
+from datazen.parsing import load, merge
 
 # internal
 from .resources import get_resource

@@ -5,18 +5,18 @@ datazen - A class for adding caching to the manifest-loading environment.
 # built-in
 import logging
 import os
-from typing import List, Dict
+from typing import Dict, List
 
 # third-party
 import jinja2
 
 # internal
-from datazen.environment.manifest import ManifestEnvironment
-from datazen.paths import get_file_name
-from datazen import DEFAULT_MANIFEST, CACHE_SUFFIX, ROOT_NAMESPACE
+from datazen import CACHE_SUFFIX, DEFAULT_MANIFEST, ROOT_NAMESPACE
 from datazen.classes.file_info_cache import FileInfoCache, cmp_total_loaded
 from datazen.classes.file_info_cache import copy as copy_cache
 from datazen.classes.file_info_cache import meld as meld_cache
+from datazen.environment.manifest import ManifestEnvironment
+from datazen.paths import get_file_name
 
 LOG = logging.getLogger(__name__)
 

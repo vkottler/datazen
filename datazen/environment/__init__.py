@@ -10,8 +10,8 @@ import threading
 from typing import Dict, List
 
 # internal
-from datazen.paths import resolve_dir
 from datazen.enums import DataType
+from datazen.paths import resolve_dir
 
 
 class EnvironmentNamespace:

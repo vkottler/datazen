@@ -1,6 +1,6 @@
 # =====================================
 # generator=datazen
-# version=1.9.0
+# version=1.9.1
 # hash=123bbfe4db73b6f3a12276cd93aa9768
 # =====================================
 
@@ -16,8 +16,8 @@ import sys
 from typing import List
 
 # internal
-from datazen import VERSION, DESCRIPTION
-from datazen.app import entry, add_app_args
+from datazen import DESCRIPTION, VERSION
+from datazen.app import add_app_args, entry
 
 
 def main(argv: List[str] = None) -> int:

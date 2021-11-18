@@ -7,11 +7,11 @@ from contextlib import contextmanager
 import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
-from typing import List, TextIO, Iterator
-import pkg_resources
+from typing import Iterator, List, TextIO
 
 # third-party
 import git
+import pkg_resources
 
 # module under test
 from datazen.environment.integrated import Environment, from_manifest

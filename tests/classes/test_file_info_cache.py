@@ -6,7 +6,7 @@ datazen - Tests for the file-info class.
 from tempfile import TemporaryDirectory
 
 # module under test
-from datazen.classes.file_info_cache import FileInfoCache, meld, copy
+from datazen.classes.file_info_cache import FileInfoCache, copy, meld
 
 
 def test_cache_meld():

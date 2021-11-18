@@ -7,7 +7,7 @@ import logging
 from typing import List
 
 # internal
-from datazen.compile import str_compile, get_compile_output
+from datazen.compile import get_compile_output, str_compile
 from datazen.environment.base import TaskResult
 from datazen.environment.task import TaskEnvironment
 from datazen.parsing import merge_dicts

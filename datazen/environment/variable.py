@@ -10,7 +10,7 @@ from typing import List
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
 from datazen.environment.base import BaseEnvironment
-from datazen.load import LoadedFiles, DEFAULT_LOADS
+from datazen.load import DEFAULT_LOADS, LoadedFiles
 from datazen.variables import load as load_variables
 
 

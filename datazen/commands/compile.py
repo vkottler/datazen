@@ -8,9 +8,9 @@ import logging
 from typing import List
 
 # internal
+from datazen.compile import str_compile
 from datazen.environment.integrated import Environment
 from datazen.parsing import get_file_ext
-from datazen.compile import str_compile
 
 LOG = logging.getLogger(__name__)
 

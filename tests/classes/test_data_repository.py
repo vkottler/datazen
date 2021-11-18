@@ -2,11 +2,11 @@
 datazen - Tests for the data-repository class.
 """
 
-# internal
-from tests.resources import get_temp_repo
-
 # module under test
 from datazen.classes.data_repository import DataRepository
+
+# internal
+from tests.resources import get_temp_repo
 
 
 def test_data_repository_basic():

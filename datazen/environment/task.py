@@ -8,14 +8,14 @@ from collections import defaultdict
 from copy import deepcopy
 import logging
 import os
-from typing import Callable, List, Tuple, Dict, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 # internal
 from datazen import ROOT_NAMESPACE
-from datazen.environment.base import dep_slug_unwrap, Task, TaskResult
+from datazen.classes.task_data_cache import TaskDataCache
+from datazen.environment.base import Task, TaskResult, dep_slug_unwrap
 from datazen.environment.manifest import set_output_dir
 from datazen.environment.manifest_cache import ManifestCacheEnvironment
-from datazen.classes.task_data_cache import TaskDataCache
 from datazen.parsing import merge
 
 LOG = logging.getLogger(__name__)

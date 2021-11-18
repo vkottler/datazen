@@ -7,7 +7,7 @@ import os
 from typing import List, Tuple
 
 # internal
-from datazen import VERSION, PKG_NAME
+from datazen import PKG_NAME, VERSION
 from datazen.parsing import get_hash
 
 BARRIER = "="

@@ -10,9 +10,10 @@ from typing import List
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
 from datazen.environment.base import BaseEnvironment
-from datazen.load import LoadedFiles, DEFAULT_LOADS
+from datazen.load import DEFAULT_LOADS, LoadedFiles
+from datazen.schemas import inject_custom_schemas
 from datazen.schemas import load as load_schemas
-from datazen.schemas import validate, load_types, inject_custom_schemas
+from datazen.schemas import load_types, validate
 
 
 class SchemaEnvironment(BaseEnvironment):

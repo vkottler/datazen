@@ -4,14 +4,14 @@ datazen - Orchestrates the "parameterized target" capability.
 
 # built-in
 import logging
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional, Tuple
 
 # internal
 from datazen.targets import (
-    parse_targets,
-    match_target,
-    resolve_target_data,
     MatchData,
+    match_target,
+    parse_targets,
+    resolve_target_data,
 )
 
 

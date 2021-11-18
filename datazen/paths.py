@@ -5,7 +5,7 @@ datazen - APIs for working with file paths.
 # built-in
 import os
 import pkgutil
-from typing import List, Iterator, Tuple
+from typing import Iterator, List, Tuple
 
 # third-party
 import pkg_resources

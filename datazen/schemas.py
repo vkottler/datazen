@@ -4,15 +4,15 @@ datazen - Top-level APIs for loading and interacting with schema definitions.
 
 # built-in
 from contextlib import contextmanager
-from typing import List, Dict, Iterator
 import logging
+from typing import Dict, Iterator, List
 
 # third-party
 from cerberus import Validator, rules_set_registry
 
 # internal
-from datazen.load import load_dir, LoadedFiles, DEFAULT_LOADS
 from datazen.classes.valid_dict import ValidDict
+from datazen.load import DEFAULT_LOADS, LoadedFiles, load_dir
 
 LOG = logging.getLogger(__name__)
 

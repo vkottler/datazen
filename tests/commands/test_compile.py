@@ -7,10 +7,10 @@ from datazen.commands.compile import cmd_compile
 
 # internal
 from ..resources import (
+    get_tempfile,
     get_test_configs,
     get_test_schemas,
     get_test_variables,
-    get_tempfile,
 )
 
 

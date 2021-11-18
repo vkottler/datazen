@@ -11,7 +11,7 @@ from datazen.environment.integrated import from_manifest
 
 # internal
 from ..environment import EnvironmentMock
-from ..resources import get_test_configs, get_resource, scoped_environment
+from ..resources import get_resource, get_test_configs, scoped_environment
 
 
 def test_environment():

@@ -5,14 +5,14 @@ datazen - An environment extension that exposes rendering capabilities.
 # built-in
 import logging
 import os
-from typing import cast, Dict, List, Optional
+from typing import Dict, List, Optional, cast
 
 # third-party
 import jinja2
 
 # internal
 from datazen import GLOBAL_KEY, to_private
-from datazen.environment.base import dep_slug_unwrap, TaskResult
+from datazen.environment.base import TaskResult, dep_slug_unwrap
 from datazen.environment.task import TaskEnvironment, get_path
 from datazen.fingerprinting import build_fingerprint
 from datazen.load import data_added

@@ -3,7 +3,7 @@ datazen - Tests for the 'paths' API.
 """
 
 # module under test
-from datazen.paths import unflatten_dict, format_resolve_delims
+from datazen.paths import format_resolve_delims, unflatten_dict
 
 
 def test_unflatten_dict():

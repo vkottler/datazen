@@ -3,13 +3,13 @@ datazen - A module implementing various data-file decoders.
 """
 
 # built-in
-from configparser import ConfigParser, ExtendedInterpolation, Error
+from configparser import ConfigParser, Error, ExtendedInterpolation
 import json
 import logging
 from typing import Dict, NamedTuple, TextIO
 
 # third-party
-from ruamel.yaml import YAML, scanner, parser
+from ruamel.yaml import YAML, parser, scanner
 
 LOG = logging.getLogger(__name__)
 INI_INTERPOLATION = ExtendedInterpolation()

@@ -6,7 +6,7 @@ datazen - Top-level APIs for loading and interacting with configuration data.
 from typing import List
 
 # internal
-from datazen.load import load_dir, LoadedFiles, DEFAULT_LOADS
+from datazen.load import DEFAULT_LOADS, LoadedFiles, load_dir
 
 
 def load(

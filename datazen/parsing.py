@@ -6,8 +6,8 @@ datazen - APIs for loading raw data from files.
 import hashlib
 import io
 import logging
-from typing import TextIO, List
 import time
+from typing import List, TextIO
 
 # third-party
 import jinja2

@@ -3,8 +3,8 @@ datazen - A class for storing metadata about files that have been loaded.
 """
 
 # built-in
-from copy import deepcopy
 from collections import defaultdict
+from copy import deepcopy
 import logging
 import os
 import shutil
@@ -13,9 +13,9 @@ from typing import Dict, List
 
 # internal
 from datazen import VERSION
-from datazen.parsing import set_file_hash, dedup_dict_lists
-from datazen.load import load_dir_only, LoadedFiles
 from datazen.compile import write_dir
+from datazen.load import LoadedFiles, load_dir_only
+from datazen.parsing import dedup_dict_lists, set_file_hash
 
 LOG = logging.getLogger(__name__)
 

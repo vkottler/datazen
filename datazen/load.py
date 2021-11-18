@@ -7,18 +7,18 @@ from collections import defaultdict
 from contextlib import contextmanager
 import logging
 import os
-from typing import Any, Dict, List, Tuple, NamedTuple, Optional, Iterator
+from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple
 
 # internal
 from datazen import GLOBAL_KEY
-from datazen.paths import (
-    get_path_list,
-    advance_dict_by_path,
-    walk_with_excludes,
-    get_file_name,
-)
 from datazen.parsing import load as load_raw_resolve
 from datazen.parsing import set_file_hash
+from datazen.paths import (
+    advance_dict_by_path,
+    get_file_name,
+    get_path_list,
+    walk_with_excludes,
+)
 
 LOG = logging.getLogger(__name__)
 

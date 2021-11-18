@@ -3,8 +3,8 @@ datazen - A dict wrapper that enables simpler schema validation.
 """
 
 # built-in
-import logging
 from collections import UserDict
+import logging
 
 # third-party
 from cerberus import Validator
