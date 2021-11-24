@@ -32,9 +32,6 @@ jobs:
       - name: venv
         run: |
           mk PYTHON_VERSION=${{matrix.python-version}} venv
-      - name: fixup-mk
-        run: |
-          mk PYTHON_VERSION=${{matrix.python-version}} mk-upgrade
       - name: lint
         run: |
           mk PYTHON_VERSION=${{matrix.python-version}} python-lint
