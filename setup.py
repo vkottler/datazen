@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=1.9.3
-# hash=f6483b2e32cc9bbcbc037b06037884a7
+# version=1.9.4
+# hash=4ee264b4096199a336a4c50698d416f9
 # =====================================
 
 """
@@ -12,7 +12,7 @@ datazen - Package definition for distribution.
 try:
     from vmklib.setup import setup
 except (ImportError, ModuleNotFoundError):
-    from vmklib_bootstrap.setup import setup  # type: ignore
+    from datazen_bootstrap.setup import setup  # type: ignore
 
 # internal
 from datazen import DESCRIPTION, PKG_NAME, VERSION
