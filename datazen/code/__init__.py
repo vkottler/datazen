@@ -33,7 +33,7 @@ class DataType(Enum):
     """An aggregation of all known data types."""
 
     JSON = DataHandle(["json"], decode_json, encode_json)
-    YAML = DataHandle(["yml", "yaml"], decode_yaml, encode_yaml)
+    YAML = DataHandle(["yml", "yaml", "eyaml"], decode_yaml, encode_yaml)
     INI = DataHandle(["ini", "cfg"], decode_ini, encode_ini)
 
 
