@@ -6,27 +6,20 @@ datazen - A module implementing various data-file decoders.
 from configparser import ConfigParser, Error, ExtendedInterpolation
 import json
 import logging
-from typing import Dict, NamedTuple, TextIO
+from typing import Dict
 
 # third-party
 from ruamel.yaml import YAML, parser, scanner
+
+# internal
+from datazen.code.types import DataStream, LoadResult
 
 LOG = logging.getLogger(__name__)
 INI_INTERPOLATION = ExtendedInterpolation()
 
 
-class LoadResult(NamedTuple):
-    """
-    An encapsulation of the result of loading raw data, the data collected and
-    whether or not it succeeded.
-    """
-
-    data: dict
-    success: bool
-
-
 def decode_ini(
-    data_file: TextIO,
+    data_file: DataStream,
     logger: logging.Logger = LOG,
 ) -> LoadResult:
     """Load INI data from a text stream."""
@@ -51,7 +44,7 @@ def decode_ini(
 
 
 def decode_json(
-    data_file: TextIO,
+    data_file: DataStream,
     logger: logging.Logger = LOG,
 ) -> LoadResult:
     """Load JSON data from a text stream."""
@@ -69,7 +62,7 @@ def decode_json(
 
 
 def decode_yaml(
-    data_file: TextIO,
+    data_file: DataStream,
     logger: logging.Logger = LOG,
 ) -> LoadResult:
     """Load YAML data from a text stream."""

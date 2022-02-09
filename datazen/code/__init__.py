@@ -4,21 +4,12 @@ datazen - A module exposing data-file encoders and decoders.
 
 # built-in
 from enum import Enum
-from io import StringIO
-from logging import Logger
-from typing import Callable, Dict, List, NamedTuple, Optional, TextIO
+from typing import Dict, List, NamedTuple, Optional
 
 # internal
-from datazen.code.decode import (
-    LoadResult,
-    decode_ini,
-    decode_json,
-    decode_yaml,
-)
+from datazen.code.decode import decode_ini, decode_json, decode_yaml
 from datazen.code.encode import encode_ini, encode_json, encode_yaml
-
-DataDecoder = Callable[[TextIO, Logger], LoadResult]
-DataEncoder = Callable[[dict, StringIO], None]
+from datazen.code.types import DataDecoder, DataEncoder
 
 
 class DataHandle(NamedTuple):

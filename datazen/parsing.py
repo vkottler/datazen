@@ -4,24 +4,26 @@ datazen - APIs for loading raw data from files.
 
 # built-in
 import hashlib
-import io
+from io import StringIO
 import logging
+from pathlib import Path
 import time
-from typing import List, TextIO
+from typing import List, Union
 
 # third-party
 import jinja2
 
 # internal
-from datazen.code import ARBITER, LoadResult
+from datazen.code import ARBITER
+from datazen.code.types import DataStream, LoadResult
 from datazen.paths import get_file_ext
 
 LOG = logging.getLogger(__name__)
 
 
 def load_stream(
-    data_stream: TextIO,
-    data_path: str,
+    data_stream: DataStream,
+    path: Union[Path, str],
     logger: logging.Logger = LOG,
 ) -> LoadResult:
     """
@@ -29,21 +31,22 @@ def load_stream(
     """
 
     # update the dictionary
-    ext = get_file_ext(data_path)
+    path = str(path)
+    ext = get_file_ext(path)
     result = LoadResult({}, False)
 
     decoder = ARBITER.decoder(ext)
     if decoder is None:
         logger.error(
             "can't load data from '%s' (unknown extension '%s')",
-            data_path,
+            path,
             ext,
         )
     else:
         result = decoder(data_stream, logger)
 
     if not result.success:
-        logger.error("failed to load '%s'", data_path)
+        logger.error("failed to load '%s'", path)
 
     return result
 
@@ -149,7 +152,7 @@ def merge(
 
 
 def load(
-    data_path: str,
+    path: Union[Path, str],
     variables: dict,
     dict_to_update: dict,
     expect_overwrite: bool = False,
@@ -164,26 +167,27 @@ def load(
     result = LoadResult({}, False)
 
     # read the raw file and interpret it as a template, resolve 'variables'
+    path = str(path)
     try:
-        with open(data_path, encoding="utf-8") as config_file:
+        with open(path, encoding="utf-8") as config_file:
             if is_template:
                 template = jinja2.Template(config_file.read())
                 str_output = template.render(variables)
             else:
                 str_output = config_file.read()
     except FileNotFoundError:
-        logger.error("can't find '%s' to load file data", data_path)
+        logger.error("can't find '%s' to load file data", path)
         return result
     except jinja2.exceptions.TemplateError as exc:
         logger.error(
             "couldn't render '%s': %s (variables: %s)",
-            data_path,
+            path,
             exc,
             variables,
         )
         return result
 
-    new_data, loaded = load_stream(io.StringIO(str_output), data_path, logger)
+    new_data, loaded = load_stream(StringIO(str_output), path, logger)
     return LoadResult(
         merge(dict_to_update, new_data, expect_overwrite=expect_overwrite),
         loaded,
@@ -196,17 +200,21 @@ def get_hash(data: str, encoding: str = "utf-8") -> str:
     return hashlib.md5(bytes(data, encoding)).hexdigest()
 
 
-def get_file_hash(path: str) -> str:
+def get_file_hash(path: Union[Path, str]) -> str:
     """Get the MD5 of a file by path."""
 
+    path = str(path)
     with open(path, encoding="utf-8") as data:
         contents = data.read()
     return get_hash(contents)
 
 
-def set_file_hash(hashes: dict, path: str, set_new: bool = True) -> bool:
+def set_file_hash(
+    hashes: dict, path: Union[Path, str], set_new: bool = True
+) -> bool:
     """Evaluate a hash dictionary and update it on a miss."""
 
+    path = str(path)
     str_hash = get_file_hash(path)
     result = True
     if path in hashes and str_hash == hashes[path]["hash"]:

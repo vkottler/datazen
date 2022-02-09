@@ -4,8 +4,9 @@ datazen - APIs for working with file paths.
 
 # built-in
 import os
+from pathlib import Path
 import pkgutil
-from typing import Iterator, List, Tuple
+from typing import Iterator, List, Tuple, Union
 
 # third-party
 import pkg_resources
@@ -18,27 +19,30 @@ FMT_CLOSE = "}"
 EXCLUDES = [".git", ".svn", ".gitignore"]
 
 
-def get_file_name(full_path: str) -> str:
+def get_file_name(path: Union[Path, str]) -> str:
     """From a full path to a file, get just the name of the file."""
 
-    return ".".join(os.path.basename(full_path).split(".")[:-1])
+    return ".".join(os.path.basename(str(path)).split(".")[:-1])
 
 
-def get_file_ext(full_path: str) -> str:
+def get_file_ext(path: Union[Path, str]) -> str:
     """From a pull path to a file, get just the file's extension."""
 
-    return os.path.basename(full_path).split(".")[-1]
+    return os.path.basename(str(path)).split(".")[-1]
 
 
-def get_path_list(root_abs_path: str, current_abs_path: str) -> List[str]:
+def get_path_list(
+    root: Union[Path, str], current: Union[Path, str]
+) -> List[str]:
     """
     From a root directory and a child path, compute the list of directories,
     in order, mapping the root to the child.
     """
-
-    assert len(current_abs_path) >= len(root_abs_path)
-    assert root_abs_path in current_abs_path
-    return current_abs_path[len(root_abs_path) :].split(os.sep)
+    root = os.path.abspath(str(root))
+    current = os.path.abspath(str(current))
+    assert len(current) >= len(root)
+    assert root in current
+    return current[len(root) :].split(os.sep)
 
 
 def format_resolve_delims(
@@ -127,20 +131,20 @@ def advance_dict_by_path(path_list: List[str], data: dict) -> dict:
     return data
 
 
-def get_package_data(relative_path: str) -> str:
+def get_package_data(relative: Union[Path, str]) -> str:
     """Load a file from this package's data directory."""
 
-    rel_path = os.path.join("data", relative_path)
+    rel_path = os.path.join("data", str(relative))
     schema_raw = pkgutil.get_data(PKG_NAME, rel_path)
     schema_bytes = schema_raw if schema_raw else bytes()
     return schema_bytes.decode("utf-8")
 
 
-def get_package_dir(relative_path: str) -> str:
+def get_package_dir(relative: Union[Path, str]) -> str:
     """Locate the path to a package-data directory."""
 
     return pkg_resources.resource_filename(
-        __name__, os.path.join("data", relative_path)
+        __name__, os.path.join("data", str(relative))
     )
 
 
@@ -158,7 +162,7 @@ def resolve_dir(data: str, rel_base: str = "") -> str:
 
 
 def walk_with_excludes(
-    path: str, excludes: List[str] = None
+    path: Union[Path, str], excludes: List[str] = None
 ) -> Iterator[Tuple[str, List[str], List[str]]]:
     """
     Behaves like os.walk but attempts to skip iterations that would enter
@@ -168,7 +172,7 @@ def walk_with_excludes(
     if excludes is None:
         excludes = EXCLUDES
 
-    for root, dirnames, filenames in os.walk(path):
+    for root, dirnames, filenames in os.walk(str(path)):
         dirs = root.split(os.sep)
 
         # don't yield any directories that have an excluded path

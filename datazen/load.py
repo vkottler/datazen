@@ -7,7 +7,18 @@ from collections import defaultdict
 from contextlib import contextmanager
 import logging
 import os
-from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple
+from pathlib import Path
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    NamedTuple,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 
 # internal
 from datazen import GLOBAL_KEY
@@ -51,7 +62,7 @@ def data_added(key: Any, value: Any, data: dict = None) -> Iterator[dict]:
 
 
 def meld_and_resolve(
-    full_path: str,
+    path: Union[Path, str],
     existing_data: dict,
     variables: dict,
     globals_added: bool = False,
@@ -66,7 +77,7 @@ def meld_and_resolve(
     variables_root: dict = variables
 
     # allow directory/.{file_type} to be equivalent to directory.{file_type}
-    key = get_file_name(full_path)
+    key = get_file_name(path)
     if not key:
         data_dict = existing_data
     else:
@@ -84,7 +95,7 @@ def meld_and_resolve(
             global_add_success = True
 
     _, loaded = load_raw_resolve(
-        full_path, variables, data_dict, expect_overwrite, is_template
+        path, variables, data_dict, expect_overwrite, is_template
     )
 
     if global_add_success:
@@ -94,7 +105,7 @@ def meld_and_resolve(
 
 
 def load_dir(
-    path: str,
+    path: Union[Path, str],
     existing_data: dict,
     variables: dict = None,
     loads: LoadedFiles = DEFAULT_LOADS,
@@ -107,6 +118,7 @@ def load_dir(
     if variables is None:
         variables = {}
 
+    path = str(path)
     root_abs = os.path.abspath(path)
     for root, _, files in walk_with_excludes(path):
         logger.debug("loading '%s'", root)
@@ -128,7 +140,7 @@ def load_dir(
         # extend the provided list of files that were newly loaded, or at
         # least have new content
         new = load_files(
-            files,
+            cast(List[Union[Path, str]], files),
             root,
             (
                 advance_dict_by_path(path_list, existing_data),
@@ -149,7 +161,7 @@ def load_dir(
 
 
 def load_dir_only(
-    path: str,
+    path: Union[Path, str],
     expect_overwrite: bool = False,
     are_templates: bool = True,
     logger: logging.Logger = LOG,
@@ -171,7 +183,7 @@ def load_dir_only(
 
 
 def load_files(
-    file_paths: List[str],
+    file_paths: List[Union[Path, str]],
     root: str,
     meld_data: Tuple[dict, dict, bool],
     hashes: Dict[str, dict] = None,
@@ -187,6 +199,7 @@ def load_files(
 
     # load (or meld) data
     for name in file_paths:
+        name = str(name)
         full_path = os.path.join(root, name)
         assert os.path.isabs(full_path)
         success = meld_and_resolve(
