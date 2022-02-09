@@ -170,7 +170,7 @@ def load(
     path = str(path)
     try:
         with open(path, encoding="utf-8") as config_file:
-            if is_template:
+            if variables and is_template:
                 template = jinja2.Template(config_file.read())
                 str_output = template.render(variables)
             else:
