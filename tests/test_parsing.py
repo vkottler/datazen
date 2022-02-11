@@ -25,4 +25,4 @@ def test_load_bad_template():
     """Test that loading invalid templates returns correctly."""
 
     template = get_resource(os.path.join("templates", "bad.j2"), False)
-    assert load(template, {}, {}) == ({}, False)
+    assert load(template, {"a": 1}, {}) == ({}, False)
