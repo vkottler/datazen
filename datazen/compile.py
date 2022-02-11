@@ -12,7 +12,6 @@ from typing import Tuple, Union
 # internal
 from datazen import DEFAULT_TYPE
 from datazen.code import ARBITER
-from datazen.code.types import DataStream
 
 LOG = logging.getLogger(__name__)
 
@@ -25,24 +24,7 @@ def write_dir(
     directory = str(directory)
     os.makedirs(directory, exist_ok=True)
     for key, val in data.items():
-        key_path = os.path.join(directory, f"{key}.{out_type}")
-        with open(key_path, "w", encoding="utf-8") as key_file:
-            key_file.write(str_compile(val, out_type))
-
-
-def stream_compile(
-    stream: DataStream,
-    configs: dict,
-    data_type: str,
-    logger: logging.Logger = LOG,
-) -> None:
-    """Compile configuration data to an output stream of a specified type."""
-
-    encoder = ARBITER.encoder(data_type)
-    if encoder is None:
-        logger.error("can't serialize '%s' data (unknown type)", data_type)
-    else:
-        encoder(configs, stream)
+        ARBITER.encode(Path(directory, f"{key}.{out_type}"), val)
 
 
 def str_compile(
@@ -54,8 +36,9 @@ def str_compile(
     """
 
     with StringIO() as ostream:
-        stream_compile(ostream, configs, data_type, logger)
-        return ostream.getvalue()
+        if ARBITER.encode_stream(data_type, ostream, configs, logger):
+            return ostream.getvalue()
+    return ""
 
 
 def get_compile_output(

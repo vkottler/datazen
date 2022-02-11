@@ -30,25 +30,7 @@ def load_stream(
     Load arbitrary data from a text stream, update an existing dictionary.
     """
 
-    # update the dictionary
-    path = str(path)
-    ext = get_file_ext(path)
-    result = LoadResult({}, False)
-
-    decoder = ARBITER.decoder(ext)
-    if decoder is None:
-        logger.error(
-            "can't load data from '%s' (unknown extension '%s')",
-            path,
-            ext,
-        )
-    else:
-        result = decoder(data_stream, logger)
-
-    if not result.success:
-        logger.error("failed to load '%s'", path)
-
-    return result
+    return ARBITER.decode_stream(get_file_ext(path), data_stream, logger)
 
 
 def dedup_dict_lists(data: dict) -> dict:
