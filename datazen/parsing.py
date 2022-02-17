@@ -25,12 +25,15 @@ def load_stream(
     data_stream: DataStream,
     path: Union[Path, str],
     logger: logging.Logger = LOG,
+    **kwargs,
 ) -> LoadResult:
     """
     Load arbitrary data from a text stream, update an existing dictionary.
     """
 
-    return ARBITER.decode_stream(get_file_ext(path), data_stream, logger)
+    return ARBITER.decode_stream(
+        get_file_ext(path), data_stream, logger, **kwargs
+    )
 
 
 def dedup_dict_lists(data: dict) -> dict:
@@ -148,7 +151,12 @@ def load(
 
     result = LoadResult({}, False)
 
-    # read the raw file and interpret it as a template, resolve 'variables'
+    # Include the time it takes to initially read or render the file in the
+    # returned time.
+    start = time.time_ns()
+    load_time = 0
+
+    # Read the raw file and interpret it as a template, resolve 'variables'.
     path = str(path)
     try:
         with open(path, encoding="utf-8") as config_file:
@@ -157,6 +165,7 @@ def load(
                 str_output = template.render(variables)
             else:
                 str_output = config_file.read()
+        load_time = start - time.time_ns()
     except FileNotFoundError:
         logger.error("can't find '%s' to load file data", path)
         return result
@@ -169,10 +178,13 @@ def load(
         )
         return result
 
-    new_data, loaded = load_stream(StringIO(str_output), path, logger)
+    load_result = load_stream(StringIO(str_output), path, logger)
     return LoadResult(
-        merge(dict_to_update, new_data, expect_overwrite=expect_overwrite),
-        loaded,
+        merge(
+            dict_to_update, load_result.data, expect_overwrite=expect_overwrite
+        ),
+        load_result.success,
+        load_result.time_ns + load_time,
     )
 
 

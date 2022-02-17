@@ -146,7 +146,7 @@ class FileInfoCache:
 
         if self.cache_dir != "":
             data = sync_cache_data(self.data, self.removed_data)
-            write_dir(self.cache_dir, data, out_type)
+            write_dir(self.cache_dir, data, out_type, indent=0)
             self.logger.debug("wrote cache to '%s'", self.cache_dir)
 
 

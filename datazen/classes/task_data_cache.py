@@ -34,7 +34,7 @@ class TaskDataCache:
     def save(self, out_type: str = "json") -> None:
         """Write cache data to disk."""
 
-        write_dir(self.cache_dir, self.data, out_type)
+        write_dir(self.cache_dir, self.data, out_type, indent=0)
 
     def clean(self, purge_data: bool = True) -> None:
         """Clean this cache's data on disk."""

@@ -120,12 +120,12 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         files.append(os.path.abspath(path))
 
         # load raw data
-        curr_manifest, loaded = load_raw(path, params, {})
+        curr_manifest, loaded, _ = load_raw(path, params, {})
 
         # update params, load again so we can use self-referential params
         if "params" in curr_manifest:
             params = merge_dicts([params, curr_manifest["params"]])
-            curr_manifest, loaded = load_raw(path, params, {})
+            curr_manifest, loaded, _ = load_raw(path, params, {})
 
         if not loaded:
             return curr_manifest, False
