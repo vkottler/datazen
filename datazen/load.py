@@ -94,7 +94,7 @@ def meld_and_resolve(
             variables[GLOBAL_KEY] = variables_root[GLOBAL_KEY]
             global_add_success = True
 
-    _, loaded = load_raw_resolve(
+    _, loaded, __ = load_raw_resolve(
         path, variables, data_dict, expect_overwrite, is_template
     )
 

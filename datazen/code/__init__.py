@@ -11,7 +11,13 @@ from typing import Dict, List, NamedTuple, Optional
 # internal
 from datazen.code.decode import decode_ini, decode_json, decode_yaml
 from datazen.code.encode import encode_ini, encode_json, encode_yaml
-from datazen.code.types import DataDecoder, DataEncoder, DataStream, LoadResult
+from datazen.code.types import (
+    DataDecoder,
+    DataEncoder,
+    DataStream,
+    EncodeResult,
+    LoadResult,
+)
 from datazen.paths import get_file_ext
 
 
@@ -66,7 +72,11 @@ class DataArbiter:
         return result
 
     def decode_stream(
-        self, ext: str, stream: DataStream, logger: logging.Logger = None
+        self,
+        ext: str,
+        stream: DataStream,
+        logger: logging.Logger = None,
+        **kwargs,
     ) -> LoadResult:
         """Attempt to load data from a text stream."""
 
@@ -76,10 +86,12 @@ class DataArbiter:
         result = LoadResult({}, False)
         decoder = self.decoder(ext)
         if decoder is not None:
-            result = decoder(stream, logger)
+            result = decoder(stream, logger, **kwargs)
         return result
 
-    def decode(self, path: Path, logger: logging.Logger = None) -> LoadResult:
+    def decode(
+        self, path: Path, logger: logging.Logger = None, **kwargs
+    ) -> LoadResult:
         """Attempt to load data from a file."""
 
         result = LoadResult({}, False)
@@ -89,7 +101,7 @@ class DataArbiter:
         if path.is_file():
             with path.open(encoding=self.encoding) as path_fd:
                 result = self.decode_stream(
-                    get_file_ext(path), path_fd, logger
+                    get_file_ext(path), path_fd, logger, **kwargs
                 )
 
         if not result.success:
@@ -102,25 +114,30 @@ class DataArbiter:
         ext: str,
         stream: DataStream,
         data: dict,
-        _: logging.Logger = None,
-    ) -> bool:
+        logger: logging.Logger = None,
+        **kwargs,
+    ) -> EncodeResult:
         """Serialize data to an output stream."""
+
+        if logger is None:
+            logger = self.logger
 
         result = False
         encoder = self.encoder(ext)
+        time_ns = -1
         if encoder is not None:
-            encoder(data, stream)
+            time_ns = encoder(data, stream, logger, **kwargs)
             result = True
-        return result
+        return result, time_ns
 
     def encode(
-        self, path: Path, data: dict, logger: logging.Logger = None
-    ) -> bool:
+        self, path: Path, data: dict, logger: logging.Logger = None, **kwargs
+    ) -> EncodeResult:
         """Encode data to a file on disk."""
 
         with path.open("w", encoding=self.encoding) as path_fd:
             return self.encode_stream(
-                get_file_ext(path), path_fd, data, logger
+                get_file_ext(path), path_fd, data, logger, **kwargs
             )
 
     def encoder(self, ext: str) -> Optional[DataEncoder]:

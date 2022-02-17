@@ -17,18 +17,18 @@ LOG = logging.getLogger(__name__)
 
 
 def write_dir(
-    directory: Union[Path, str], data: dict, out_type: str = "json"
+    directory: Union[Path, str], data: dict, out_type: str = "json", **kwargs
 ) -> None:
     """Write dictionary data to the file-system."""
 
     directory = str(directory)
     os.makedirs(directory, exist_ok=True)
     for key, val in data.items():
-        ARBITER.encode(Path(directory, f"{key}.{out_type}"), val)
+        ARBITER.encode(Path(directory, f"{key}.{out_type}"), val, **kwargs)
 
 
 def str_compile(
-    configs: dict, data_type: str, logger: logging.Logger = LOG
+    configs: dict, data_type: str, logger: logging.Logger = LOG, **kwargs
 ) -> str:
     """
     Serialize dictionary data into the String-form of a specific,
@@ -36,7 +36,9 @@ def str_compile(
     """
 
     with StringIO() as ostream:
-        if ARBITER.encode_stream(data_type, ostream, configs, logger):
+        if ARBITER.encode_stream(
+            data_type, ostream, configs, logger, **kwargs
+        )[0]:
             return ostream.getvalue()
     return ""
 
