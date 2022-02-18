@@ -6,7 +6,7 @@ datazen - A module implementing various data-file encoders.
 from configparser import ConfigParser
 import json
 from logging import Logger, getLogger
-from time import time_ns
+from time import perf_counter_ns
 
 # internal
 from datazen import DEFAULT_INDENT
@@ -20,7 +20,7 @@ def encode_json(
 ) -> int:
     """Write config data as JSON to the output stream."""
 
-    start = time_ns()
+    start = perf_counter_ns()
 
     # Normalize arguments with some defaults.
     indent = kwargs.get("indent", DEFAULT_INDENT)
@@ -32,7 +32,7 @@ def encode_json(
         pass
 
     json.dump(configs, ostream, indent=indent, sort_keys=sort_keys, **kwargs)
-    return time_ns() - start
+    return perf_counter_ns() - start
 
 
 def encode_yaml(
@@ -40,9 +40,9 @@ def encode_yaml(
 ) -> int:
     """Write config data as YAML to the output stream."""
 
-    start = time_ns()
+    start = perf_counter_ns()
     YAML_INTERFACE.dump(configs, ostream, **kwargs)
-    return time_ns() - start
+    return perf_counter_ns() - start
 
 
 def encode_ini(
@@ -50,7 +50,7 @@ def encode_ini(
 ) -> int:
     """Write config data as INI to the output stream."""
 
-    start = time_ns()
+    start = perf_counter_ns()
     interpolation = kwargs.get("interpolation")
     try:
         del kwargs["interpolation"]
@@ -60,4 +60,4 @@ def encode_ini(
     cparser = ConfigParser(interpolation=interpolation, **kwargs)
     cparser.read_dict(configs)
     cparser.write(ostream)
-    return time_ns() - start
+    return perf_counter_ns() - start

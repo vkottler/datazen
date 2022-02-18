@@ -6,7 +6,7 @@ datazen - A module implementing various data-file decoders.
 from configparser import ConfigParser, Error, ExtendedInterpolation
 import json
 from logging import Logger, getLogger
-from time import time_ns
+from time import perf_counter_ns
 from typing import Dict
 
 # third-party
@@ -26,7 +26,7 @@ def decode_ini(
 ) -> LoadResult:
     """Load INI data from a text stream."""
 
-    start = time_ns()
+    start = perf_counter_ns()
     data = {}
     loaded = True
 
@@ -50,7 +50,7 @@ def decode_ini(
         loaded = False
         logger.error("config-load error: %s", exc)
 
-    return LoadResult(data, loaded, time_ns() - start)
+    return LoadResult(data, loaded, perf_counter_ns() - start)
 
 
 def decode_json(
@@ -60,7 +60,7 @@ def decode_json(
 ) -> LoadResult:
     """Load JSON data from a text stream."""
 
-    start = time_ns()
+    start = perf_counter_ns()
     data = {}
     loaded = True
     try:
@@ -70,7 +70,7 @@ def decode_json(
     except json.decoder.JSONDecodeError as exc:
         loaded = False
         logger.error("json-load error: %s", exc)
-    return LoadResult(data, loaded, time_ns() - start)
+    return LoadResult(data, loaded, perf_counter_ns() - start)
 
 
 def decode_yaml(
@@ -80,7 +80,7 @@ def decode_yaml(
 ) -> LoadResult:
     """Load YAML data from a text stream."""
 
-    start = time_ns()
+    start = perf_counter_ns()
     data = {}
     loaded = True
     try:
@@ -90,4 +90,4 @@ def decode_yaml(
     except (scanner.ScannerError, parser.ParserError) as exc:
         loaded = False
         logger.error("yaml-load error: %s", exc)
-    return LoadResult(data, loaded, time_ns() - start)
+    return LoadResult(data, loaded, perf_counter_ns() - start)

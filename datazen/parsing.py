@@ -153,7 +153,7 @@ def load(
 
     # Include the time it takes to initially read or render the file in the
     # returned time.
-    start = time.time_ns()
+    start = time.perf_counter_ns()
     load_time = 0
 
     # Read the raw file and interpret it as a template, resolve 'variables'.
@@ -165,7 +165,7 @@ def load(
                 str_output = template.render(variables)
             else:
                 str_output = config_file.read()
-        load_time = start - time.time_ns()
+        load_time = start - time.perf_counter_ns()
     except FileNotFoundError:
         logger.error("can't find '%s' to load file data", path)
         return result

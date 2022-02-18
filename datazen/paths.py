@@ -180,3 +180,22 @@ def walk_with_excludes(
             continue
 
         yield root, dirnames, filenames
+
+
+def nano_str(nanos: int) -> str:
+    """
+    Convert an arbitrary value in a 10^-9 domain into as concise of a string
+    as possible.
+    """
+
+    prefixes = ["n", "u", "m", ""]
+    divisor = 1000
+    iteration = 0
+    decimal = nanos
+    fractional = 0
+    while decimal >= divisor and iteration < len(prefixes):
+        fractional = decimal % divisor
+        decimal = decimal // divisor
+        iteration += 1
+
+    return str(decimal) + "." + str(fractional) + prefixes[iteration]
