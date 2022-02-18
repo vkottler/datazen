@@ -8,6 +8,7 @@ from collections import defaultdict
 from copy import deepcopy
 import logging
 import os
+from time import perf_counter_ns
 from typing import Callable, Dict, List, Optional, Tuple
 
 # internal
@@ -105,10 +106,9 @@ class TaskEnvironment(ManifestCacheEnvironment):
         """Set a target for an operation as resolved."""
 
         task = Task(operation, target)
-        slug = task.slug
         with self.lock:
-            self.visited[slug] = True
-            self.is_new[slug] = is_new
+            self.visited[task.slug] = True
+            self.is_new[task.slug] = is_new
             if should_cache:
                 self.write_cache()
 
@@ -243,9 +243,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         """
 
         task = Task(key_name, target)
-        slug = task.slug
-
-        logger = logging.getLogger(slug)
+        logger = logging.getLogger(task.slug)
         self.logger = logger
 
         # fall back on default behavior if the manifest doesn't even have
@@ -261,13 +259,13 @@ class TaskEnvironment(ManifestCacheEnvironment):
         data = self.get_manifest_entry(key_name, target)
 
         if data["name"] is None:
-            logger.error("no '%s' found", slug)
+            logger.error("no '%s' found", task.slug)
             return TaskResult(False, False)
 
         if self.is_resolved(key_name, target):
-            return TaskResult(True, False)
+            return TaskResult(True, False, 0)
 
-        logger.debug("executing '%s'", slug)
+        logger.debug("executing '%s'", task.slug)
 
         # push dependencies
         dep_result = self.resolve_dependencies(
@@ -293,11 +291,16 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
         # write-through to the cache when we complete an operation,
         # if it succeeded
+        start = perf_counter_ns()
         result = self.handles[key_name](
             data, namespace, dep_result[1], dep_result[2], logger=logger
         )
         if result.success:
             self.resolve(key_name, target, should_cache, result.fresh)
+
+        # Update the execution time and log the result.
+        result = result.with_time(perf_counter_ns() - start)
+        result.log(task, logger)
         return result
 
 
@@ -305,8 +308,7 @@ def get_dep_list(entry: dict) -> List[str]:
     """From task data, build a list of task dependencies."""
 
     result = []
-    dep_keys = ["dependencies", "children"]
-    for key in dep_keys:
+    for key in ["dependencies", "children"]:
         if key in entry:
             result += entry[key]
     return list(set(result))

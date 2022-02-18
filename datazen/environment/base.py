@@ -12,6 +12,7 @@ from typing import List, NamedTuple
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
 from datazen.environment import EnvironmentNamespace, clone
+from datazen.paths import nano_str
 
 SLUG_DELIM = "-"
 
@@ -38,6 +39,29 @@ class TaskResult(NamedTuple):
 
     success: bool
     fresh: bool
+    time_ns: int = -1
+
+    def __eq__(self, other: object) -> bool:
+        """Don't compare timing when checking equivalence."""
+        assert isinstance(other, (TaskResult, tuple))
+        return self.success == other[0] and self.fresh == other[1]
+
+    def with_time(self, time_ns: int) -> "TaskResult":
+        """Create a new result from this one, with the time set."""
+        return TaskResult(self.success, self.fresh, time_ns)
+
+    def log(
+        self, task: Task, logger: logging.Logger, level: int = logging.DEBUG
+    ) -> None:
+        """Log status based on this task result."""
+
+        logger.log(
+            level,
+            "task '%s' %s in %ss",
+            task.slug,
+            "succeeded" if self.success else "failed",
+            nano_str(self.time_ns),
+        )
 
 
 def dep_slug_unwrap(slug: str, default_op: str) -> Task:
