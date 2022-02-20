@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=1.12.0
-# hash=8e59f193b27414527b95c34b3dcbc2a0
+# version=1.12.1
+# hash=532c2cda95df3b762979fe27623ed8d2
 # =====================================
 
 """
@@ -10,7 +10,7 @@ datazen - Useful defaults and other package metadata.
 
 DESCRIPTION = "Compile and render schema-validated configuration data."
 PKG_NAME = "datazen"
-VERSION = "1.12.1"
+VERSION = "1.13.0"
 
 DEFAULT_TYPE = "yaml"
 DEFAULT_MANIFEST = f"manifest.{DEFAULT_TYPE}"

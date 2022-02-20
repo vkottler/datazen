@@ -6,7 +6,7 @@ datazen - A module exposing data-file encoders and decoders.
 from enum import Enum
 import logging
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Optional
+from typing import NamedTuple, Optional
 
 # internal
 from datazen.code.decode import decode_ini, decode_json, decode_yaml
@@ -16,6 +16,7 @@ from datazen.code.types import (
     DataEncoder,
     DataStream,
     EncodeResult,
+    FileExtension,
     LoadResult,
 )
 from datazen.paths import get_file_ext
@@ -24,7 +25,6 @@ from datazen.paths import get_file_ext
 class DataHandle(NamedTuple):
     """A description of a data type."""
 
-    extensions: List[str]
     decoder: DataDecoder
     encoder: DataEncoder
 
@@ -32,9 +32,27 @@ class DataHandle(NamedTuple):
 class DataType(Enum):
     """An aggregation of all known data types."""
 
-    JSON = DataHandle(["json"], decode_json, encode_json)
-    YAML = DataHandle(["yml", "yaml", "eyaml"], decode_yaml, encode_yaml)
-    INI = DataHandle(["ini", "cfg"], decode_ini, encode_ini)
+    INI = DataHandle(decode_ini, encode_ini)
+    JSON = DataHandle(decode_json, encode_json)
+    YAML = DataHandle(decode_yaml, encode_yaml)
+
+    @staticmethod
+    def from_ext(ext: FileExtension = None) -> Optional["DataType"]:
+        """Map a file extension to a data type."""
+
+        if ext is None:
+            ext = FileExtension.UNKNOWN
+        mapping = {
+            FileExtension.INI: DataType.INI,
+            FileExtension.JSON: DataType.JSON,
+            FileExtension.YAML: DataType.YAML,
+        }
+        return mapping.get(ext)
+
+    @staticmethod
+    def from_ext_str(ext: str) -> Optional["DataType"]:
+        """Get a data type from a file-extension string."""
+        return DataType.from_ext(FileExtension.from_ext(ext))
 
 
 LOG = logging.getLogger(__name__)
@@ -49,24 +67,16 @@ class DataArbiter:
         self, logger: logging.Logger = LOG, encoding: str = "utf-8"
     ) -> None:
         """Initialize a new data arbiter."""
-
-        self.encoders: Dict[DataType, DataEncoder] = {}
-        self.decoders: Dict[DataType, DataDecoder] = {}
-        self.ext_map: Dict[str, DataType] = {}
         self.logger = logger
         self.encoding = encoding
-        for dtype in DataType:
-            self.encoders[dtype] = dtype.value.encoder
-            self.decoders[dtype] = dtype.value.decoder
-            for ext in dtype.value.extensions:
-                self.ext_map[ext] = dtype
 
     def decoder(self, ext: str) -> Optional[DataDecoder]:
         """Look up a decoding routine from a file extension."""
 
         result = None
-        if ext in self.ext_map:
-            result = self.decoders[self.ext_map[ext]]
+        dtype = DataType.from_ext_str(ext)
+        if dtype is not None:
+            result = dtype.value.decoder
         else:
             self.logger.warning("No decoder for '%s'.", ext)
         return result
@@ -101,7 +111,7 @@ class DataArbiter:
         if path.is_file():
             with path.open(encoding=self.encoding) as path_fd:
                 result = self.decode_stream(
-                    get_file_ext(path), path_fd, logger, **kwargs
+                    get_file_ext(path, maxsplit=1), path_fd, logger, **kwargs
                 )
 
         if not result.success:
@@ -137,15 +147,16 @@ class DataArbiter:
 
         with path.open("w", encoding=self.encoding) as path_fd:
             return self.encode_stream(
-                get_file_ext(path), path_fd, data, logger, **kwargs
+                get_file_ext(path, maxsplit=1), path_fd, data, logger, **kwargs
             )
 
     def encoder(self, ext: str) -> Optional[DataEncoder]:
         """Look up an encoding routine from a file extension."""
 
         result = None
-        if ext in self.ext_map:
-            result = self.encoders[self.ext_map[ext]]
+        dtype = DataType.from_ext_str(ext)
+        if dtype is not None:
+            result = dtype.value.encoder
         else:
             self.logger.warning("No encoder for '%s'.", ext)
         return result

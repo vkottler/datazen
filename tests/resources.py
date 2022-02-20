@@ -27,6 +27,12 @@ def get_resource(
     return pkg_resources.resource_filename(pkg, resource_path)
 
 
+def get_archives_root(pkg: str = __name__) -> Path:
+    """Get the data directory for test archives."""
+    resource = os.path.join("data", "archives")
+    return Path(pkg_resources.resource_filename(pkg, resource))
+
+
 def get_scenario_manifest(
     scenario: str, manifest: str = "manifest.yaml", pkg: str = __name__
 ) -> Path:
