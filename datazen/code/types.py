@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import (
     Callable,
     FrozenSet,
+    Iterator,
     NamedTuple,
     Optional,
     TextIO,
@@ -77,6 +78,14 @@ class FileExtension(Enum):
     ) -> Optional["FileExtension"]:
         """Get a known file extension for a path, if it exists."""
         return FileExtension.from_ext(get_file_ext(path, maxsplit=maxsplit))
+
+    def candidates(self, path: Path) -> Iterator[Path]:
+        """
+        For a given path, iterate over candidate paths that have the suffixes
+        for this kind of file extension.
+        """
+        for ext in list(self.value):
+            yield path.with_suffix(f".{ext}")
 
 
 class LoadResult(NamedTuple):

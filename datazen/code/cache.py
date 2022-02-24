@@ -5,8 +5,10 @@ datazen - A module for cache implementations, conforming to package-wide,
 
 # built-in
 from collections import UserDict
+from contextlib import suppress
 import logging
 from pathlib import Path
+from shutil import rmtree
 from time import perf_counter_ns
 from typing import Dict
 
@@ -159,3 +161,30 @@ class FlatDirectoryCache(UserDict):
                 level, "Cache written in %ss.", nano_str(self.save_time_ns)
             )
         self.changed = False
+
+    def clean(
+        self,
+        path: Path = None,
+        logger: logging.Logger = None,
+        level: int = logging.DEBUG,
+    ) -> None:
+        """Remove cached data from disk."""
+
+        if path is None:
+            path = self.root
+
+        start = perf_counter_ns()
+
+        # Remove any archives.
+        for file_ext in FileExtension:
+            if file_ext.is_archive():
+                for candidate in file_ext.candidates(path):
+                    with suppress(FileNotFoundError):
+                        candidate.unlink()
+
+        # Remove the data directory.
+        rmtree(path, ignore_errors=True)
+
+        time_ns = perf_counter_ns() - start
+        if logger is not None:
+            logger.log(level, "Cache cleaned in %ss.", nano_str(time_ns))
