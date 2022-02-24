@@ -100,7 +100,11 @@ class DataArbiter:
         return result
 
     def decode(
-        self, path: Path, logger: logging.Logger = None, **kwargs
+        self,
+        path: Path,
+        logger: logging.Logger = None,
+        require_success: bool = False,
+        **kwargs,
     ) -> LoadResult:
         """Attempt to load data from a file."""
 
@@ -116,6 +120,10 @@ class DataArbiter:
 
         if not result.success:
             logger.error("Failed to decode '%s'.", path)
+
+        # Raise an exception if we expected decoding to succeed.
+        if require_success:
+            result.require_success(path)
 
         return result
 

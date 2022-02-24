@@ -94,6 +94,10 @@ class LoadResult(NamedTuple):
         assert isinstance(other, (LoadResult, tuple))
         return self.data == other[0] and self.success == other[1]
 
+    def require_success(self, path: Union[Path, str]) -> None:
+        """Raise a canonical exception if this result is a failure."""
+        assert self.success, f"Couldn't load '{path}'!"
+
 
 EncodeResult = Tuple[bool, int]
 DataStream = Union[TextIO, StringIO]
