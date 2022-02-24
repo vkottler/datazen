@@ -25,15 +25,21 @@ def load_stream(
     data_stream: DataStream,
     path: Union[Path, str],
     logger: logging.Logger = LOG,
+    require_success: bool = False,
     **kwargs,
 ) -> LoadResult:
     """
     Load arbitrary data from a text stream, update an existing dictionary.
     """
 
-    return ARBITER.decode_stream(
+    result = ARBITER.decode_stream(
         get_file_ext(path), data_stream, logger, **kwargs
     )
+
+    if require_success:
+        result.require_success(path)
+
+    return result
 
 
 def dedup_dict_lists(data: dict) -> dict:
@@ -143,6 +149,7 @@ def load(
     expect_overwrite: bool = False,
     is_template: bool = True,
     logger: logging.Logger = LOG,
+    **kwargs,
 ) -> LoadResult:
     """
     Load raw file data and meld it into an existing dictionary. Update
@@ -178,7 +185,7 @@ def load(
         )
         return result
 
-    load_result = load_stream(StringIO(str_output), path, logger)
+    load_result = load_stream(StringIO(str_output), path, logger, **kwargs)
     return LoadResult(
         merge(
             dict_to_update, load_result.data, expect_overwrite=expect_overwrite

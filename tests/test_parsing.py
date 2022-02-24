@@ -4,8 +4,13 @@ datazen - Test functions in the 'parsing' module.
 
 # built-in
 import os
+from pathlib import Path
+
+# third-party
+from pytest import raises
 
 # module under test
+from datazen.code import ARBITER
 from datazen.parsing import load, merge
 
 # internal
@@ -26,3 +31,14 @@ def test_load_bad_template():
 
     template = get_resource(os.path.join("templates", "bad.j2"), False)
     assert load(template, {"a": 1}, {}) == ({}, False)
+
+
+def test_load_assert():
+    """Verify that requiring success on a load works."""
+
+    bad_load = get_resource(os.path.join("variables", "bad.json"), False)
+    with raises(AssertionError):
+        ARBITER.decode(Path(bad_load), require_success=True)
+
+    with raises(AssertionError):
+        load(bad_load, {}, {}, require_success=True)

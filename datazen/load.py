@@ -68,6 +68,7 @@ def meld_and_resolve(
     globals_added: bool = False,
     expect_overwrite: bool = False,
     is_template: bool = True,
+    **kwargs,
 ) -> bool:
     """
     Meld dictionary data from a file into an existing dictionary, assume
@@ -94,14 +95,14 @@ def meld_and_resolve(
             variables[GLOBAL_KEY] = variables_root[GLOBAL_KEY]
             global_add_success = True
 
-    _, loaded, __ = load_raw_resolve(
-        path, variables, data_dict, expect_overwrite, is_template
+    result = load_raw_resolve(
+        path, variables, data_dict, expect_overwrite, is_template, **kwargs
     )
 
     if global_add_success:
         del variables[GLOBAL_KEY]
 
-    return loaded
+    return result.success
 
 
 def load_dir(
