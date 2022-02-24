@@ -35,6 +35,12 @@ def test_directory_cache_basic():
         new_cache.save(logger=logger)
         assert new_cache == new_cache.load()
 
+        # Clean the cache and verify the next load contains no data.
+        new_cache.clean(logger=logger)
+        new_cache = FlatDirectoryCache(tmpdir, logger=logger)
+        assert not new_cache
+        tmpdir.mkdir()
+
 
 def test_directory_cache_archive_load():
     """Test that we can load a cache, when only an archive for it exists."""

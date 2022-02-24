@@ -18,6 +18,7 @@ from datazen.classes.target_resolver import TargetResolver
 # internal
 from datazen.environment.config import ConfigEnvironment
 from datazen.environment.template import TemplateEnvironment
+from datazen.parsing import dict_resolve_env_vars
 from datazen.parsing import load as load_raw
 from datazen.parsing import load_stream, merge_dicts
 from datazen.paths import get_package_data, get_package_dir, resolve_dir
@@ -124,7 +125,9 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
 
         # update params, load again so we can use self-referential params
         if "params" in curr_manifest:
-            params = merge_dicts([params, curr_manifest["params"]])
+            params = merge_dicts(
+                [params, dict_resolve_env_vars(curr_manifest["params"])]
+            )
             curr_manifest, loaded, _ = load_raw(path, params, {})
 
         if not loaded:

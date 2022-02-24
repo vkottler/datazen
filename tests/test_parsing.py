@@ -11,7 +11,13 @@ from pytest import raises
 
 # module under test
 from datazen.code import ARBITER
-from datazen.parsing import load, merge
+from datazen.parsing import (
+    dict_resolve_env_vars,
+    list_resolve_env_vars,
+    load,
+    merge,
+    str_resolve_env_var,
+)
 
 # internal
 from .resources import get_resource
@@ -42,3 +48,21 @@ def test_load_assert():
 
     with raises(AssertionError):
         load(bad_load, {}, {}, require_success=True)
+
+
+def test_resolve_env_vars():
+    """
+    Test that we can correctly resolve environment variables in data
+    structures.
+    """
+
+    os.environ["TEST"] = "test"
+    assert str_resolve_env_var("$TEST") == "test"
+    assert list_resolve_env_vars(["$TEST", ["$TEST"], {"$TEST": "$TEST"}]) == [
+        "test",
+        ["test"],
+        {"test": "test"},
+    ]
+    assert dict_resolve_env_vars({"a": {"b": ["$TEST"]}}) == {
+        "a": {"b": ["test"]}
+    }
