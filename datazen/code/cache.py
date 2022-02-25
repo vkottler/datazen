@@ -142,19 +142,17 @@ class FlatDirectoryCache(UserDict):
         if self.changed:
             self.save_time_ns = self.save_directory(path, **kwargs)
 
-            # Create an archive for this cache as well.
-            if archive:
-                result = make_archive(path, self.archive_encoding)
-                assert (
-                    result[0] is not None
-                ), "Tried to make archive but couldn't!"
-                if logger is not None:
-                    logger.log(
-                        level,
-                        "Cache archived to '%s' in %ss.",
-                        result[0],
-                        result[1],
-                    )
+        # Create an archive for this cache if requested.
+        if archive:
+            result = make_archive(path, self.archive_encoding)
+            assert result[0] is not None, "Tried to make archive but couldn't!"
+            if logger is not None:
+                logger.log(
+                    level,
+                    "Cache archived to '%s' in %ss.",
+                    result[0],
+                    nano_str(result[1]),
+                )
 
         if self.changed and logger is not None:
             logger.log(
