@@ -94,7 +94,12 @@ def make_archive(
 
         start = perf_counter_ns()
         result = Path(
-            shutil.make_archive(src_dir.name, format_str, **archive_kwargs)
+            shutil.make_archive(
+                src_dir.name,
+                format_str,
+                base_dir=src_dir.name,
+                **archive_kwargs,
+            )
         )
         time_ns = perf_counter_ns() - start
 
