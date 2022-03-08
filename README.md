@@ -1,12 +1,12 @@
 <!--
     =====================================
     generator=datazen
-    version=1.13.3
-    hash=b5394af0c28f7825db5ba6b81150fc4a
+    version=1.13.4
+    hash=b9011b9640d504cd2723d99aa9fb6024
     =====================================
 -->
 
-# datazen ([1.13.3](https://pypi.org/project/datazen/))
+# datazen ([1.13.4](https://pypi.org/project/datazen/))
 
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
 ![Build Status](https://github.com/vkottler/datazen/workflows/Python%20package/badge.svg)
@@ -36,7 +36,7 @@ templates, or just rendering final sets of serialized data.
 # Usage
 
 ```
-$ ./venv3.7/bin/dz -h
+$ ./venv3.8/bin/dz -h
 
 usage: dz [-h] [--version] [-v] [-C DIR] [-m MANIFEST] [-c] [--sync] [-d]
           [targets [targets ...]]
