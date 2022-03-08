@@ -5,7 +5,6 @@ datazen - A module for cache implementations, conforming to package-wide,
 
 # built-in
 from collections import UserDict
-from contextlib import suppress
 import logging
 from pathlib import Path
 from shutil import rmtree
@@ -174,11 +173,8 @@ class FlatDirectoryCache(UserDict):
         start = perf_counter_ns()
 
         # Remove any archives.
-        for file_ext in FileExtension:
-            if file_ext.is_archive():
-                for candidate in file_ext.candidates(path):
-                    with suppress(FileNotFoundError):
-                        candidate.unlink()
+        for candidate in FileExtension.archive_candidates(path, True):
+            candidate.unlink()
 
         # Remove the data directory.
         rmtree(path, ignore_errors=True)
