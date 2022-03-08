@@ -79,13 +79,41 @@ class FileExtension(Enum):
         """Get a known file extension for a path, if it exists."""
         return FileExtension.from_ext(get_file_ext(path, maxsplit=maxsplit))
 
-    def candidates(self, path: Path) -> Iterator[Path]:
+    def candidates(
+        self, path: Path, exists_only: bool = False
+    ) -> Iterator[Path]:
         """
         For a given path, iterate over candidate paths that have the suffixes
         for this kind of file extension.
         """
         for ext in list(self.value):
-            yield path.with_suffix(f".{ext}")
+            path = path.with_suffix(f".{ext}")
+            if not exists_only or path.exists():
+                yield path
+
+    @staticmethod
+    def archive_candidates(
+        path: Path, exists_only: bool = False
+    ) -> Iterator[Path]:
+        """
+        Iterate over all file extensions that could point to an archive file.
+        """
+        for file_ext in FileExtension:
+            if file_ext.is_archive():
+                for candidate in file_ext.candidates(path, exists_only):
+                    yield candidate
+
+    @staticmethod
+    def data_candidates(
+        path: Path, exists_only: bool = False
+    ) -> Iterator[Path]:
+        """
+        Iterate over all file extensions that could point to a data file.
+        """
+        for file_ext in FileExtension:
+            if file_ext.is_data():
+                for candidate in file_ext.candidates(path, exists_only):
+                    yield candidate
 
 
 class LoadResult(NamedTuple):

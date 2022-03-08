@@ -121,11 +121,12 @@ def get_test_variables(valid: bool = True) -> List[str]:
     return [get_resource("variables", valid)]
 
 
-def get_tempfile(extension: str) -> str:
+@contextmanager
+def get_tempfile(extension: str) -> Iterator[str]:
     """Obtain a temporary file name with a specific extension."""
 
     with NamedTemporaryFile(suffix=extension) as tfile:
-        return tfile.name
+        yield tfile.name
 
 
 @contextmanager

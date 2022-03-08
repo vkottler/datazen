@@ -2,6 +2,9 @@
 datazen - Tests for the 'compile' command interface.
 """
 
+# built-in
+from contextlib import ExitStack
+
 # module under test
 from datazen.commands.compile import cmd_compile
 
@@ -21,12 +24,15 @@ def test_compile():
     schema_dirs = get_test_schemas(True)
     variable_dirs = get_test_variables(True)
 
-    yaml_out = get_tempfile(".yaml")
-    assert cmd_compile(config_dirs, schema_dirs, variable_dirs, yaml_out)
-    json_out = get_tempfile(".json")
-    assert cmd_compile(config_dirs, schema_dirs, variable_dirs, json_out)
-    toml_out = get_tempfile(".toml")
-    assert not cmd_compile(config_dirs, schema_dirs, variable_dirs, toml_out)
+    with ExitStack() as stack:
+        yaml_out = stack.enter_context(get_tempfile(".yaml"))
+        assert cmd_compile(config_dirs, schema_dirs, variable_dirs, yaml_out)
+        json_out = stack.enter_context(get_tempfile(".json"))
+        assert cmd_compile(config_dirs, schema_dirs, variable_dirs, json_out)
+        toml_out = stack.enter_context(get_tempfile(".toml"))
+        assert not cmd_compile(
+            config_dirs, schema_dirs, variable_dirs, toml_out
+        )
 
 
 def test_invalid_compile():
@@ -36,5 +42,7 @@ def test_invalid_compile():
     schema_dirs = get_test_schemas(False)
     variable_dirs = get_test_variables(False)
 
-    yaml_out = get_tempfile(".yaml")
-    assert not cmd_compile(config_dirs, schema_dirs, variable_dirs, yaml_out)
+    with get_tempfile(".yaml") as yaml_out:
+        assert not cmd_compile(
+            config_dirs, schema_dirs, variable_dirs, yaml_out
+        )

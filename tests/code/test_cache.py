@@ -60,6 +60,10 @@ def test_directory_cache_archive_load():
             assert cache
             assert all(x in cache for x in "abc")
 
+            # Verify that we can clean the cache.
+            cache.save(archive=True)
+            cache.clean()
+
 
 def test_directory_cache_save_archive():
     """Test that we can create a cache archive and load from it."""
