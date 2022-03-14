@@ -100,7 +100,7 @@ def make_archive(
                 base_dir=src_dir.name,
                 **archive_kwargs,
             )
-        )
+        ).resolve()
         time_ns = perf_counter_ns() - start
 
         # Move the resulting archive, if requested.

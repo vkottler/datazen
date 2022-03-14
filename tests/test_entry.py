@@ -4,6 +4,8 @@ datazen - Test the program's entry-point.
 
 # built-in
 import os
+from subprocess import check_output
+from sys import executable
 
 # module under test
 from datazen import PKG_NAME
@@ -23,6 +25,12 @@ def test_entry_basic():
     args = [PKG_NAME, "-m", manifest]
     assert datazen_main(args) == 0
     assert datazen_main(args + ["-c"]) == 0
+
+
+def test_package_entry():
+    """Test the command-line entry through the 'python -m' invocation."""
+
+    check_output([executable, "-m", PKG_NAME, "-h"])
 
 
 def test_entry():

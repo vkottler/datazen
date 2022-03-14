@@ -16,7 +16,7 @@ from datazen.archive import extractall, make_archive
 from datazen.code import ARBITER, DataArbiter
 from datazen.code.types import FileExtension
 from datazen.parsing import merge
-from datazen.paths import get_file_name, nano_str
+from datazen.paths import byte_count_str, get_file_name, nano_str
 
 
 class FlatDirectoryCache(UserDict):
@@ -148,8 +148,9 @@ class FlatDirectoryCache(UserDict):
             if logger is not None:
                 logger.log(
                     level,
-                    "Cache archived to '%s' in %ss.",
+                    "Cache archived to '%s' (%s) in %ss.",
                     result[0],
+                    byte_count_str(result[0].stat().st_size),
                     nano_str(result[1]),
                 )
 

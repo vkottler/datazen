@@ -15,6 +15,7 @@ from datazen.environment.command import CommandEnvironment
 from datazen.environment.compile import CompileEnvironment
 from datazen.environment.group import GroupEnvironment
 from datazen.environment.render import RenderEnvironment
+from datazen.performance import log_time
 
 
 class Environment(
@@ -58,12 +59,13 @@ class Environment(
             targets.append(self.default_target())
 
         for target in targets:
-            task_result = self.execute(target, False)
-            if not task_result[0]:
-                self.logger.error("target '%s' failed", target)
-                return False
-            if not task_result[1]:
-                self.logger.info("'%s' already satisfied", target)
+            with log_time(self.logger, "Target '%s'", target):
+                task_result = self.execute(target, False)
+                if not task_result[0]:
+                    self.logger.error("target '%s' failed", target)
+                    return False
+                if not task_result[1]:
+                    self.logger.info("'%s' already satisfied", target)
 
         # write the cache at the end, if we were totally successful
         self.write_cache()
