@@ -1,0 +1,44 @@
+[build-system]
+requires = ["vmklib", "wheel"]
+
+[project]
+name = "datazen"
+version = "1.13.5"
+description = "Compile and render schema-validated configuration data."
+readme = "README.md"
+requires-python = ">=3.7"
+authors = [
+  {name = "Vaughn Kottler", email = "vaughnkottler@gmail.com"}
+]
+maintainers = [
+  {name = "Vaughn Kottler", email = "vaughnkottler@gmail.com"}
+]
+classifiers = [
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "License :: OSI Approved :: MIT License"
+]
+dependencies = [
+  "Jinja2",
+  "ruamel.yaml",
+  "cerberus",
+  "GitPython"
+]
+
+[project.optional-dependencies]
+test = [
+  "vmklib",
+  "types-setuptools",
+  "pylint",
+  "flake8",
+  "pytest",
+  "pytest-cov",
+  "mypy",
+  "black",
+  "isort"
+]
+
+[project.scripts]
+datazen = "datazen.entry:main"

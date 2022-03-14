@@ -3,10 +3,12 @@ datazen - APIs for working with file paths.
 """
 
 # built-in
+from io import StringIO
+from math import floor
 import os
 from pathlib import Path
 import pkgutil
-from typing import Iterator, List, Tuple, Union
+from typing import Iterator, List, NamedTuple, Tuple, Union
 
 # third-party
 import pkg_resources
@@ -182,20 +184,107 @@ def walk_with_excludes(
         yield root, dirnames, filenames
 
 
-def nano_str(nanos: int) -> str:
+def seconds_str(seconds: int) -> Tuple[str, int]:
+    """
+    Attempt to characterize a large amount of seconds into a string describing
+    hours and minutes, returning the string (may be empty) and the seconds
+    left over.
+    """
+
+    result = ""
+
+    if seconds >= 60:
+        minutes = seconds // 60
+        seconds = seconds % 60
+        result = f"{minutes}m"
+
+    if minutes >= 60:
+        hours = minutes // 60
+        minutes = minutes % 60
+        result = f"{hours}h {minutes}m"
+
+    return result, seconds
+
+
+class UnitSystem(NamedTuple):
+    """
+    A pairing of prefixes defining a unit, and the amount that indicates the
+    multiplicative step-size between them.
+    """
+
+    prefixes: List[str]
+    divisor: int
+
+
+SI_UNITS = UnitSystem(["n", "u", "m", "", "k", "M", "G", "T"], 1000)
+KIBI_UNITS = UnitSystem(
+    ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"], 1024
+)
+
+
+def unit_traverse(
+    val: int,
+    unit: UnitSystem = SI_UNITS,
+    max_prefix: int = 3,
+    iteration: int = 0,
+) -> Tuple[int, int, str]:
+    """
+    Given an initial value, traverse a unit system to get the largest
+    representative unit prefix. Also return a fractional component, in units
+    of the next-smallest prefix.
+    """
+
+    prefixes = unit.prefixes
+    divisor = unit.divisor
+    decimal = val
+    fractional = 0
+
+    max_iter = min(len(prefixes) - 1, max_prefix)
+    while decimal >= divisor and iteration < max_iter:
+        fractional = decimal % divisor
+        decimal = decimal // divisor
+        iteration += 1
+
+    return decimal, fractional, prefixes[iteration]
+
+
+def nano_str(
+    nanos: int,
+    is_time: bool = False,
+    max_prefix: int = 3,
+    unit: UnitSystem = SI_UNITS,
+    prefix_space: bool = False,
+    iteration: int = 0,
+) -> str:
     """
     Convert an arbitrary value in a 10^-9 domain into as concise of a string
     as possible.
     """
 
-    prefixes = ["n", "u", "m", ""]
-    divisor = 1000
-    iteration = 0
-    decimal = nanos
-    fractional = 0
-    while decimal >= divisor and iteration < len(prefixes):
-        fractional = decimal % divisor
-        decimal = decimal // divisor
-        iteration += 1
+    decimal, fractional, prefix = unit_traverse(
+        nanos, unit, max_prefix, iteration
+    )
 
-    return str(decimal) + "." + str(fractional) + prefixes[iteration]
+    with StringIO() as stream:
+        if not prefix and is_time:
+            result, decimal = seconds_str(decimal)
+            stream.write(result)
+            if result:
+                stream.write(" ")
+
+        # Normalize the fractional component if necessary.
+        if unit.divisor != 1000 and fractional != 0:
+            fractional = floor(float(fractional / unit.divisor) * 1000.0)
+
+        stream.write(str(decimal))
+        if fractional:
+            stream.write(f".{fractional:03}")
+        if prefix_space:
+            stream.write(" ")
+        stream.write(prefix)
+        return stream.getvalue()
+
+
+def byte_count_str(byte_count: int) -> str:
+    """Get a string representing a number of bytes."""
+    return nano_str(byte_count, False, 99, KIBI_UNITS, True) + "B"

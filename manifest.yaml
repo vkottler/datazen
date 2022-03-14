@@ -1,13 +1,14 @@
 ---
-default_target: "groups-all"
+default_target: groups-all
 
 params:
-  project: "datazen"
+  project: datazen
   python_version: "$PYTHON_VERSION"
-  entry: "dz"
+  entry: dz
 
 includes:
   - "config/includes/python.yaml"
+  - "config/includes/license.yaml"
   - "config/includes/help.yaml"
 
 configs:
@@ -33,16 +34,11 @@ renders:
       - "compiles-local"
       - "commands-help"
       - "renders-python_readme_header.md"
-  - name: "LICENSE"
-    key: "LICENSE_MIT"
-    output_dir: "."
-    dependencies:
-      - "compiles-local"
 
 groups:
-  - name: "all"
+  - name: all
     dependencies:
-      - "renders-LICENSE"
+      - groups-python
+      - groups-license
       - "renders-README.md"
       - "renders-manifest.yaml"
-      - "groups-python"

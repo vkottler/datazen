@@ -4,6 +4,14 @@ version: "{{major}}.{{minor}}.{{patch}}"
 description: "Compile and render schema-validated configuration data."
 setup_args:
   - entry_override="dz"
+requirements:
+  - Jinja2
+  - ruamel.yaml
+  - cerberus
+  - GitPython
+dev_requirements:
+  - vmklib
+  - types-setuptools
 init_local: |
 
   DEFAULT_TYPE = "yaml"
