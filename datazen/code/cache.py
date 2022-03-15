@@ -103,13 +103,15 @@ class FlatDirectoryCache(UserDict):
                             level,
                             "Extracted archive '%s' in %ss.",
                             archive,
-                            nano_str(time_ns),
+                            nano_str(time_ns, True),
                         )
                     return self.load(path, logger, level, **kwargs)
 
         if loaded and logger is not None:
             logger.log(
-                level, "Cache loaded in %ss.", nano_str(self.load_time_ns)
+                level,
+                "Cache loaded in %ss.",
+                nano_str(self.load_time_ns, True),
             )
         return result
 
@@ -151,12 +153,14 @@ class FlatDirectoryCache(UserDict):
                     "Cache archived to '%s' (%s) in %ss.",
                     result[0],
                     byte_count_str(result[0].stat().st_size),
-                    nano_str(result[1]),
+                    nano_str(result[1], True),
                 )
 
         if self.changed and logger is not None:
             logger.log(
-                level, "Cache written in %ss.", nano_str(self.save_time_ns)
+                level,
+                "Cache written in %ss.",
+                nano_str(self.save_time_ns, True),
             )
         self.changed = False
 
@@ -182,4 +186,4 @@ class FlatDirectoryCache(UserDict):
 
         time_ns = perf_counter_ns() - start
         if logger is not None:
-            logger.log(level, "Cache cleaned in %ss.", nano_str(time_ns))
+            logger.log(level, "Cache cleaned in %ss.", nano_str(time_ns, True))

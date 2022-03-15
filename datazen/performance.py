@@ -33,6 +33,6 @@ def log_time(
         level,
         message + " completed in %ss.",
         *args,
-        nano_str(time_ns),
+        nano_str(time_ns, True),
         **kwargs,
     )
