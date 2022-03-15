@@ -60,7 +60,7 @@ class TaskResult(NamedTuple):
             "task '%s' %s in %ss",
             task.slug,
             "succeeded" if self.success else "failed",
-            nano_str(self.time_ns),
+            nano_str(self.time_ns, True),
         )
 
 
