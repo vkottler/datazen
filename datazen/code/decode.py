@@ -11,6 +11,7 @@ from typing import Dict
 
 # third-party
 from ruamel.yaml import parser, scanner
+import tomli
 
 # internal
 from datazen.code.types import YAML_INTERFACE, DataStream, LoadResult
@@ -90,4 +91,23 @@ def decode_yaml(
     except (scanner.ScannerError, parser.ParserError) as exc:
         loaded = False
         logger.error("yaml-load error: %s", exc)
+    return LoadResult(data, loaded, perf_counter_ns() - start)
+
+
+def decode_toml(
+    data_file: DataStream,
+    logger: Logger = LOG,
+    **kwargs,
+) -> LoadResult:
+    """Load TOML data from a text stream."""
+
+    start = perf_counter_ns()
+    data = {}
+    loaded = True
+    try:
+        data = tomli.loads(data_file.read(), **kwargs)
+    except tomli.TOMLDecodeError as exc:
+        loaded = False
+        logger.error("toml-load error: %s", exc)
+
     return LoadResult(data, loaded, perf_counter_ns() - start)

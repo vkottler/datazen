@@ -9,8 +9,18 @@ from pathlib import Path
 from typing import NamedTuple, Optional
 
 # internal
-from datazen.code.decode import decode_ini, decode_json, decode_yaml
-from datazen.code.encode import encode_ini, encode_json, encode_yaml
+from datazen.code.decode import (
+    decode_ini,
+    decode_json,
+    decode_toml,
+    decode_yaml,
+)
+from datazen.code.encode import (
+    encode_ini,
+    encode_json,
+    encode_toml,
+    encode_yaml,
+)
 from datazen.code.types import (
     DataDecoder,
     DataEncoder,
@@ -29,12 +39,26 @@ class DataHandle(NamedTuple):
     encoder: DataEncoder
 
 
-class DataType(Enum):
-    """An aggregation of all known data types."""
+class DataMapping:
+    """
+    Map interfaces that read and write data formats to the file extensions
+    that most-likely indicate the desire for that kind of format.
+    """
 
-    INI = DataHandle(decode_ini, encode_ini)
-    JSON = DataHandle(decode_json, encode_json)
-    YAML = DataHandle(decode_yaml, encode_yaml)
+    class DataType(Enum):
+        """An aggregation of all known data types."""
+
+        INI = DataHandle(decode_ini, encode_ini)
+        JSON = DataHandle(decode_json, encode_json)
+        YAML = DataHandle(decode_yaml, encode_yaml)
+        TOML = DataHandle(decode_toml, encode_toml)
+
+    mapping = {
+        FileExtension.INI: DataType.INI,
+        FileExtension.JSON: DataType.JSON,
+        FileExtension.YAML: DataType.YAML,
+        FileExtension.TOML: DataType.TOML,
+    }
 
     @staticmethod
     def from_ext(ext: FileExtension = None) -> Optional["DataType"]:
@@ -42,17 +66,12 @@ class DataType(Enum):
 
         if ext is None:
             ext = FileExtension.UNKNOWN
-        mapping = {
-            FileExtension.INI: DataType.INI,
-            FileExtension.JSON: DataType.JSON,
-            FileExtension.YAML: DataType.YAML,
-        }
-        return mapping.get(ext)
+        return DataMapping.mapping.get(ext)
 
     @staticmethod
     def from_ext_str(ext: str) -> Optional["DataType"]:
         """Get a data type from a file-extension string."""
-        return DataType.from_ext(FileExtension.from_ext(ext))
+        return DataMapping.from_ext(FileExtension.from_ext(ext))
 
 
 LOG = logging.getLogger(__name__)
@@ -74,7 +93,7 @@ class DataArbiter:
         """Look up a decoding routine from a file extension."""
 
         result = None
-        dtype = DataType.from_ext_str(ext)
+        dtype = DataMapping.from_ext_str(ext)
         if dtype is not None:
             result = dtype.value.decoder
         else:
@@ -162,7 +181,7 @@ class DataArbiter:
         """Look up an encoding routine from a file extension."""
 
         result = None
-        dtype = DataType.from_ext_str(ext)
+        dtype = DataMapping.from_ext_str(ext)
         if dtype is not None:
             result = dtype.value.encoder
         else:

@@ -8,6 +8,9 @@ import json
 from logging import Logger, getLogger
 from time import perf_counter_ns
 
+# third-party
+import tomli_w
+
 # internal
 from datazen import DEFAULT_INDENT
 from datazen.code.types import YAML_INTERFACE, DataStream
@@ -60,4 +63,14 @@ def encode_ini(
     cparser = ConfigParser(interpolation=interpolation, **kwargs)
     cparser.read_dict(configs)
     cparser.write(ostream)
+    return perf_counter_ns() - start
+
+
+def encode_toml(
+    configs: dict, ostream: DataStream, _: Logger = LOG, **kwargs
+) -> int:
+    """Write config data as TOML to the output stream."""
+
+    start = perf_counter_ns()
+    ostream.write(tomli_w.dumps(configs, **kwargs))
     return perf_counter_ns() - start

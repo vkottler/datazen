@@ -36,6 +36,7 @@ class FileExtension(Enum):
     TAR: FrozenSet[str] = frozenset(
         ["tar", "tar.gz", "tar.bz2", "tar.lzma", "tar.xz"]
     )
+    TOML: FrozenSet[str] = frozenset(["toml"])
 
     def is_archive(self) -> bool:
         """Determine if this extension is a kind of archive file."""

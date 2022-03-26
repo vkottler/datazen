@@ -193,6 +193,7 @@ def seconds_str(seconds: int) -> Tuple[str, int]:
 
     result = ""
 
+    minutes = 0
     if seconds >= 60:
         minutes = seconds // 60
         seconds = seconds % 60

@@ -30,8 +30,10 @@ def test_compile():
         json_out = stack.enter_context(get_tempfile(".json"))
         assert cmd_compile(config_dirs, schema_dirs, variable_dirs, json_out)
         toml_out = stack.enter_context(get_tempfile(".toml"))
+        assert cmd_compile(config_dirs, schema_dirs, variable_dirs, toml_out)
+        asdf_out = stack.enter_context(get_tempfile(".asdf"))
         assert not cmd_compile(
-            config_dirs, schema_dirs, variable_dirs, toml_out
+            config_dirs, schema_dirs, variable_dirs, asdf_out
         )
 
 
