@@ -52,10 +52,29 @@ def set_output_dir(
     data["output_dir"] = out_dir
 
 
+def update_path_relativity(path_strs: List[str], rel_path: str) -> None:
+    """
+    For a list of paths, if paths aren't absolute, apply the provided relative
+    path to the beginning of the path.
+    """
+    for idx, path in enumerate(path_strs):
+        if not os.path.isabs(path):
+            path_strs[idx] = os.path.join(rel_path, path)
+
+
 class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
     """
     A wrapper for the manifest-loading implementations of an environment.
     """
+
+    targets_with_paths = ["compiles", "renders"]
+    path_fields = [
+        "configs",
+        "schemas",
+        "schema_types",
+        "variables",
+        "templates",
+    ]
 
     def __init__(self):
         """Add a manifest dictionary to the environment."""
@@ -103,6 +122,24 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             result = self.manifest["data"]["default_target"]
         return result
 
+    @staticmethod
+    def update_task_dirs(data: dict, rel_path: str) -> None:
+        """
+        Update path definitions in the provided manifest chunk to respect a
+        relative path (e.g. the directory that the manifest chunk was loaded
+        from).
+        """
+
+        # Iterate over all task types that may contain paths.
+        for key in ManifestEnvironment.targets_with_paths:
+            # Iterate over each task definition.
+            for item in data.get(key, []):
+                # For each task definition, iterate over fields that may
+                # contain paths (if they're specified).
+                for path_list in ManifestEnvironment.path_fields:
+                    if path_list in item:
+                        update_path_relativity(item[path_list], rel_path)
+
     def load_manifest_reent(
         self,
         path: str,
@@ -136,6 +173,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         # load the data directories before resolving includes
         rel_path = os.path.dirname(path)
         self.load_dirs(curr_manifest, rel_path, allow_dup=True)
+        self.update_task_dirs(curr_manifest, rel_path)
 
         # resolve includes
         all_manifests = [curr_manifest]

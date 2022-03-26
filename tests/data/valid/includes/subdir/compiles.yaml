@@ -1,7 +1,7 @@
 compiles:
 - name: "a"
   configs:
-  - "{{compiles}}"
+  - "../../{{compiles}}"
 - name: "b"
   output_type: "json"
   output_dir: "{{sub_param}}"
