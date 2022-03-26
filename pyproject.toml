@@ -3,7 +3,7 @@ requires = ["vmklib", "wheel"]
 
 [project]
 name = "datazen"
-version = "1.13.5"
+version = "1.14.0"
 description = "Compile and render schema-validated configuration data."
 readme = "README.md"
 requires-python = ">=3.7"
@@ -21,10 +21,12 @@ classifiers = [
   "License :: OSI Approved :: MIT License"
 ]
 dependencies = [
+  "cerberus",
+  "GitPython",
   "Jinja2",
   "ruamel.yaml",
-  "cerberus",
-  "GitPython"
+  "tomli",
+  "tomli-w"
 ]
 
 [project.optional-dependencies]
@@ -41,4 +43,4 @@ test = [
 ]
 
 [project.scripts]
-datazen = "datazen.entry:main"
+dz = "datazen.entry:main"
