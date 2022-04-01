@@ -4,3 +4,4 @@ Jinja2
 ruamel.yaml
 tomli
 tomli-w
+vcorelib

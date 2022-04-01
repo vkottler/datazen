@@ -8,6 +8,9 @@ import logging
 import os
 from typing import List
 
+# third-party
+from vcorelib.logging import log_time
+
 # internal
 from datazen import CACHE_SUFFIX
 from datazen.environment.base import TaskResult, dep_slug_unwrap
@@ -15,7 +18,6 @@ from datazen.environment.command import CommandEnvironment
 from datazen.environment.compile import CompileEnvironment
 from datazen.environment.group import GroupEnvironment
 from datazen.environment.render import RenderEnvironment
-from datazen.performance import log_time
 
 
 class Environment(
