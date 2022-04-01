@@ -11,12 +11,15 @@ from shutil import rmtree
 from time import perf_counter_ns
 from typing import Dict
 
+# third-party
+from vcorelib.math.time import byte_count_str, nano_str
+
 # internal
 from datazen.archive import extractall, make_archive
 from datazen.code import ARBITER, DataArbiter
 from datazen.code.types import FileExtension
 from datazen.parsing import merge
-from datazen.paths import byte_count_str, get_file_name, nano_str
+from datazen.paths import get_file_name
 
 
 class FlatDirectoryCache(UserDict):

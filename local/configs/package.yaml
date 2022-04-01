@@ -10,6 +10,7 @@ requirements:
   - ruamel.yaml
   - tomli
   - tomli-w
+  - vcorelib
 dev_requirements:
   - vmklib
   - types-setuptools

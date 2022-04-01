@@ -8,11 +8,13 @@ import logging
 import threading
 from typing import List, NamedTuple
 
+# third-party
+from vcorelib.math.time import nano_str
+
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
 from datazen.environment import EnvironmentNamespace, clone
-from datazen.paths import nano_str
 
 SLUG_DELIM = "-"
 

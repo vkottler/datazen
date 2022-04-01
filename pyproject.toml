@@ -26,7 +26,8 @@ dependencies = [
   "Jinja2",
   "ruamel.yaml",
   "tomli",
-  "tomli-w"
+  "tomli-w",
+  "vcorelib"
 ]
 
 [project.optional-dependencies]
