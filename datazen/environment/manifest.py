@@ -11,16 +11,16 @@ from typing import List, Tuple
 
 # third-party
 from cerberus import Validator
-
-from datazen import DEFAULT_DIR, ROOT_NAMESPACE
-from datazen.classes.target_resolver import TargetResolver
+from vcorelib.dict import merge_dicts
+from vcorelib.dict.env import dict_resolve_env_vars
 
 # internal
+from datazen import DEFAULT_DIR, ROOT_NAMESPACE
+from datazen.classes.target_resolver import TargetResolver
 from datazen.environment.config import ConfigEnvironment
 from datazen.environment.template import TemplateEnvironment
-from datazen.parsing import dict_resolve_env_vars
 from datazen.parsing import load as load_raw
-from datazen.parsing import load_stream, merge_dicts
+from datazen.parsing import load_stream
 from datazen.paths import get_package_data, get_package_dir, resolve_dir
 from datazen.schemas import inject_custom_schemas, load_types
 

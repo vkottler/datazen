@@ -6,13 +6,13 @@ datazen - APIs for loading raw data from files.
 import hashlib
 from io import StringIO
 import logging
-import os
 from pathlib import Path
 import time
-from typing import List, Union
+from typing import Union
 
 # third-party
 import jinja2
+from vcorelib.dict import merge
 
 # internal
 from datazen.code import ARBITER
@@ -58,157 +58,6 @@ def dedup_dict_lists(data: dict) -> dict:
                 if item not in new_list:
                     new_list.append(item)
             data[key] = new_list
-
-    return data
-
-
-def merge_dicts(
-    dicts: List[dict],
-    expect_overwrite: bool = False,
-    logger: logging.Logger = LOG,
-) -> dict:
-    """
-    Merge a list of dictionary data into a single set (mutates the first
-    element).
-    """
-
-    result = dicts[0]
-    for right_dict in dicts[1:]:
-        result = merge(
-            result,
-            right_dict,
-            expect_overwrite=expect_overwrite,
-            logger=logger,
-        )
-    return result
-
-
-def merge(
-    dict_a: dict,
-    dict_b: dict,
-    path: List[str] = None,
-    expect_overwrite: bool = False,
-    logger: logging.Logger = LOG,
-) -> dict:
-    """
-    Combine two dictionaries recursively, prefers dict_a in a conflict. For
-    values of the same key that are lists, the lists are combined. Otherwise
-    the resulting dictionary is cleanly merged.
-    """
-
-    if path is None:
-        path = []
-
-    for key in dict_b:
-        if key in dict_a:
-            # first try to coerce b's type into a's
-            if not isinstance(dict_b[key], type(dict_a[key])):
-                try:
-                    dict_b[key] = type(dict_a[key])(dict_b[key])
-                except ValueError:
-                    pass
-
-            # same leaf value
-            if dict_a[key] == dict_b[key]:
-                pass
-            elif isinstance(dict_a[key], dict) and isinstance(
-                dict_b[key], dict
-            ):
-                merge(
-                    dict_a[key],
-                    dict_b[key],
-                    path + [str(key)],
-                    expect_overwrite,
-                    logger,
-                )
-            elif isinstance(dict_a[key], list) and isinstance(
-                dict_b[key], list
-            ):
-                dict_a[key].extend(dict_b[key])
-            elif not isinstance(dict_b[key], type(dict_a[key])):
-                logger.error(
-                    "Type mismatch at '%s'", ".".join(path + [str(key)])
-                )
-                logger.error("left:  %s (%s)", type(dict_a[key]), dict_a[key])
-                logger.error("right: %s (%s)", type(dict_b[key]), dict_b[key])
-            elif not expect_overwrite:
-                logger.error("Conflict at '%s'", ".".join(path + [str(key)]))
-                logger.error("left:  %s", dict_a[key])
-                logger.error("right: %s", dict_b[key])
-            else:
-                dict_a[key] = dict_b[key]
-        else:
-            dict_a[key] = dict_b[key]
-
-    return dict_a
-
-
-def str_resolve_env_var(data: str) -> str:
-    """
-    Convert string data to a resolved environment variable if the string begins
-    with '$' and is a key in the environment with a non-empty value.
-    """
-
-    temp = data.strip()
-    if temp.startswith("$"):
-        key = temp[1:]
-        if key in os.environ and os.environ[key]:
-            data = os.environ[key]
-
-    return data
-
-
-def list_resolve_env_vars(
-    data: list, keys: bool = True, values: bool = True, lists: bool = True
-) -> list:
-    """
-    Recursively resolve list data that may contain strings that should be
-    treated as environment-variable substitutions. The data is updated
-    in-place.
-    """
-
-    for idx, item in enumerate(data):
-        if isinstance(item, dict) and (keys or values):
-            data[idx] = dict_resolve_env_vars(item, keys, values, lists)
-        if isinstance(item, list) and lists:
-            data[idx] = list_resolve_env_vars(item, keys, values, lists)
-        if isinstance(item, str):
-            data[idx] = str_resolve_env_var(item)
-
-    return data
-
-
-def dict_resolve_env_vars(
-    data: dict, keys: bool = True, values: bool = True, lists: bool = True
-) -> dict:
-    """
-    Recursively resolve dictionary data that may contain strings that should be
-    treated as environment-variable substitutions. The data is updated
-    in-place.
-    """
-
-    keys_to_remove: List[str] = []
-    to_update: dict = {}
-    for key, value in data.items():
-
-        if isinstance(value, str) and values:
-            value = str_resolve_env_var(value)
-
-        if isinstance(key, str) and keys:
-            to_update[str_resolve_env_var(key)] = value
-            keys_to_remove.append(key)
-
-        data[key] = value
-
-        if isinstance(value, dict):
-            data[key] = dict_resolve_env_vars(value, keys, values, lists)
-        if isinstance(value, list) and lists:
-            data[key] = list_resolve_env_vars(value, keys, values, lists)
-
-    # Don't change the size of data while iterating.
-    for key in keys_to_remove:
-        del data[key]
-    data.update(to_update)
 
     return data
 
