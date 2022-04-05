@@ -6,6 +6,14 @@ custom:
   a: [test1, test2]
   b: [test1, test2]
   c: [test1, test2]
+  nested:
+    a: {a: a, b: b, c: c}
+    b: {a: a, b: b, c: c}
+    c: {a: a, b: b, c: c}
+    custom:
+      a: [test1, test2]
+      b: [test1, test2]
+      c: [test1, test2]
 d: {d: d}
 e: {e: e}
 empty:

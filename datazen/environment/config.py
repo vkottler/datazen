@@ -9,6 +9,7 @@ from typing import List
 
 # internal
 from datazen import ROOT_NAMESPACE
+from datazen.code.types import LoadResult
 from datazen.configs import load as load_configs
 from datazen.enums import DataType
 from datazen.environment.schema import SchemaEnvironment
@@ -36,13 +37,14 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
         sch_types_loads: LoadedFiles = DEFAULT_LOADS,
         name: str = ROOT_NAMESPACE,
         logger: logging.Logger = logging.getLogger(__name__),
-    ) -> dict:
+    ) -> LoadResult:
         """
         Load configuration data, resolve any un-loaded configuration
         directories.
         """
 
         self.configs_valid = False
+        errors = 0
 
         # determine directories that need to be loaded
         data_type = DataType.CONFIG
@@ -53,19 +55,28 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
             # load new data
             config_data = self.get_data(data_type, name)
             if to_load:
-                vdata = self.load_variables(var_loads, name)
-                config_data.update(load_configs(to_load, vdata, cfg_loads))
-                self.update_load_state(data_type, to_load, name)
+                vdata, success, _ = self.load_variables(var_loads, name)
+                errors += int(not success)
+
+                if success:
+                    new_configs, success, _ = load_configs(
+                        to_load, vdata, cfg_loads
+                    )
+                    errors += int(not success)
+                    config_data.update(new_configs)
+                    self.update_load_state(data_type, to_load, name)
 
         # enforce schemas
         if not self.enforce_schemas(
             config_data, True, sch_loads, sch_types_loads, name
         ):
             logger.error("schema validation failed, returning an empty dict")
-            return {}
+            errors += 1
 
-        self.configs_valid = True
-        return config_data
+        self.configs_valid = errors == 0
+        return LoadResult(
+            config_data if self.configs_valid else {}, self.configs_valid
+        )
 
     def add_config_dirs(
         self,

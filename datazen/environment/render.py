@@ -208,7 +208,7 @@ class RenderEnvironment(TaskEnvironment):
         # an implicit 'compile')
         change_criteria = ["templates"]
         if not dep_data and "dependencies" not in entry:
-            dep_data = self.cached_load_configs(namespace)
+            dep_data = self.cached_load_configs(namespace)[0]
             change_criteria.append("configs")
             logger.debug(
                 "no dependencies loaded for '%s', using config data",

@@ -1,44 +1,46 @@
+---
 compiles:
-- name: "a"
-  configs:
-  - "../../{{compiles}}"
-- name: "b"
-  output_type: "json"
-  output_dir: "{{sub_param}}"
-- name: "c"
-  dependencies:
-  - "renders-b"
-  index_path: "a.a"
-- name: "e"
-  index_path: "a"
-  dependencies:
-  - "compiles-a"
-  - "b"
-  - "compiles-c"
-- name: "f"
-  dependencies:
-  - "a"
-  - "b"
-  - "c"
-- name: "comp1-{test}"
-  override_path: ""
-  dependencies:
-  - "{test}"
-- name: "comp2-{test}"
-  override_path: "a.b.c"
-  dependencies:
-  - "{test}"
-- name: "comp3-{a.b.c}"
-  override_path: "test"
-  dependencies:
-  - "{a.b.c}"
-- name: comp4
-  merge_deps: true
-  index_path: a
-  dependencies: [a, b, c]
-- name: "g"
-  dependencies:
-  - "noop-test"
-- name: "z"
-  configs:
-  - "configs_missing_vars"
+  - name: "a"
+    configs:
+      - "../../{{compiles}}"
+  - name: "b"
+    output_type: "json"
+    output_dir: "{{sub_param}}"
+  - name: "c"
+    dependencies:
+      - "renders-b"
+    index_path: "custom.nested"
+  - name: "e"
+    index_path: "a"
+    dependencies:
+      - "compiles-a"
+      - "b"
+      - "compiles-c"
+  - name: "f"
+    dependencies:
+      - "a"
+      - "b"
+      - "c"
+  - name: "comp1-{test}"
+    override_path: ""
+    dependencies:
+      - "{test}"
+  - name: "comp2-{test}"
+    override_path: "a.b.c"
+    schemas: []
+    dependencies:
+      - "{test}"
+  - name: "comp3-{a.b.c}"
+    override_path: "test"
+    dependencies:
+      - "{a.b.c}"
+  - name: comp4
+    merge_deps: true
+    index_path: a
+    dependencies: [a, b, c]
+  - name: "g"
+    dependencies:
+      - "noop-test"
+  - name: "z"
+    configs:
+      - "configs_missing_vars"

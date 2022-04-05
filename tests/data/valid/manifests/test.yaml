@@ -1,8 +1,9 @@
+---
 configs:
-- "../configs"
+  - "../configs"
 schemas:
-- "..\\schemas"
+  - "..\\schemas"
 templates:
-- "../templates"
+  - "../templates"
 variables:
-- "..\\variables"
+  - "..\\variables"

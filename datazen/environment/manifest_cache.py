@@ -15,6 +15,7 @@ from datazen import CACHE_SUFFIX, DEFAULT_MANIFEST, ROOT_NAMESPACE
 from datazen.classes.file_info_cache import FileInfoCache, cmp_total_loaded
 from datazen.classes.file_info_cache import copy as copy_cache
 from datazen.classes.file_info_cache import meld as meld_cache
+from datazen.code.types import LoadResult
 from datazen.environment.manifest import ManifestEnvironment
 from datazen.paths import get_file_name
 
@@ -116,7 +117,7 @@ class ManifestCacheEnvironment(ManifestEnvironment):
             self.cache, self.initial_cache, types, load_checks
         )
 
-    def cached_load_variables(self, name: str = ROOT_NAMESPACE) -> dict:
+    def cached_load_variables(self, name: str = ROOT_NAMESPACE) -> LoadResult:
         """Load variables, proxied through the cache."""
 
         return self.load_variables(self.cache.get_data("variables"), name)
@@ -146,7 +147,7 @@ class ManifestCacheEnvironment(ManifestEnvironment):
             name,
         )
 
-    def cached_load_configs(self, name: str = ROOT_NAMESPACE) -> dict:
+    def cached_load_configs(self, name: str = ROOT_NAMESPACE) -> LoadResult:
         """Load configs, proxied through the cache."""
 
         return self.load_configs(

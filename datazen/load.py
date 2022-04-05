@@ -22,6 +22,7 @@ from typing import (
 
 # internal
 from datazen import GLOBAL_KEY
+from datazen.code.types import LoadResult
 from datazen.parsing import load as load_raw_resolve
 from datazen.parsing import set_file_hash
 from datazen.paths import (
@@ -113,18 +114,18 @@ def load_dir(
     expect_overwrite: bool = False,
     are_templates: bool = True,
     logger: logging.Logger = LOG,
-) -> dict:
+) -> LoadResult:
     """Load a directory tree into a dictionary, optionally meld."""
 
     if variables is None:
         variables = {}
 
+    total_errors = 0
     path = str(path)
-    root_abs = os.path.abspath(path)
     for root, _, files in walk_with_excludes(path):
         logger.debug("loading '%s'", root)
 
-        path_list = get_path_list(root_abs, root)
+        path_list = get_path_list(os.path.abspath(path), root)
         variable_data = advance_dict_by_path(path_list, variables)
 
         # expose data globally, if it was provided
@@ -152,13 +153,18 @@ def load_dir(
             expect_overwrite,
             are_templates,
         )
+
+        if new[1]:
+            logger.warning("%d errors loading '%s'.", new[1], root)
+        total_errors += new[1]
+
         if loads.files is not None:
-            loads.files.extend(new)
+            loads.files.extend(new[0])
 
         if added_globals:
             del variable_data[GLOBAL_KEY]
 
-    return existing_data
+    return LoadResult(existing_data, total_errors == 0)
 
 
 def load_dir_only(
@@ -166,7 +172,7 @@ def load_dir_only(
     expect_overwrite: bool = False,
     are_templates: bool = True,
     logger: logging.Logger = LOG,
-) -> dict:
+) -> LoadResult:
     """
     A convenient wrapper for loading just directory data from a path without
     worrying about melding data, resolving variables, enforcing schemas, etc.
@@ -190,13 +196,14 @@ def load_files(
     hashes: Dict[str, dict] = None,
     expect_overwrite: bool = False,
     are_templates: bool = True,
-) -> List[str]:
+) -> Tuple[List[str], int]:
     """
     Load files into a dictionary and return a list of the files that are
     new or had hash mismatches.
     """
 
     new_or_changed = []
+    errors = 0
 
     # load (or meld) data
     for name in file_paths:
@@ -211,9 +218,10 @@ def load_files(
             expect_overwrite,
             are_templates,
         )
+        errors += int(not success)
         if success and hashes is not None:
             success = set_file_hash(hashes, full_path)
         if success:
             new_or_changed.append(full_path)
 
-    return new_or_changed
+    return new_or_changed, errors

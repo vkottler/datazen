@@ -1,9 +1,10 @@
+---
 yaml: "yaml"
 yaml2: "yaml"
 top_list:
-- "a"
-- "b"
-- "c"
+  - "a"
+  - "b"
+  - "c"
 top_dict:
   a:
     a: "a"

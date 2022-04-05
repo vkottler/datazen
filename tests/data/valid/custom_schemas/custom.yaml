@@ -1,3 +1,7 @@
+---
 a: test_schema
 b: test_schema
 c: test_schema
+nested:
+  required: false
+  type: dict

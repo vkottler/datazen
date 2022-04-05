@@ -1,1 +1,47 @@
-{a: a, b: b, c: c}
+a: a
+b: b
+bad: 5
+c: c
+custom:
+  a: [test1, test2]
+  b: [test1, test2]
+  c: [test1, test2]
+  nested:
+    a: {a: a, b: b, c: c}
+    b: {a: a, b: b, c: c}
+    c: {a: a, b: b, c: c}
+    custom:
+      a: [test1, test2]
+      b: [test1, test2]
+      c: [test1, test2]
+d: {d: d}
+e: {e: e}
+empty:
+  a:
+    a: {a: a}
+f: {f: f}
+json: json
+json2: json
+renders_b: 'json
+
+  yaml
+
+  {''a'': ''a'', ''b'': ''b'', ''c'': ''c''}
+
+  {''a'': ''a'', ''b'': ''b'', ''c'': ''c''}
+
+  {''a'': ''a'', ''b'': ''b'', ''c'': ''c''}
+
+  {''d'': ''d''}
+
+  {''e'': ''e''}
+
+  {''f'': ''f''}'
+top_dict:
+  a: {a: a}
+  b: {b: b}
+top_list: [d, e, f, a, b, c]
+yaml: yaml
+yaml2: yaml
+yaml3: yaml
+yaml3_dict: {a: a, b: b}

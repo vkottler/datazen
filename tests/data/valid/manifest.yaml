@@ -1,3 +1,4 @@
+---
 output_dir: "datazen-out-test"
 
 params:
@@ -6,60 +7,60 @@ params:
   compiles: "configs3"
 
 includes:
-- "includes/renders.yaml"
+  - "includes/renders.yaml"
 
 configs:
-- "configs"
-- "configs2"
+  - "configs"
+  - "configs2"
 variables:
-- "variables"
-- "variables2"
+  - "variables"
+  - "variables2"
 
 schemas:
-- "custom_schemas"
+  - "custom_schemas"
 
 default_target: "{{renders_str}}-b"
 
 commands:
-- name: "a"
-  command: "ls"
-  arguments:
-  - "-lat"
-- name: "b"
-  command: "ls"
-  arguments:
-  - "-lat"
-  file: "out.txt"
-- name: "false"
-  command: "false"
-- name: "echo-{test}"
-  command: "echo"
-  arguments:
-  - "{test}"
-- name: "bad-pattern-{test1}"
-  command: "echo"
-  arguments:
-  - "{test1}"
-- name: "bad-pattern-{test1}-{test2}"
-  command: "echo"
-  arguments:
-  - "{test1}"
+  - name: "a"
+    command: "ls"
+    arguments:
+      - "-lat"
+  - name: "b"
+    command: "ls"
+    arguments:
+      - "-lat"
+    file: "out.txt"
+  - name: "false"
+    command: "false"
+  - name: "echo-{test}"
+    command: "echo"
+    arguments:
+      - "{test}"
+  - name: "bad-pattern-{test1}"
+    command: "echo"
+    arguments:
+      - "{test1}"
+  - name: "bad-pattern-{test1}-{test2}"
+    command: "echo"
+    arguments:
+      - "{test1}"
 
 groups:
-- name: "test"
-  dependencies:
-  - "{{renders_str}}-a"
-  - "{{renders_str}}-b"
-  - "{{renders_str}}-test.md"
-  - "{{renders_str}}-test.py"
-- name: "test-children"
-  dependencies:
-  - "{{renders_str}}-test-children"
-  - "{{renders_str}}-test-child-delim"
-- name: "compile-test"
-  dependencies:
-  - "compiles-comp1-a"
-  - "compiles-comp2-c"
-  - "compiles-comp2-e"
-  - "compiles-comp3-a"
-  - "compiles-comp4"
+  - name: "test"
+    dependencies:
+      - "{{renders_str}}-a"
+      - "{{renders_str}}-b"
+      - "{{renders_str}}-test.md"
+      - "{{renders_str}}-test.py"
+  - name: "test-children"
+    dependencies:
+      - "{{renders_str}}-test-children"
+      - "{{renders_str}}-test-child-delim"
+  - name: "compile-test"
+    dependencies:
+      - "compiles-comp1-a"
+      - "compiles-comp2-c"
+      - "compiles-comp2-e"
+      - "compiles-comp3-a"
+      - "compiles-comp4"
