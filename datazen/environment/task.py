@@ -11,13 +11,15 @@ import os
 from time import perf_counter_ns
 from typing import Callable, Dict, List, Optional, Tuple
 
+# third-party
+from vcorelib.dict import merge
+
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.classes.task_data_cache import TaskDataCache
 from datazen.environment.base import Task, TaskResult, dep_slug_unwrap
 from datazen.environment.manifest import set_output_dir
 from datazen.environment.manifest_cache import ManifestCacheEnvironment
-from datazen.parsing import merge
 
 LOG = logging.getLogger(__name__)
 

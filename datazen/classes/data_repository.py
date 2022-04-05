@@ -12,11 +12,11 @@ from typing import Iterator
 
 # third-party
 import git
+from vcorelib.dict import merge
 
 # internal
 from datazen.compile import write_dir
 from datazen.load import load_dir_only
-from datazen.parsing import merge
 from datazen.paths import EXCLUDES
 
 

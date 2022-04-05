@@ -8,8 +8,10 @@ from copy import deepcopy
 import re
 from typing import Dict, List, NamedTuple, Tuple
 
+# third-party
+from vcorelib.dict import merge
+
 # internal
-from datazen.parsing import merge
 from datazen.paths import (
     advance_dict_by_path,
     format_resolve_delims,

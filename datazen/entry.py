@@ -1,11 +1,11 @@
 # =====================================
 # generator=datazen
-# version=1.14.0
-# hash=c0c8b2f1e5456cb6bd203f0d5591f6d0
+# version=2.0.0
+# hash=c3cf4d979508d04d947b1cb9b156da0f
 # =====================================
 
 """
-datazen - This package's command-line entry-point (boilerplate).
+This package's command-line entry-point (boilerplate).
 """
 
 # built-in
