@@ -43,7 +43,9 @@ class CompileEnvironment(TaskEnvironment):
         path, output_type = get_compile_output(entry)
 
         # load configs early to update cache
-        data = self.cached_load_configs(namespace)
+        data, success, _ = self.cached_load_configs(namespace)
+        if not success:
+            return TaskResult(False, False)
 
         # update this dict with the dependency data
         if dep_data is not None:

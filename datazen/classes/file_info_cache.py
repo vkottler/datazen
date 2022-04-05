@@ -52,7 +52,7 @@ class FileInfoCache:
 
         # reject things that don't belong by updating instead of assigning
         new_data = sync_cache_data(
-            load_dir_only(self.cache_dir, True), self.removed_data
+            load_dir_only(self.cache_dir, True)[0], self.removed_data
         )
         for key in DATA_DEFAULT:
             self.data[key].update(new_data[key])

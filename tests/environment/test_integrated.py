@@ -98,9 +98,9 @@ def test_load_manifest():
     """Test a nominal manifest-loading scenario."""
 
     with scoped_environment() as env:
-        cfg_data1 = env.cached_load_configs()
+        cfg_data1 = env.cached_load_configs()[0]
         assert cfg_data1
-        assert env.cached_load_configs()
+        assert env.cached_load_configs()[1]
         env.write_cache()
 
         assert env.cached_enforce_schemas(cfg_data1)
@@ -108,7 +108,7 @@ def test_load_manifest():
         # clean the cache
         env.clean_cache()
 
-        cfg_data2 = env.cached_load_configs()
+        cfg_data2 = env.cached_load_configs()[0]
         assert cfg_data2
         assert cfg_data2 == cfg_data1
         env.write_cache()

@@ -75,7 +75,7 @@ class DataRepository:
         to_load = os.path.realpath(os.path.join(self.root, root_rel))
         assert os.path.isdir(to_load)
         with self.lock:
-            self.data = load_dir_only(to_load)
+            self.data = load_dir_only(to_load)[0]
             self.logger.info("loading '%s'", to_load)
             yield self.data
             if write_back:

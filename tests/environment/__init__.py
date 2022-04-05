@@ -38,7 +38,7 @@ class EnvironmentMock:
         """Attempt to load one of the sets of configuration data."""
 
         env = self.valid if valid else self.invalid
-        return env.cached_load_configs()
+        return env.cached_load_configs()[0]
 
     def get_schemas(
         self, valid: bool = True, require_all: bool = True
@@ -58,4 +58,4 @@ class EnvironmentMock:
         """Attempt to load one of the sets of variables."""
 
         env = self.valid if valid else self.invalid
-        return env.cached_load_variables()
+        return env.cached_load_variables()[0]

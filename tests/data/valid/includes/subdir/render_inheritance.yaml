@@ -1,9 +1,10 @@
+---
 renders:
-- name: "child.html"
-  template_dependencies:
-  - "base.html"
+  - name: "child.html"
+    template_dependencies:
+      - "base.html"
 
 groups:
-- name: "render-inheritance"
-  dependencies:
-  - "renders-child.html"
+  - name: "render-inheritance"
+    dependencies:
+      - "renders-child.html"

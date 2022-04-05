@@ -25,9 +25,6 @@ class ValidDict(UserDict):
     ) -> None:
         """Initialize a named, ValidDict."""
 
-        # initialize the dict
-        if not isinstance(data, dict):
-            data = {}
         super().__init__(data)
 
         self.name = name

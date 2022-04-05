@@ -1,2 +1,3 @@
+---
 includes:
-- "includes/bad.yaml"
+  - "includes/bad.yaml"

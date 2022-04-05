@@ -12,4 +12,4 @@ def test_ini_basic():
     with scoped_scenario("test_ini") as env:
         for key in "abc":
             assert env.compile(f"single-{key}").success
-        assert env.compile("bad").success
+        assert not env.compile("bad").success

@@ -36,7 +36,7 @@ def cmd_compile(
     env.add_variable_dirs(variable_dirs)
 
     # load data (resolves variables and enforces schemas)
-    configs = env.load_configs()
+    configs = env.load_configs()[0]
     if not env.configs_valid:
         return False
 

@@ -1,3 +1,4 @@
-a: "{{global["a"]["a"]}}"
+---
+a: "{{global['a']['a']}}"
 b: "{{b}}"
-c: "{{global["c"]["c"]}}"
+c: "{{global['c']['c']}}"

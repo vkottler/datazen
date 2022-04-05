@@ -1,9 +1,10 @@
+---
 configs:
-- "configs"
+  - "configs"
 schemas:
-- "schemas"
+  - "schemas"
 variables:
-- "variables"
+  - "variables"
 
 compiles:
-- name: "a"
+  - name: "a"

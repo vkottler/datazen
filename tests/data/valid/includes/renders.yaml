@@ -1,80 +1,82 @@
+---
 params:
   sub_param: "b_out"
 
 templates:
-- "../templates2"
+  - "../templates2"
 
 renders:
-- name: "a"
-  output_path: "a_render"
-  indent: 4
-  dependencies:
-  - "a"
-  - "b"
-  - "c"
-  key: "a"
-  as: "a"
-- name: "b"
-  dependencies:
-  - "a"
-  - "b"
-  output_path: "b_cool"
-- name: "d"
-  indent: 4
-  dependencies:
-  - "x"
-- name: "e"
-  indent: 4
-  dependencies:
-  - "a"
-  - "b"
-  - "c"
-- name: "z"
-  as: "zz"
-- name: "{{renders}}.md"
-  as: "test.md"
-- name: "{{renders}}.py"
-  as: "test.py"
-  no_dynamic_fingerprint: true
+  - name: "a"
+    output_path: "a_render"
+    indent: 4
+    dependencies:
+      - "a"
+      - "b"
+      - "c"
+    key: "a"
+    as: "a"
+  - name: "b"
+    as: "renders_b"
+    dependencies:
+      - "a"
+      - "b"
+    output_path: "b_cool"
+  - name: "d"
+    indent: 4
+    dependencies:
+      - "x"
+  - name: "e"
+    indent: 4
+    dependencies:
+      - "a"
+      - "b"
+      - "c"
+  - name: "z"
+    as: "zz"
+  - name: "{{renders}}.md"
+    as: "test.md"
+  - name: "{{renders}}.py"
+    as: "test.py"
+    no_dynamic_fingerprint: true
 
-- name: "test-children"
-  dependencies:
-  - "a"
-  - "b"
-  children:
-  - "renders-{{renders}}.md"
-  - "renders-{{renders}}.py"
-- name: "test-child-delim"
-  key: "test-children"
-  dependencies:
-  - "a"
-  - "b"
-  children:
-  - "renders-{{renders}}.md"
-  - "renders-{{renders}}.py"
-  - "renders-{{renders}}.md"
-  - "renders-{{renders}}.py"
-  child_delimeter: "\n\n======== delim working! ========\n\n"
-  child_indent: 4
+  - name: "test-children"
+    dependencies:
+      - "a"
+      - "b"
+    children:
+      - "renders-{{renders}}.md"
+      - "renders-{{renders}}.py"
+  - name: "test-child-delim"
+    key: "test-children"
+    dependencies:
+      - "a"
+      - "b"
+    children:
+      - "renders-{{renders}}.md"
+      - "renders-{{renders}}.py"
+      - "renders-{{renders}}.md"
+      - "renders-{{renders}}.py"
+    child_delimeter: "\n\n======== delim working! ========\n\n"
+    child_indent: 4
 
-- name: "render2"
-  key: "test"
-  indent: 4
-  dependencies:
-  - "a"
-  - "b"
-- name: "test"
-  output_dir: "b_cool"
-  dependencies:
-  - "a"
-  - "b"
+  - name: "render2"
+    key: "test"
+    indent: 4
+    dependencies:
+      - "a"
+      - "b"
+  - name: "test"
+    output_dir: "b_cool"
+    dependencies:
+      - "a"
+      - "b"
 
 groups:
-- name: "render_test"
-  dependencies:
-  - "renders-test"
-  - "renders-render2"
+  - name: "render_test"
+    dependencies:
+      - "renders-test"
+      - "renders-render2"
 
 includes:
-- "subdir/compiles.yaml"
-- "subdir/render_inheritance.yaml"
+  - "subdir/compiles.yaml"
+  - "subdir/render_inheritance.yaml"

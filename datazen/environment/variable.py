@@ -8,6 +8,7 @@ from typing import List
 
 # internal
 from datazen import ROOT_NAMESPACE
+from datazen.code.types import LoadResult
 from datazen.enums import DataType
 from datazen.environment.base import BaseEnvironment
 from datazen.load import DEFAULT_LOADS, LoadedFiles
@@ -24,11 +25,12 @@ class VariableEnvironment(BaseEnvironment):
         self,
         var_loads: LoadedFiles = DEFAULT_LOADS,
         name: str = ROOT_NAMESPACE,
-    ) -> dict:
+    ) -> LoadResult:
         """Load variable data, resolve any un-loaded variable directories."""
 
         # determine directories that need to be loaded
         data_type = DataType.VARIABLE
+        errors = 0
 
         with self.lock:
             to_load = self.get_to_load(data_type, name)
@@ -36,10 +38,12 @@ class VariableEnvironment(BaseEnvironment):
             # load new data
             variable_data = self.get_data(data_type, name)
             if to_load:
-                variable_data.update(load_variables(to_load, var_loads))
+                new_data, success, _ = load_variables(to_load, var_loads)
+                errors += int(not success)
+                variable_data.update(new_data)
                 self.update_load_state(data_type, to_load, name)
 
-        return variable_data
+        return LoadResult(variable_data, errors == 0)
 
     def add_variable_dirs(
         self,
