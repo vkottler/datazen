@@ -7,37 +7,38 @@ params:
   entry: dz
 
 includes:
-  - "config/includes/python.yaml"
-  - "config/includes/license.yaml"
+  - config/includes/python.yaml
+  - config/includes/license.yaml
 
 configs:
-  - "local/configs"
+  - local/configs
 
 templates:
-  - "local/templates"
+  - local/templates
 
 variables:
-  - "local/variables"
+  - local/variables
 
 compiles:
-  - name: "local"
+  - name: local
 
 renders:
-  - name: "manifest.yaml"
+  - name: manifest.yaml
     output_dir: "{{project}}/data/schemas"
     dependencies:
-      - "compiles-local"
-  - name: "README.md"
+      - compiles-local
+  - name: README.md
     output_dir: "."
     dependencies:
-      - "compiles-local"
-      - "commands-help"
-      - "renders-python_readme_header.md"
+      - compiles-local
+      - commands-help
+      - renders-python_readme_header.md
+      - renders-python_readme_dep_graph.md
 
 groups:
   - name: all
     dependencies:
       - groups-python
       - groups-license
-      - "renders-README.md"
-      - "renders-manifest.yaml"
+      - renders-README.md
+      - renders-manifest.yaml
