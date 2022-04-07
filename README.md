@@ -2,7 +2,7 @@
     =====================================
     generator=datazen
     version=2.1.0
-    hash=4c3fd6c2c4f48dc6161c157e67878a4d
+    hash=6c73dd40aaccd7f01af0769f2e884bae
     =====================================
 -->
 
@@ -266,8 +266,10 @@ schema:
   type: string
 ```
 
-# Dependency Graph
+# Internal Dependency Graph
 
+A coarse view of the internal structure and scale of
+`datazen`'s source.
 Generated using [pydeps](https://github.com/thebjorn/pydeps) (via
 `mk python-deps`).
 
