@@ -2,14 +2,14 @@
     =====================================
     generator=datazen
     version=2.1.0
-    hash=6c73dd40aaccd7f01af0769f2e884bae
+    hash=1d2c7fa1b06e50b6fee18d0c27105619
     =====================================
 -->
 
-# datazen ([2.1.0](https://pypi.org/project/datazen/))
+# datazen ([2.1.1](https://pypi.org/project/datazen/))
 
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
-![Build Status](https://github.com/vkottler/datazen/workflows/Python%20package/badge.svg)
+![Build Status](https://github.com/vkottler/datazen/workflows/Python%20Package/badge.svg)
 [![codecov](https://codecov.io/gh/vkottler/datazen/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/vkottler/datazen)
 
 *Compile and render schema-validated configuration data.*

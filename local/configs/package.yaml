@@ -12,8 +12,7 @@ requirements:
   - tomli-w
   - vcorelib
 dev_requirements:
-  - vmklib
-  - types-setuptools
+  - setuptools-wrapper
 init_local: |
 
   DEFAULT_TYPE = "yaml"
