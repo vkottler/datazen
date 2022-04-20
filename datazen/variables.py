@@ -5,8 +5,10 @@ datazen - Top-level APIs for loading and interacting with variables.
 # built-in
 from typing import List
 
+# third-party
+from vcorelib.io.types import LoadResult
+
 # internal
-from datazen.code.types import LoadResult
 from datazen.load import DEFAULT_LOADS, LoadedFiles, load_dir
 
 

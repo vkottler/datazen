@@ -8,11 +8,11 @@ from typing import Dict, List
 
 # third-party
 import jinja2
+from vcorelib.paths import get_file_ext, get_file_name
 
 # internal
 from datazen.load import DEFAULT_LOADS, LoadedFiles
 from datazen.parsing import set_file_hash
-from datazen.paths import get_file_ext, get_file_name
 
 
 def update_cache_primitives(dir_path: str, loads: LoadedFiles) -> None:

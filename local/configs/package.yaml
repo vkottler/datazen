@@ -7,9 +7,6 @@ requirements:
   - cerberus
   - GitPython
   - Jinja2
-  - ruamel.yaml
-  - tomli
-  - tomli-w
   - vcorelib
 dev_requirements:
   - setuptools-wrapper

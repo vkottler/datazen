@@ -6,9 +6,11 @@ datazen - A child class for adding variable-data loading capabilities to the
 # built-in
 from typing import List
 
+# third-party
+from vcorelib.io.types import LoadResult
+
 # internal
 from datazen import ROOT_NAMESPACE
-from datazen.code.types import LoadResult
 from datazen.enums import DataType
 from datazen.environment.base import BaseEnvironment
 from datazen.load import DEFAULT_LOADS, LoadedFiles

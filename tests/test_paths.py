@@ -2,9 +2,11 @@
 datazen - Tests for the 'paths' API.
 """
 
+# third-party
+from vcorelib.io.types import FileExtension
+
 # module under test
 from datazen import paths
-from datazen.code import FileExtension
 
 
 def test_unflatten_dict():

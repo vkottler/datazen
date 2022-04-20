@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, cast
 
 # third-party
 import jinja2
+from vcorelib.paths import get_file_ext
 
 # internal
 from datazen import GLOBAL_KEY, to_private
@@ -16,7 +17,6 @@ from datazen.environment.base import TaskResult, dep_slug_unwrap
 from datazen.environment.task import TaskEnvironment, get_path
 from datazen.fingerprinting import build_fingerprint
 from datazen.load import data_added
-from datazen.paths import get_file_ext
 from datazen.targets import resolve_dep_data
 
 LOG = logging.getLogger(__name__)

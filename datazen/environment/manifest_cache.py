@@ -9,15 +9,15 @@ from typing import Dict, List
 
 # third-party
 import jinja2
+from vcorelib.io.types import LoadResult
+from vcorelib.paths import get_file_name
 
 # internal
 from datazen import CACHE_SUFFIX, DEFAULT_MANIFEST, ROOT_NAMESPACE
 from datazen.classes.file_info_cache import FileInfoCache, cmp_total_loaded
 from datazen.classes.file_info_cache import copy as copy_cache
 from datazen.classes.file_info_cache import meld as meld_cache
-from datazen.code.types import LoadResult
 from datazen.environment.manifest import ManifestEnvironment
-from datazen.paths import get_file_name
 
 LOG = logging.getLogger(__name__)
 

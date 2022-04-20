@@ -7,9 +7,11 @@ datazen - A child class for adding configuration-data loading capabilities to
 import logging
 from typing import List
 
+# third-party
+from vcorelib.io.types import LoadResult
+
 # internal
 from datazen import ROOT_NAMESPACE
-from datazen.code.types import LoadResult
 from datazen.configs import load as load_configs
 from datazen.enums import DataType
 from datazen.environment.schema import SchemaEnvironment

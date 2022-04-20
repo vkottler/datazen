@@ -13,11 +13,9 @@ from typing import Union
 # third-party
 import jinja2
 from vcorelib.dict import merge
-
-# internal
-from datazen.code import ARBITER
-from datazen.code.types import DataStream, LoadResult
-from datazen.paths import get_file_ext
+from vcorelib.io import ARBITER
+from vcorelib.io.types import DataStream, LoadResult
+from vcorelib.paths import get_file_ext
 
 LOG = logging.getLogger(__name__)
 
