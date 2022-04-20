@@ -1,12 +1,12 @@
 <!--
     =====================================
     generator=datazen
-    version=2.1.0
-    hash=1d2c7fa1b06e50b6fee18d0c27105619
+    version=3.0.0
+    hash=0707a70906b0631a0e5b5d81d8bc98be
     =====================================
 -->
 
-# datazen ([2.1.1](https://pypi.org/project/datazen/))
+# datazen ([3.0.0](https://pypi.org/project/datazen/))
 
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
 ![Build Status](https://github.com/vkottler/datazen/workflows/Python%20Package/badge.svg)

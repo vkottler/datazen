@@ -9,9 +9,11 @@ import os
 from pathlib import Path
 from typing import Tuple, Union
 
+# third-party
+from vcorelib.io import ARBITER
+
 # internal
 from datazen import DEFAULT_TYPE
-from datazen.code import ARBITER
 
 LOG = logging.getLogger(__name__)
 

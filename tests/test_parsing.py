@@ -8,9 +8,9 @@ from pathlib import Path
 
 # third-party
 from pytest import raises
+from vcorelib.io import ARBITER
 
 # module under test
-from datazen.code import ARBITER
 from datazen.parsing import load
 
 # internal

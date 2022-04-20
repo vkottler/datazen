@@ -19,18 +19,6 @@ FMT_CLOSE = "}"
 EXCLUDES = [".git", ".svn", ".gitignore"]
 
 
-def get_file_name(path: Union[Path, str], **kwargs) -> str:
-    """From a full path to a file, get just the name of the file."""
-
-    return ".".join(os.path.basename(str(path)).split(".", **kwargs)[:-1])
-
-
-def get_file_ext(path: Union[Path, str], **kwargs) -> str:
-    """From a pull path to a file, get just the file's extension."""
-
-    return os.path.basename(str(path)).split(".", **kwargs)[-1]
-
-
 def get_path_list(
     root: Union[Path, str], current: Union[Path, str]
 ) -> List[str]:

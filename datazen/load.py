@@ -20,14 +20,16 @@ from typing import (
     cast,
 )
 
+# third-party
+from vcorelib.io.types import LoadResult
+from vcorelib.paths import get_file_name
+
 # internal
 from datazen import GLOBAL_KEY
-from datazen.code.types import LoadResult
 from datazen.parsing import load as load_raw_resolve
 from datazen.parsing import set_file_hash
 from datazen.paths import (
     advance_dict_by_path,
-    get_file_name,
     get_path_list,
     walk_with_excludes,
 )
