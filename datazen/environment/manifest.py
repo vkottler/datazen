@@ -13,6 +13,7 @@ from typing import List, Tuple
 from cerberus import Validator
 from vcorelib.dict import merge_dicts
 from vcorelib.dict.env import dict_resolve_env_vars
+from vcorelib.io import ARBITER
 
 # internal
 from datazen import DEFAULT_DIR, ROOT_NAMESPACE
@@ -20,7 +21,6 @@ from datazen.classes.target_resolver import TargetResolver
 from datazen.environment.config import ConfigEnvironment
 from datazen.environment.template import TemplateEnvironment
 from datazen.parsing import load as load_raw
-from datazen.parsing import load_stream
 from datazen.paths import get_package_data, get_package_dir, resolve_dir
 from datazen.schemas import inject_custom_schemas, load_types
 
@@ -247,10 +247,14 @@ def get_manifest_schema(
 ) -> Validator:
     """Load the schema for manifest from the package."""
 
-    rel_path = os.path.join("schemas", "manifest.yaml")
-    schema_str = get_package_data(rel_path)
     return Validator(
-        load_stream(StringIO(schema_str), rel_path, logger).data,
+        ARBITER.decode_stream(
+            "yaml",
+            StringIO(
+                get_package_data(os.path.join("schemas", "manifest.yaml"))
+            ),
+            logger,
+        ).data,
         require_all=require_all,
     )
 

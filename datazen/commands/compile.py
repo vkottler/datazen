@@ -7,10 +7,12 @@ datazen - A command implementation for compiling configuration data and
 import logging
 from typing import List
 
+# third-party
+from vcorelib.paths import get_file_ext
+
 # internal
 from datazen.compile import str_compile
 from datazen.environment.integrated import Environment
-from datazen.parsing import get_file_ext
 
 LOG = logging.getLogger(__name__)
 
