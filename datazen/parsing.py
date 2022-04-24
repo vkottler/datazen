@@ -3,6 +3,7 @@ datazen - APIs for loading raw data from files.
 """
 
 # built-in
+from contextlib import ExitStack
 import hashlib
 from io import StringIO
 import logging
@@ -14,31 +15,9 @@ from typing import Union
 import jinja2
 from vcorelib.dict import merge
 from vcorelib.io import ARBITER
-from vcorelib.io.types import DataStream, LoadResult
-from vcorelib.paths import get_file_ext
+from vcorelib.io.types import DataStream, LoadResult, StreamProcessor
 
 LOG = logging.getLogger(__name__)
-
-
-def load_stream(
-    data_stream: DataStream,
-    path: Union[Path, str],
-    logger: logging.Logger = LOG,
-    require_success: bool = False,
-    **kwargs,
-) -> LoadResult:
-    """
-    Load arbitrary data from a text stream, update an existing dictionary.
-    """
-
-    result = ARBITER.decode_stream(
-        get_file_ext(path), data_stream, logger, **kwargs
-    )
-
-    if require_success:
-        result.require_success(path)
-
-    return result
 
 
 def dedup_dict_lists(data: dict) -> dict:
@@ -60,6 +39,27 @@ def dedup_dict_lists(data: dict) -> dict:
     return data
 
 
+def template_preprocessor_factory(
+    variables: dict, is_template: bool, stack: ExitStack
+) -> StreamProcessor:
+    """Create a stream-processing function for data decoding."""
+
+    def processor(stream: DataStream) -> DataStream:
+        """
+        If the stream should be interpreted as a template, load and render it,
+        returning a readable stream as a result. Otherwise return the original
+        stream.
+        """
+
+        if variables and is_template:
+            template = jinja2.Template(stream.read())
+            stream = stack.enter_context(StringIO(template.render(variables)))
+
+        return stream
+
+    return processor
+
+
 def load(
     path: Union[Path, str],
     variables: dict,
@@ -76,40 +76,31 @@ def load(
 
     result = LoadResult({}, False)
 
-    # Include the time it takes to initially read or render the file in the
-    # returned time.
-    start = time.perf_counter_ns()
-    load_time = 0
+    with ExitStack() as stack:
+        try:
+            load_result = ARBITER.decode(
+                path,
+                logger,
+                preprocessor=template_preprocessor_factory(
+                    variables, is_template, stack
+                ),
+                **kwargs,
+            )
+        except jinja2.exceptions.TemplateError as exc:
+            logger.error(
+                "couldn't render '%s': %s (variables: %s)",
+                path,
+                exc,
+                variables,
+            )
+            return result
 
-    # Read the raw file and interpret it as a template, resolve 'variables'.
-    path = str(path)
-    try:
-        with open(path, encoding="utf-8") as config_file:
-            if variables and is_template:
-                template = jinja2.Template(config_file.read())
-                str_output = template.render(variables)
-            else:
-                str_output = config_file.read()
-        load_time = start - time.perf_counter_ns()
-    except FileNotFoundError:
-        logger.error("can't find '%s' to load file data", path)
-        return result
-    except jinja2.exceptions.TemplateError as exc:
-        logger.error(
-            "couldn't render '%s': %s (variables: %s)",
-            path,
-            exc,
-            variables,
-        )
-        return result
-
-    load_result = load_stream(StringIO(str_output), path, logger, **kwargs)
     return LoadResult(
         merge(
             dict_to_update, load_result.data, expect_overwrite=expect_overwrite
         ),
         load_result.success,
-        load_result.time_ns + load_time,
+        load_result.time_ns,
     )
 
 

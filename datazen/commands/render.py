@@ -10,10 +10,10 @@ from typing import List
 
 # third-party
 import jinja2
+from vcorelib.io import ARBITER
 
 # internal
 from datazen.environment.integrated import Environment
-from datazen.parsing import load_stream
 
 LOG = logging.getLogger(__name__)
 
@@ -22,14 +22,13 @@ def str_render(
     template: jinja2.Template,
     config_data_path: str,
     logger: logging.Logger = LOG,
+    **kwargs,
 ) -> str:
     """Load configuration data and render a jinja2 template with it."""
 
-    # load the configuration data from file
-    with open(config_data_path, encoding="utf-8") as stream:
-        config_data = load_stream(stream, config_data_path, logger).data
-
-    return template.render(config_data)
+    return template.render(
+        ARBITER.decode(config_data_path, logger, True, **kwargs).data
+    )
 
 
 def cmd_render(
