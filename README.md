@@ -1,8 +1,8 @@
 <!--
     =====================================
     generator=datazen
-    version=3.0.0
-    hash=87320580c18fe3cf263a2ae0949e1dc8
+    version=3.0.1
+    hash=a553381c95b74b1a78ea6d4e22bf9352
     =====================================
 -->
 
@@ -13,6 +13,9 @@
 [![codecov](https://codecov.io/gh/vkottler/datazen/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/vkottler/datazen)
 
 *Compile and render schema-validated configuration data.*
+
+See also: [generated documentation](https://vkottler.github.io/python/pydoc/datazen.html)
+(created with [`pydoc`](https://docs.python.org/3/library/pydoc.html)).
 
 Good software is composable and configurable, but
 the complexity of managing configuration data scales with its complexity.
