@@ -1281,7 +1281,7 @@
 <!-- vcorelib_paths -->
 <g id="node50" class="node">
 <title>vcorelib_paths</title><style>.edge>path:hover{stroke-width:8}</style>
-<ellipse fill="#f910d8" stroke="black" cx="554" cy="-1632.24" rx="46.95" ry="18"/>
+<ellipse fill="#f906d6" stroke="black" cx="554" cy="-1632.24" rx="46.95" ry="18"/>
 <text text-anchor="middle" x="554" y="-1629.24" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#ffffff">vcorelib.paths</text>
 </g>
 <!-- vcorelib_paths&#45;&gt;datazen_commands_compile -->
@@ -1290,13 +1290,13 @@
 <path fill="none" stroke="black" d="M76,-1266.91C28.67,-1114.33 37.51,-1047.93 118,-909.95"/>
 <path fill="none" stroke="black" d="M118,-907.95C133.9,-881.97 104.04,-872.02 100,-841.83 90.4,-770 88.68,-741.6 129,-681.38 224.6,-538.6 298.13,-536.64 462,-484.93 486.91,-477.07 1371.07,-340.49 1388,-320.59"/>
 <path fill="none" stroke="black" d="M1388,-318.59C1470.94,-199.93 1563.88,-272.4 1697,-215.48 1700.94,-213.8 1704.97,-211.94 1708.98,-210.01"/>
-<polygon fill="#f910d8" stroke="black" points="1710.86,-212.99 1718.25,-205.39 1707.74,-206.72 1710.86,-212.99"/>
+<polygon fill="#f906d6" stroke="black" points="1710.86,-212.99 1718.25,-205.39 1707.74,-206.72 1710.86,-212.99"/>
 </g>
 <!-- vcorelib_paths&#45;&gt;datazen_environment_manifest_cache -->
 <g id="edge150" class="edge">
 <title>vcorelib_paths&#45;&gt;datazen_environment_manifest_cache</title><style>.edge>path:hover{stroke-width:8}</style>
 <path fill="none" stroke="black" d="M118,-907.95C160.12,-836.26 230.61,-896.79 293,-841.83 316.49,-821.14 308.24,-805.38 326,-779.61 358.92,-731.83 361.74,-710.38 412,-681.38 494.22,-633.95 604.65,-619.99 675.83,-616.18"/>
-<polygon fill="#f910d8" stroke="black" points="676.22,-619.67 686.04,-615.69 675.88,-612.68 676.22,-619.67"/>
+<polygon fill="#f906d6" stroke="black" points="676.22,-619.67 686.04,-615.69 675.88,-612.68 676.22,-619.67"/>
 </g>
 <!-- vcorelib_paths&#45;&gt;datazen_environment_render -->
 <g id="edge151" class="edge">
@@ -1305,33 +1305,33 @@
 <path fill="none" stroke="black" d="M489,-1474.13C399.11,-1358.41 293.5,-1480.24 166,-1408.02 101.93,-1371.72 90.65,-1341.07 76,-1268.91"/>
 <path fill="none" stroke="black" d="M76,-1266.91C63.63,-1231.63 40.19,-1234.49 24,-1200.79 3.67,-1158.47 0,-1144.86 0,-1097.91 0,-1097.91 0,-1097.91 0,-1006.17 0,-905.99 92.85,-909.64 114,-811.72"/>
 <path fill="none" stroke="black" d="M114,-809.72C117.88,-769.2 102.14,-709.22 374,-583.16 678.44,-441.99 1090.15,-421.44 1245.34,-418.92"/>
-<polygon fill="#f910d8" stroke="black" points="1245.68,-422.42 1255.63,-418.78 1245.58,-415.42 1245.68,-422.42"/>
+<polygon fill="#f906d6" stroke="black" points="1245.68,-422.42 1255.63,-418.78 1245.58,-415.42 1245.68,-422.42"/>
 </g>
 <!-- vcorelib_paths&#45;&gt;datazen_load -->
 <g id="edge152" class="edge">
 <title>vcorelib_paths&#45;&gt;datazen_load</title><style>.edge>path:hover{stroke-width:8}</style>
 <path fill="none" stroke="black" d="M489,-1389.02C454.48,-1327.75 543.83,-1320.14 592,-1268.91"/>
 <path fill="none" stroke="black" d="M592,-1266.91C611.32,-1245.74 632.63,-1221.01 647.76,-1203.21"/>
-<polygon fill="#f910d8" stroke="black" points="650.45,-1205.45 654.24,-1195.56 645.11,-1200.93 650.45,-1205.45"/>
+<polygon fill="#f906d6" stroke="black" points="650.45,-1205.45 654.24,-1195.56 645.11,-1200.93 650.45,-1205.45"/>
 </g>
 <!-- vcorelib_paths&#45;&gt;datazen_templates -->
 <g id="edge153" class="edge">
 <title>vcorelib_paths&#45;&gt;datazen_templates</title><style>.edge>path:hover{stroke-width:8}</style>
 <path fill="none" stroke="black" d="M489,-1474.13C472.75,-1440.96 506.81,-1423.38 489,-1391.02"/>
 <path fill="none" stroke="black" d="M489,-1389.02C453.7,-1324.86 375.64,-1395.55 333,-1336.02 282.08,-1264.94 371.02,-1168.34 420.4,-1123.16"/>
-<polygon fill="#f910d8" stroke="black" points="422.86,-1125.65 427.95,-1116.36 418.18,-1120.44 422.86,-1125.65"/>
+<polygon fill="#f906d6" stroke="black" points="422.86,-1125.65 427.95,-1116.36 418.18,-1120.44 422.86,-1125.65"/>
 </g>
 <!-- vcorelib_paths&#45;&gt;vcorelib_io -->
 <g id="edge154" class="edge">
 <title>vcorelib_paths&#45;&gt;vcorelib_io</title><style>.edge>path:hover{stroke-width:8}</style>
 <path fill="none" stroke="black" d="M489,-1474.13C477.07,-1449.77 500.69,-1425.78 522.73,-1409.89"/>
-<polygon fill="#f910d8" stroke="black" points="524.74,-1412.75 531.02,-1404.21 520.79,-1406.97 524.74,-1412.75"/>
+<polygon fill="#f906d6" stroke="black" points="524.74,-1412.75 531.02,-1404.21 520.79,-1406.97 524.74,-1412.75"/>
 </g>
 <!-- vcorelib_paths&#45;&gt;vcorelib_io_types -->
 <g id="edge155" class="edge">
 <title>vcorelib_paths&#45;&gt;vcorelib_io_types</title><style>.edge>path:hover{stroke-width:8}</style>
 <path fill="none" stroke="black" d="M561.19,-1614.35C571.33,-1590.51 590.12,-1546.35 603.74,-1514.34"/>
-<polygon fill="#f910d8" stroke="black" points="607.09,-1515.41 607.79,-1504.83 600.65,-1512.67 607.09,-1515.41"/>
+<polygon fill="#f906d6" stroke="black" points="607.09,-1515.41 607.79,-1504.83 600.65,-1512.67 607.09,-1515.41"/>
 </g>
 </g>
 </svg>
