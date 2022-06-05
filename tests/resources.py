@@ -3,7 +3,7 @@ datazen - An interface for retrieving and interacting with test data.
 """
 
 # built-in
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
@@ -126,7 +126,10 @@ def get_tempfile(extension: str) -> Iterator[str]:
     """Obtain a temporary file name with a specific extension."""
 
     with NamedTemporaryFile(suffix=extension) as tfile:
-        yield tfile.name
+        name = tfile.name
+    yield name
+    with suppress(FileNotFoundError):
+        os.unlink(tfile.name)
 
 
 @contextmanager
