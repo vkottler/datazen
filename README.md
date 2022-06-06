@@ -2,7 +2,7 @@
     =====================================
     generator=datazen
     version=3.0.4
-    hash=0a2fce90d2e23de1995d1beb77c0a009
+    hash=005b98b62627c6973063f963e39f78d7
     =====================================
 -->
 
@@ -11,11 +11,32 @@
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
 ![Build Status](https://github.com/vkottler/datazen/workflows/Python%20Package/badge.svg)
 [![codecov](https://codecov.io/gh/vkottler/datazen/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/vkottler/datazen)
+![PyPI - Status](https://img.shields.io/pypi/status/datazen)
+![Dependents (via libraries.io)](https://img.shields.io/librariesio/dependents/pypi/datazen)
 
 *Compile and render schema-validated configuration data.*
 
 See also: [generated documentation](https://vkottler.github.io/python/pydoc/datazen.html)
 (created with [`pydoc`](https://docs.python.org/3/library/pydoc.html)).
+
+## Python Version Support
+
+This package is tested with the following Python minor versions:
+
+* [`python3.7`](https://docs.python.org/3.7/)
+* [`python3.8`](https://docs.python.org/3.8/)
+* [`python3.9`](https://docs.python.org/3.9/)
+* [`python3.10`](https://docs.python.org/3.10/)
+
+## Platform Support
+
+This package is tested on the following platforms:
+
+* `macos-latest`
+* `windows-latest`
+* `ubuntu-latest`
+
+# Introduction
 
 Good software is composable and configurable, but
 the complexity of managing configuration data scales with its complexity.
