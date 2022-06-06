@@ -9,6 +9,9 @@ import os
 import subprocess
 from typing import List
 
+# third-party
+from vcorelib.task.subprocess.run import reconcile_platform
+
 # internal
 from datazen.environment.base import TaskResult
 from datazen.environment.task import TaskEnvironment, get_path
@@ -33,7 +36,7 @@ class CommandEnvironment(TaskEnvironment):
     ) -> TaskResult:
         """Perform the command specified by the entry."""
 
-        cmd = [entry["command"]]
+        cmd = []
         if "arguments" in entry and entry["arguments"]:
             cmd += entry["arguments"]
 
@@ -51,7 +54,8 @@ class CommandEnvironment(TaskEnvironment):
         ):
             return TaskResult(True, False)
 
-        result = subprocess.run(cmd, capture_output=True)
+        program, args = reconcile_platform(entry["command"], cmd)
+        result = subprocess.run([program] + args, capture_output=True)
 
         task_data[entry["name"]] = defaultdict(str)
         data = task_data[entry["name"]]

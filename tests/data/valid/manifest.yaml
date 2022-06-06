@@ -22,6 +22,10 @@ schemas:
 default_target: "{{renders_str}}-b"
 
 commands:
+  - name: "windows"
+    command: "python"
+    arguments:
+      - "--version"
   - name: "a"
     command: "ls"
     arguments:
