@@ -10,7 +10,7 @@ import subprocess
 from typing import List
 
 # third-party
-from vcorelib.task.subprocess.run import reconcile_platform
+from vcorelib.task.subprocess.run import is_windows, reconcile_platform
 
 # internal
 from datazen.environment.base import TaskResult
@@ -54,7 +54,19 @@ class CommandEnvironment(TaskEnvironment):
         ):
             return TaskResult(True, False)
 
-        program, args = reconcile_platform(entry["command"], cmd)
+        program = entry["command"]
+
+        # Try and fix a path to a virtual-environment script on Windows.
+        program = (
+            program.replace("/bin/", "/Scripts/")
+            if is_windows() and "venv" in program
+            else program
+        )
+
+        # Try and fix a path to a program on Windows.
+        program = program.replace("/", "\\") if is_windows() else program
+
+        program, args = reconcile_platform(program, cmd)
         result = subprocess.run([program] + args, capture_output=True)
 
         task_data[entry["name"]] = defaultdict(str)
