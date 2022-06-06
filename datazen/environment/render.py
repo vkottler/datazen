@@ -145,7 +145,9 @@ class RenderEnvironment(TaskEnvironment):
             # don't write a file, if requested
             if path is not None:
                 with open(path, "w", encoding="utf-8") as render_out:
-                    render_out.write(fprint + render_str + os.linesep)
+                    render_out.write(fprint)
+                    render_out.write(render_str)
+                    render_out.write("\n")
 
             # save the output into a dict for consistency
             self.store_render(entry, out_data)

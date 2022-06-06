@@ -1,9 +1,10 @@
 [build-system]
 requires = ["setuptools-wrapper", "trove-classifiers"]
+build-backend = "setuptools.build_meta:__legacy__"
 
 [project]
 name = "datazen"
-version = "3.0.1"
+version = "3.0.2"
 description = "Compile and render schema-validated configuration data."
 readme = "README.md"
 requires-python = ">=3.7"
