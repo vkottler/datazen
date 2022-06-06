@@ -22,8 +22,9 @@ def test_command_duplicate_matches():
 def test_command_basic():
     """Test basic commanding functionality."""
 
-    if not is_windows():
-        with scoped_environment() as env:
+    with scoped_environment() as env:
+        assert env.command("windows") == (True, True)
+        if not is_windows():
             # run a command
             assert env.command("a") == (True, True)
             assert env.command("b") == (True, True)
