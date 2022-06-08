@@ -3,13 +3,12 @@ datazen - An interface for parsing and matching targets.
 """
 
 # built-in
-from collections import defaultdict
 from copy import deepcopy
-import re
-from typing import Dict, List, NamedTuple, Tuple
+from typing import Dict, List, Tuple
 
 # third-party
 from vcorelib.dict import merge
+from vcorelib.target import Substitutions, Target
 
 # internal
 from datazen.paths import (
@@ -17,52 +16,6 @@ from datazen.paths import (
     format_resolve_delims,
     unflatten_dict,
 )
-
-KW_OPEN = "{"
-KW_CLOSE = "}"
-KW_PATTERN = "[a-zA-Z0-9-_.]+"
-
-
-def target_is_literal(name: str) -> bool:
-    """
-    Determine if a named target has keywords or not (is otherwise literal).
-    """
-
-    return name.count(KW_OPEN) == name.count(KW_CLOSE) == 0
-
-
-class ParseResult(NamedTuple):
-    """
-    An encapsulation for a regular expression and the in-order keywords that
-    can be mapped to 'group' indices.
-    """
-
-    pattern: re.Pattern
-    keys: List[str]
-
-
-def parse_target(name: str) -> ParseResult:
-    """
-    From a target name, provide a compiled pattern and an in-order list of
-    the names of the keyword arguments that will appear (group order).
-    """
-
-    open_len = name.count(KW_OPEN)
-    assert open_len == name.count(KW_CLOSE)
-
-    pattern = "^"
-    keys = []
-    for _ in range(open_len):
-        start = name.index(KW_OPEN) + 1
-        end = name.index(KW_CLOSE)
-        pattern += name[: start - 1]
-        pattern += f"({KW_PATTERN})"
-        keys.append(name[start:end])
-        name = name[end + 1 :]
-    pattern += name + "$"
-
-    assert len(keys) == open_len
-    return ParseResult(re.compile(pattern), keys)
 
 
 def parse_targets(
@@ -77,54 +30,20 @@ def parse_targets(
     patterns: Dict[str, dict] = {}
 
     for target in targets:
-        data: dict = {}
+        data: dict = {"data": target}
         assert "name" in target
-        data["literal"] = target_is_literal(target["name"])
+        name = target["name"]
+        parsed = Target(name)
+        data["parsed"] = parsed
+        data["literal"] = parsed.literal
         dest_set = literals if data["literal"] else patterns
-        data["data"] = target
-        parsed = parse_target(target["name"])
-        data["pattern"] = parsed.pattern
-        data["keys"] = parsed.keys
-        dest_set[target["name"]] = data
+
+        dest_set[name] = data
 
     return literals, patterns
 
 
-MatchData = Dict[str, str]
-
-
-class TargetMatch(NamedTuple):
-    """
-    An encapsulation of results when attempting to patch a target name to a
-    pattern. If a target was matched and had keyword substitutions, the actual
-    values used will be set as match data.
-    """
-
-    found: bool
-    substitutions: MatchData
-
-
-def match_target(
-    name: str, pattern: re.Pattern, keys: List[str]
-) -> TargetMatch:
-    """
-    From a target name, attempt to match against a pattern and resolve a set
-    of key names.
-    """
-
-    data: MatchData = defaultdict(str)
-    result = pattern.fullmatch(name)
-
-    if result is None:
-        return TargetMatch(False, data)
-
-    for idx, key in enumerate(keys):
-        data[key] = result.group(1 + idx)
-
-    return TargetMatch(True, data)
-
-
-def resolve_target_list(target_list: list, match_data: MatchData) -> list:
+def resolve_target_list(target_list: list, match_data: Substitutions) -> list:
     """
     Resovle matched-target data into a list form of target data from a
     manifest.
@@ -166,7 +85,7 @@ def resolve_dep_data(entry: dict, data: dict) -> dict:
     return data
 
 
-def resolve_target_data(target_data: dict, match_data: MatchData) -> dict:
+def resolve_target_data(target_data: dict, match_data: Substitutions) -> dict:
     """Resolve matched-target data into a target's data from a manifest."""
 
     result: dict = {}
