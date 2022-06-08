@@ -6,13 +6,11 @@ datazen - Orchestrates the "parameterized target" capability.
 import logging
 from typing import Dict, List, Optional, Tuple
 
+# third-party
+from vcorelib.target import Substitutions
+
 # internal
-from datazen.targets import (
-    MatchData,
-    match_target,
-    parse_targets,
-    resolve_target_data,
-)
+from datazen.targets import parse_targets, resolve_target_data
 
 
 class TargetResolver:
@@ -55,10 +53,10 @@ class TargetResolver:
             return None
 
         # attempt to match this target to any of our patterns for this group
-        matches: List[Tuple[dict, MatchData]] = []
+        matches: List[Tuple[dict, Substitutions]] = []
         for pattern in self.patterns[group].values():
-            result = match_target(name, pattern["pattern"], pattern["keys"])
-            if result.found:
+            result = pattern["parsed"].evaluate(name)
+            if result.matched:
                 matches.append((pattern, result.substitutions))
 
         # make sure we matched only one target
