@@ -1,12 +1,12 @@
 <!--
     =====================================
     generator=datazen
-    version=3.0.4
-    hash=83a86fdf3d452e7cc65a3ecfdebe9e26
+    version=3.0.6
+    hash=9a02e82a84ee901c97c9ae0a0a0201d5
     =====================================
 -->
 
-# datazen ([3.0.5](https://pypi.org/project/datazen/))
+# datazen ([3.0.6](https://pypi.org/project/datazen/))
 
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
 ![Build Status](https://github.com/vkottler/datazen/workflows/Python%20Package/badge.svg)
@@ -62,7 +62,8 @@ templates, or just rendering final sets of serialized data.
 ```
 $ ./venv3.8/bin/dz -h
 
-usage: dz [-h] [--version] [-v] [-C DIR] [-m MANIFEST] [-c] [--sync] [-d]
+usage: dz [-h] [--version] [-v] [-C DIR] [--line-ending {unix,dos,unix}]
+          [-m MANIFEST] [-c] [--sync] [-d]
           [targets [targets ...]]
 
 Compile and render schema-validated configuration data.
@@ -75,6 +76,8 @@ optional arguments:
   --version             show program's version number and exit
   -v, --verbose         set to increase logging verbosity
   -C DIR, --dir DIR     execute from a specific directory
+  --line-ending {unix,dos,unix}
+                        line-ending option to use by default (default: 'unix')
   -m MANIFEST, --manifest MANIFEST
                         manifest to execute tasks from (default:
                         'manifest.yaml')

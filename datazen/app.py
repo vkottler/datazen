@@ -5,6 +5,9 @@ datazen - This package's command-line entry-point application.
 # built-in
 import argparse
 
+# third-party
+from vcorelib.args.newline import add_newline_arg
+
 # internal
 from datazen import DEFAULT_MANIFEST
 from datazen.environment.integrated import from_manifest
@@ -14,7 +17,7 @@ def entry(args: argparse.Namespace) -> int:
     """Execute the requested task."""
 
     result = 0
-    env = from_manifest(args.manifest)
+    env = from_manifest(args.manifest, newline=args.line_ending)
     if env.get_valid():
         # clean, if requested
         if args.sync:
@@ -34,6 +37,7 @@ def entry(args: argparse.Namespace) -> int:
 def add_app_args(parser: argparse.ArgumentParser) -> None:
     """Add application-specific arguments to the command-line parser."""
 
+    add_newline_arg(parser)
     parser.add_argument(
         "-m",
         "--manifest",

@@ -25,10 +25,10 @@ class Environment(
 ):
     """A wrapper for inheriting all environment-loading capabilities."""
 
-    def __init__(self):
+    def __init__(self, newline: str = os.linesep):
         """Add a notion of 'visited' targets to the environment data."""
 
-        super().__init__()
+        super().__init__(newline=newline)
         self.visited = defaultdict(bool)
         self.default = "compiles"
 
@@ -96,12 +96,13 @@ class Environment(
 
 def from_manifest(
     manifest_path: str,
+    newline: str = os.linesep,
     data_cache_name: str = "task_data",
     logger: logging.Logger = logging.getLogger(__name__),
 ) -> Environment:
     """Load an environment object from a schema definition on disk."""
 
-    env = Environment()
+    env = Environment(newline=newline)
 
     # load the manifest
     if not env.load_manifest_with_cache(manifest_path):

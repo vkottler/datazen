@@ -5,6 +5,7 @@ datazen - A base class to be extended for runtime data loading and storing.
 # built-in
 from collections import defaultdict
 import logging
+import os
 import threading
 from typing import List, NamedTuple
 
@@ -86,6 +87,8 @@ class BaseEnvironment:
         self,
         default_ns: str = ROOT_NAMESPACE,
         logger: logging.Logger = logging.getLogger(__name__),
+        newline: str = os.linesep,
+        **_,
     ) -> None:
         """
         Manage environments by names, set up a dictionary with a root
@@ -96,6 +99,7 @@ class BaseEnvironment:
         self.namespaces[default_ns] = EnvironmentNamespace(default_ns)
         self.lock = threading.RLock()
         self.logger = logger
+        self.newline = newline
         self.logger_init = self.logger
 
     def add_namespace(self, name: str, clone_root: bool = True) -> None:

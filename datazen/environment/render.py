@@ -28,18 +28,18 @@ def render_name_to_key(name: str) -> str:
     return name.replace(".", "_")
 
 
-def indent_str(data: str, indent: int, sep: str = os.linesep) -> str:
+def indent_str(data: str, indent: int, newline: str = os.linesep) -> str:
     """
     Attempt to indent String data by some amount, based on some separator.
     """
 
     result = ""
     ind_str = " " * indent
-    for line in data.split(sep):
+    for line in data.split(newline):
         if line:
-            result += ind_str + line + sep
+            result += ind_str + line + newline
         else:
-            result += sep
+            result += newline
     return result.rstrip()
 
 
@@ -49,6 +49,7 @@ def get_render_str(
     indent: int,
     data: dict = None,
     out_data: dict = None,
+    newline: str = os.linesep,
 ) -> str:
     """Render a template."""
 
@@ -65,7 +66,7 @@ def get_render_str(
         del data[GLOBAL_KEY]
 
     # add indents if requested
-    result = indent_str(result, indent)
+    result = indent_str(result, indent, newline)
 
     if out_data is not None:
         out_data[render_name_to_key(name)] = result
@@ -78,6 +79,7 @@ def get_render_children(
     default_op: str,
     indent: int,
     delimeter: str = "",
+    newline: str = os.linesep,
 ) -> None:
     """Build child dependency data."""
 
@@ -88,17 +90,17 @@ def get_render_children(
         assert isinstance(dep_data[slug[1]], str)
         result.append(dep_data[slug[1]])
     dep_data[to_private("children")] = indent_str(
-        delimeter.join(result), indent
+        delimeter.join(result), indent, newline=newline
     )
 
 
 class RenderEnvironment(TaskEnvironment):
     """Leverages a cache-equipped environment to render templates."""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Add the 'renders' handle."""
 
-        super().__init__()
+        super().__init__(**kwargs)
         self.handles["renders"] = self.valid_render
 
     def perform_render(
@@ -121,12 +123,16 @@ class RenderEnvironment(TaskEnvironment):
             with data_added(
                 to_private("templates"), all_templates, data
             ) as render_data:
-                render_str = get_render_str(
-                    template,
-                    entry["name"],
-                    entry["indent"],
-                    render_data,
-                    out_data,
+                render_str = (
+                    get_render_str(
+                        template,
+                        entry["name"],
+                        entry["indent"],
+                        render_data,
+                        out_data,
+                        self.newline,
+                    )
+                    + self.newline
                 )
 
             # determine if the caller wanted a dynamic fingerprint or not,
@@ -139,7 +145,10 @@ class RenderEnvironment(TaskEnvironment):
                 dynamic = False
 
             fprint = build_fingerprint(
-                render_str, get_file_ext(get_path(entry)), dynamic=dynamic
+                render_str,
+                get_file_ext(get_path(entry)),
+                dynamic=dynamic,
+                newline=self.newline,
             )
 
             # don't write a file, if requested
@@ -147,7 +156,6 @@ class RenderEnvironment(TaskEnvironment):
                 with open(path, "w", encoding="utf-8") as render_out:
                     render_out.write(fprint)
                     render_out.write(render_str)
-                    render_out.write("\n")
 
             # save the output into a dict for consistency
             self.store_render(entry, out_data)
@@ -229,6 +237,7 @@ class RenderEnvironment(TaskEnvironment):
                 self.default,
                 entry.get("child_indent", 0),
                 entry.get("child_delimeter", ""),
+                newline=self.newline,
             )
 
         # determine if we need to perform this render

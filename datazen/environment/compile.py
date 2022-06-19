@@ -22,12 +22,12 @@ LOG = logging.getLogger(__name__)
 class CompileEnvironment(TaskEnvironment):
     """Leverages a cache-equipped environment to perform compilations."""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
         Add compiled data to a dictionary whenever a compilation is performed.
         """
 
-        super().__init__()
+        super().__init__(**kwargs)
         self.handles["compiles"] = self.valid_compile
 
     def valid_compile(
