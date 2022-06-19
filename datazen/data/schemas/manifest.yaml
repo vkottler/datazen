@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
 # version=3.0.6
-# hash=057d90c86d016f535eee7091bf06f960
+# hash=a266d3c5575326199ba01e10f0d55a99
 # =====================================
 includes: paths
 
@@ -65,6 +65,8 @@ commands:
       command:
         type: string
       force:
+        type: boolean
+      replace_newlines:
         type: boolean
       arguments: deps
       dependencies: deps

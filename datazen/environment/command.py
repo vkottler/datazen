@@ -72,8 +72,17 @@ class CommandEnvironment(TaskEnvironment):
         task_data[entry["name"]] = defaultdict(str)
         data = task_data[entry["name"]]
         data["args"] = result.args
-        data["stdout"] = result.stdout.decode()
-        data["stderr"] = result.stderr.decode()
+
+        stdout = result.stdout.decode()
+        stderr = result.stderr.decode()
+
+        # Fix newlines based on our newline argument.
+        if entry.get("replace_newlines", True):
+            stdout = stdout.replace(os.linesep, self.newline)
+            stderr = stderr.replace(os.linesep, self.newline)
+
+        data["stdout"] = stdout
+        data["stderr"] = stderr
         data["returncode"] = str(result.returncode)
 
         # log information about failures

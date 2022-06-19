@@ -1,8 +1,8 @@
 <!--
     =====================================
     generator=datazen
-    version=3.0.5
-    hash=427219fa6c80592d6e8beeedd035e6cf
+    version=3.0.7
+    hash=6d844b64ba9b4d34ea3a70c213cf7ea2
     =====================================
 -->
 

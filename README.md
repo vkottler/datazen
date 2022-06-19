@@ -2,11 +2,11 @@
     =====================================
     generator=datazen
     version=3.0.6
-    hash=9a02e82a84ee901c97c9ae0a0a0201d5
+    hash=93fc53a9d0eacc17f8e6e9f3696bb62a
     =====================================
 -->
 
-# datazen ([3.0.6](https://pypi.org/project/datazen/))
+# datazen ([3.0.7](https://pypi.org/project/datazen/))
 
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
 ![Build Status](https://github.com/vkottler/datazen/workflows/Python%20Package/badge.svg)
@@ -200,6 +200,8 @@ commands:
       command:
         type: string
       force:
+        type: boolean
+      replace_newlines:
         type: boolean
       arguments: deps
       dependencies: deps
