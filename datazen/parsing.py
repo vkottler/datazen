@@ -4,7 +4,6 @@ datazen - APIs for loading raw data from files.
 
 # built-in
 from contextlib import ExitStack
-import hashlib
 from io import StringIO
 import logging
 from pathlib import Path
@@ -16,6 +15,7 @@ import jinja2
 from vcorelib.dict import merge
 from vcorelib.io import ARBITER
 from vcorelib.io.types import DataStream, LoadResult, StreamProcessor
+from vcorelib.paths import Pathlike, file_md5_hex
 
 LOG = logging.getLogger(__name__)
 
@@ -104,28 +104,10 @@ def load(
     )
 
 
-def get_hash(data: str, encoding: str = "utf-8") -> str:
-    """Get the MD5 of String data."""
-
-    return hashlib.md5(bytes(data, encoding)).hexdigest()
-
-
-def get_file_hash(path: Union[Path, str]) -> str:
-    """Get the MD5 of a file by path."""
-
-    path = str(path)
-    with open(path, encoding="utf-8") as data:
-        contents = data.read()
-    return get_hash(contents)
-
-
-def set_file_hash(
-    hashes: dict, path: Union[Path, str], set_new: bool = True
-) -> bool:
+def set_file_hash(hashes: dict, path: Pathlike, set_new: bool = True) -> bool:
     """Evaluate a hash dictionary and update it on a miss."""
 
-    path = str(path)
-    str_hash = get_file_hash(path)
+    str_hash = file_md5_hex(path)
     result = True
     if path in hashes and str_hash == hashes[path]["hash"]:
         result = False

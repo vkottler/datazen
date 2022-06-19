@@ -76,10 +76,10 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         "templates",
     ]
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Add a manifest dictionary to the environment."""
 
-        super().__init__()
+        super().__init__(**kwargs)
         self.manifest = {}
         self.target_resolver = TargetResolver()
 

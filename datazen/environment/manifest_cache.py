@@ -38,10 +38,10 @@ def manifest_cache_dir(path: str, manifest: dict) -> str:
 class ManifestCacheEnvironment(ManifestEnvironment):
     """A wrapper for the cache functionality for an environment."""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Extend the environment with a notion of the cache being loaded."""
 
-        super().__init__()
+        super().__init__(**kwargs)
         self.cache = None
         self.aggregate_cache = None
         self.initial_cache = None

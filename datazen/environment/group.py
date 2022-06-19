@@ -14,10 +14,10 @@ from datazen.environment.task import TaskEnvironment
 class GroupEnvironment(TaskEnvironment):
     """Leverages a task-environment to group tasks together."""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Add the 'renders' handle."""
 
-        super().__init__()
+        super().__init__(**kwargs)
         self.handles["groups"] = self.valid_group
 
     def valid_group(

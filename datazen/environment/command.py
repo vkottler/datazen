@@ -20,10 +20,10 @@ from datazen.environment.task import TaskEnvironment, get_path
 class CommandEnvironment(TaskEnvironment):
     """Exposes command-line commanding capability to the environment."""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Add the 'commands' handle."""
 
-        super().__init__()
+        super().__init__(**kwargs)
         self.handles["commands"] = self.valid_command
 
     def valid_command(

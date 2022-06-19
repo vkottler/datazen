@@ -49,10 +49,10 @@ class TaskEnvironment(ManifestCacheEnvironment):
         )
         return TaskResult(False, False)
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Add a notion of 'visited' targets to the environment data."""
 
-        super().__init__()
+        super().__init__(**kwargs)
         self.visited = defaultdict(bool)
         self.is_new = defaultdict(bool)
         self.default = "noop"

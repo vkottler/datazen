@@ -6,9 +6,11 @@ datazen - Reading and writing a known header signature to output files.
 import os
 from typing import List, Tuple
 
+# third-party
+from vcorelib.paths import str_md5_hex
+
 # internal
 from datazen import PKG_NAME, VERSION
-from datazen.parsing import get_hash
 
 BARRIER = "="
 
@@ -23,7 +25,7 @@ def get_comment_data(
     line_data = [
         (False, ("generator", PKG_NAME)),
         (True, ("version", VERSION)),
-        (False, ("hash", get_hash(file_data))),
+        (False, ("hash", str_md5_hex(file_data))),
     ]
 
     # filter out any possibly undesired data
@@ -48,7 +50,9 @@ def apply_barriers(comment_lines: List[str], char: str) -> None:
         comment_lines.append("")
 
 
-def resolve_encapsulation(comment_lines: List[str], file_ext: str) -> str:
+def resolve_encapsulation(
+    comment_lines: List[str], file_ext: str, newline: str = os.linesep
+) -> str:
     """
     Turn the requested line data into something that can be embedded in the
     target file type.
@@ -65,13 +69,17 @@ def resolve_encapsulation(comment_lines: List[str], file_ext: str) -> str:
         for line in comment_lines:
             if line:
                 new_lines.append("    " + line)
-        new_lines.append("-->" + os.linesep + os.linesep)
+        new_lines.append("-->" + newline + newline)
 
-    return os.linesep.join(new_lines)
+    return newline.join(new_lines)
 
 
 def build_fingerprint(
-    file_data: str, file_ext: str, char: str = BARRIER, dynamic: bool = True
+    file_data: str,
+    file_ext: str,
+    char: str = BARRIER,
+    dynamic: bool = True,
+    newline: str = os.linesep,
 ) -> str:
     """
     Build a String that should be prepended to the final file output for
@@ -83,4 +91,4 @@ def build_fingerprint(
     for line in line_data:
         comment_lines.append(f"{line[0]}={line[1]}")
     apply_barriers(comment_lines, char)
-    return resolve_encapsulation(comment_lines, file_ext)
+    return resolve_encapsulation(comment_lines, file_ext, newline)

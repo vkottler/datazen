@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=3.0.4
-# hash=552558e100e9feb8ab7f64d10362b6f0
+# version=3.0.6
+# hash=8e8dc92c50d7e4c18843c024dde96d7f
 # =====================================
 """
 datazen - Package's default entry-point.
