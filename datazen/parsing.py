@@ -6,9 +6,7 @@ datazen - APIs for loading raw data from files.
 from contextlib import ExitStack
 from io import StringIO
 import logging
-from pathlib import Path
 import time
-from typing import Union
 
 # third-party
 import jinja2
@@ -61,7 +59,7 @@ def template_preprocessor_factory(
 
 
 def load(
-    path: Union[Path, str],
+    path: Pathlike,
     variables: dict,
     dict_to_update: dict,
     expect_overwrite: bool = False,

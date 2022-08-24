@@ -4,30 +4,23 @@ datazen - APIs for working with file paths.
 
 # built-in
 import os
-from pathlib import Path
-import pkgutil
-from typing import Iterator, List, Tuple, Union
+from typing import Iterator, List, Tuple
 
 # third-party
-import pkg_resources
-
-# internal
-from datazen import PKG_NAME
+from vcorelib.paths import Pathlike, normalize
 
 FMT_OPEN = "{"
 FMT_CLOSE = "}"
 EXCLUDES = [".git", ".svn", ".gitignore"]
 
 
-def get_path_list(
-    root: Union[Path, str], current: Union[Path, str]
-) -> List[str]:
+def get_path_list(root: Pathlike, current: Pathlike) -> List[str]:
     """
     From a root directory and a child path, compute the list of directories,
     in order, mapping the root to the child.
     """
-    root = os.path.abspath(str(root))
-    current = os.path.abspath(str(current))
+    root = str(normalize(root).resolve())
+    current = str(normalize(current).resolve())
     assert len(current) >= len(root)
     assert root in current
     return current[len(root) :].split(os.sep)
@@ -119,23 +112,6 @@ def advance_dict_by_path(path_list: List[str], data: dict) -> dict:
     return data
 
 
-def get_package_data(relative: Union[Path, str]) -> str:
-    """Load a file from this package's data directory."""
-
-    rel_path = os.path.join("data", str(relative))
-    schema_raw = pkgutil.get_data(PKG_NAME, rel_path)
-    schema_bytes = schema_raw if schema_raw else bytes()
-    return schema_bytes.decode("utf-8")
-
-
-def get_package_dir(relative: Union[Path, str]) -> str:
-    """Locate the path to a package-data directory."""
-
-    return pkg_resources.resource_filename(
-        __name__, os.path.join("data", str(relative))
-    )
-
-
 def resolve_dir(data: str, rel_base: str = "") -> str:
     """
     Turn directory data into an absolute path, optionally from a relative
@@ -150,7 +126,7 @@ def resolve_dir(data: str, rel_base: str = "") -> str:
 
 
 def walk_with_excludes(
-    path: Union[Path, str], excludes: List[str] = None
+    path: Pathlike, excludes: List[str] = None
 ) -> Iterator[Tuple[str, List[str], List[str]]]:
     """
     Behaves like os.walk but attempts to skip iterations that would enter

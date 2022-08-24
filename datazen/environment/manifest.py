@@ -2,26 +2,26 @@
 datazen - A class for adding manifest-loading to environments.
 """
 
-from io import StringIO
-
 # built-in
 import logging
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Type
 
 # third-party
-from cerberus import Validator
 from vcorelib.dict import merge_dicts
 from vcorelib.dict.env import dict_resolve_env_vars
-from vcorelib.io import ARBITER
+from vcorelib.paths import resource
+from vcorelib.schemas import CerberusSchema
+from vcorelib.schemas.base import Schema
 
 # internal
-from datazen import DEFAULT_DIR, ROOT_NAMESPACE
+from datazen import DEFAULT_DIR, PKG_NAME, ROOT_NAMESPACE
 from datazen.classes.target_resolver import TargetResolver
+from datazen.classes.valid_dict import ValidDict
 from datazen.environment.config import ConfigEnvironment
 from datazen.environment.template import TemplateEnvironment
 from datazen.parsing import load as load_raw
-from datazen.paths import get_package_data, get_package_dir, resolve_dir
+from datazen.paths import resolve_dir
 from datazen.schemas import inject_custom_schemas, load_types
 
 LOG = logging.getLogger(__name__)
@@ -243,18 +243,12 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
 
 def get_manifest_schema(
     require_all: bool = True,
-    logger: logging.Logger = LOG,
-) -> Validator:
+    cls: Type[Schema] = CerberusSchema,
+) -> Schema:
     """Load the schema for manifest from the package."""
 
-    return Validator(
-        ARBITER.decode_stream(
-            "yaml",
-            StringIO(
-                get_package_data(os.path.join("schemas", "manifest.yaml"))
-            ),
-            logger,
-        ).data,
+    return cls.from_path(
+        resource("schemas", "manifest.yaml", package=PKG_NAME),
         require_all=require_all,
     )
 
@@ -262,13 +256,15 @@ def get_manifest_schema(
 def validate_manifest(manifest: dict, logger: logging.Logger = LOG) -> bool:
     """Validate manifest data against the package schema."""
 
-    custom_schemas = load_types([get_package_dir("schema_types")])
+    schemas = resource("schema_types", package=PKG_NAME)
+    assert schemas is not None
 
-    with inject_custom_schemas(custom_schemas):
-        schema = get_manifest_schema(False, logger)
-        result = schema.validate(manifest)
+    with inject_custom_schemas(load_types([schemas])):
+        result = ValidDict(
+            "manifest",
+            manifest,
+            get_manifest_schema(require_all=False),
+            logger=logger,
+        )
 
-    if not result:
-        logger.error("invalid manifest: %s", schema.errors)
-
-    return result
+    return result.valid

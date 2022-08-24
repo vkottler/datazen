@@ -5,10 +5,13 @@ datazen - Top-level APIs for loading and interacting with schema definitions.
 # built-in
 from contextlib import contextmanager
 import logging
-from typing import Dict, Iterator, List
+from typing import Dict, Iterator, List, Type
 
 # third-party
-from cerberus import Validator, rules_set_registry
+from cerberus import rules_set_registry
+from vcorelib.paths import Pathlike
+from vcorelib.schemas import CerberusSchemaMap
+from vcorelib.schemas.base import Schema, SchemaMap
 
 # internal
 from datazen.classes.valid_dict import ValidDict
@@ -18,10 +21,11 @@ LOG = logging.getLogger(__name__)
 
 
 def load(
-    directories: List[str],
+    directories: List[Pathlike],
     require_all: bool = True,
     loads: LoadedFiles = DEFAULT_LOADS,
-) -> dict:
+    cls: Type[SchemaMap] = CerberusSchemaMap,
+) -> SchemaMap:
     """Load schemas from a list of directories."""
 
     result: dict = {}
@@ -31,9 +35,9 @@ def load(
         load_dir(directory, result, None, loads)
 
     # interpret all top-level keys as schemas
-    schemas = {}
+    schemas = cls()
     for key, schema in result.items():
-        schemas[key] = Validator(schema, require_all=require_all)
+        schemas[key] = schemas.kind()(schema, require_all=require_all)
     return schemas
 
 
@@ -60,7 +64,7 @@ def remove_global_schemas(
 
 
 def load_types(
-    directories: List[str],
+    directories: List[Pathlike],
     loads: LoadedFiles = DEFAULT_LOADS,
 ) -> Dict[str, dict]:
     """Load schema types and optionally register them."""
@@ -74,7 +78,7 @@ def load_types(
 
 
 def validate(
-    schema_data: Dict[str, Validator],
+    schema_data: Dict[str, Schema],
     data: dict,
     logger: logging.Logger = LOG,
 ) -> bool:

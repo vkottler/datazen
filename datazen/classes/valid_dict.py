@@ -7,7 +7,10 @@ from collections import UserDict
 import logging
 
 # third-party
-from cerberus import Validator
+from vcorelib.schemas import SchemaValidationError
+from vcorelib.schemas.base import Schema
+
+LOG = logging.getLogger(__name__)
 
 
 class ValidDict(UserDict):
@@ -20,22 +23,21 @@ class ValidDict(UserDict):
         self,
         name: str,
         data: dict,
-        schema: Validator,
-        logger: logging.Logger = logging.getLogger(__name__),
+        schema: Schema,
+        logger: logging.Logger = LOG,
     ) -> None:
         """Initialize a named, ValidDict."""
 
         super().__init__(data)
 
         self.name = name
-        self.validator = schema
-        self.valid = self.validator.validate(self.data)
         self.logger = logger
-        if not self.valid:
+        self.valid = False
+        try:
+            self.data = schema(self.data)
+            self.valid = True
+        except SchemaValidationError as exc:
             self.logger.error(
-                "validation error(s) for '%s': %s",
-                self.name,
-                self.validator.errors,
+                "validation error(s) for '%s': %s", self.name, exc
             )
-            self.logger.error("data: %s", data)
-            self.logger.error("schema: %s", schema.schema)
+            self.logger.error("data: %s", self.data)
