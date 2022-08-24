@@ -7,22 +7,11 @@ from collections import defaultdict
 from contextlib import contextmanager
 import logging
 import os
-from pathlib import Path
-from typing import (
-    Any,
-    Dict,
-    Iterator,
-    List,
-    NamedTuple,
-    Optional,
-    Tuple,
-    Union,
-    cast,
-)
+from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple, cast
 
 # third-party
 from vcorelib.io.types import LoadResult
-from vcorelib.paths import get_file_name
+from vcorelib.paths import Pathlike, get_file_name, normalize
 
 # internal
 from datazen import GLOBAL_KEY
@@ -65,7 +54,7 @@ def data_added(key: Any, value: Any, data: dict = None) -> Iterator[dict]:
 
 
 def meld_and_resolve(
-    path: Union[Path, str],
+    path: Pathlike,
     existing_data: dict,
     variables: dict,
     globals_added: bool = False,
@@ -109,7 +98,7 @@ def meld_and_resolve(
 
 
 def load_dir(
-    path: Union[Path, str],
+    path: Pathlike,
     existing_data: dict,
     variables: dict = None,
     loads: LoadedFiles = DEFAULT_LOADS,
@@ -123,7 +112,7 @@ def load_dir(
         variables = {}
 
     total_errors = 0
-    path = str(path)
+    path = normalize(path)
     for root, _, files in walk_with_excludes(path):
         logger.debug("loading '%s'", root)
 
@@ -144,7 +133,7 @@ def load_dir(
         # extend the provided list of files that were newly loaded, or at
         # least have new content
         new = load_files(
-            cast(List[Union[Path, str]], files),
+            cast(List[Pathlike], files),
             root,
             (
                 advance_dict_by_path(path_list, existing_data),
@@ -170,7 +159,7 @@ def load_dir(
 
 
 def load_dir_only(
-    path: Union[Path, str],
+    path: Pathlike,
     expect_overwrite: bool = False,
     are_templates: bool = True,
     logger: logging.Logger = LOG,
@@ -192,7 +181,7 @@ def load_dir_only(
 
 
 def load_files(
-    file_paths: List[Union[Path, str]],
+    file_paths: List[Pathlike],
     root: str,
     meld_data: Tuple[dict, dict, bool],
     hashes: Dict[str, dict] = None,
