@@ -4,11 +4,11 @@ datazen - Top-level APIs for loading and interacting with templates.
 
 # built-in
 import os
-from typing import Dict, List
+from typing import Dict, Iterable
 
 # third-party
 import jinja2
-from vcorelib.paths import get_file_ext, get_file_name
+from vcorelib.paths import Pathlike, get_file_ext, get_file_name, normalize
 
 # internal
 from datazen.load import DEFAULT_LOADS, LoadedFiles
@@ -31,7 +31,7 @@ def update_cache_primitives(dir_path: str, loads: LoadedFiles) -> None:
 
 
 def load(
-    template_dirs: List[str],
+    template_dirs: Iterable[Pathlike],
     loads: LoadedFiles = DEFAULT_LOADS,
 ) -> Dict[str, jinja2.Template]:
     """
@@ -41,14 +41,16 @@ def load(
 
     result = {}
 
+    templates = [str(normalize(x)) for x in template_dirs]
+
     # setup jinja environment
-    loader = jinja2.FileSystemLoader(template_dirs, followlinks=True)
+    loader = jinja2.FileSystemLoader(templates, followlinks=True)
     env = jinja2.Environment(
         loader=loader, trim_blocks=True, lstrip_blocks=True
     )
 
     # manually inspect directories to write into the cache
-    for template_dir in template_dirs:
+    for template_dir in templates:
         update_cache_primitives(template_dir, loads)
 
     # load templates into a dictionary

@@ -9,6 +9,9 @@ import os
 import threading
 from typing import Dict, List
 
+# third-party
+from vcorelib.paths import Pathlike
+
 # internal
 from datazen.enums import DataType
 from datazen.paths import resolve_dir
@@ -40,7 +43,7 @@ class EnvironmentNamespace:
         self.lock = threading.Lock()
         self.logger = logging.getLogger(f"namespace.{name}")
 
-    def get_to_load(self, dir_type: DataType) -> List[str]:
+    def get_to_load(self, dir_type: DataType) -> List[Pathlike]:
         """
         Build a list of the yet-to-be-loaded directories for a given data
         type.
@@ -70,7 +73,9 @@ class EnvironmentNamespace:
         for key in self.data:
             self.unload(key)
 
-    def update_load_state(self, dir_type: DataType, to_load: List[str]) -> int:
+    def update_load_state(
+        self, dir_type: DataType, to_load: List[Pathlike]
+    ) -> int:
         """
         Update the load states of directories in 'to_load' for a given
         data type.
