@@ -5,7 +5,7 @@ datazen - Top-level APIs for loading and interacting with schema definitions.
 # built-in
 from contextlib import contextmanager
 import logging
-from typing import Dict, Iterator, List, Type
+from typing import Dict, Iterable, Iterator, List, Type
 
 # third-party
 from cerberus import rules_set_registry
@@ -21,7 +21,7 @@ LOG = logging.getLogger(__name__)
 
 
 def load(
-    directories: List[Pathlike],
+    directories: Iterable[Pathlike],
     require_all: bool = True,
     loads: LoadedFiles = DEFAULT_LOADS,
     cls: Type[SchemaMap] = CerberusSchemaMap,

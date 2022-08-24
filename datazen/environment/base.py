@@ -11,6 +11,7 @@ from typing import List, NamedTuple
 
 # third-party
 from vcorelib.math.time import nano_str
+from vcorelib.paths import Pathlike
 
 # internal
 from datazen import ROOT_NAMESPACE
@@ -122,7 +123,7 @@ class BaseEnvironment:
 
     def get_to_load(
         self, dir_type: DataType, name: str = ROOT_NAMESPACE
-    ) -> List[str]:
+    ) -> List[Pathlike]:
         """Proxy for a namespace's get_to_load."""
 
         return self.namespaces[name].get_to_load(dir_type)
@@ -140,7 +141,7 @@ class BaseEnvironment:
     def update_load_state(
         self,
         dir_type: DataType,
-        to_load: List[str],
+        to_load: List[Pathlike],
         name: str = ROOT_NAMESPACE,
     ) -> int:
         """Proxy for update_load_state for a namespace."""

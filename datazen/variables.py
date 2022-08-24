@@ -3,17 +3,18 @@ datazen - Top-level APIs for loading and interacting with variables.
 """
 
 # built-in
-from typing import List
+from typing import Iterable
 
 # third-party
 from vcorelib.io.types import LoadResult
+from vcorelib.paths import Pathlike
 
 # internal
 from datazen.load import DEFAULT_LOADS, LoadedFiles, load_dir
 
 
 def load(
-    directories: List[str],
+    directories: Iterable[Pathlike],
     loads: LoadedFiles = DEFAULT_LOADS,
 ) -> LoadResult:
     """Load variable data from a list of directories."""
