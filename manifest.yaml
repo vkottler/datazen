@@ -15,6 +15,7 @@ configs:
 
 templates:
   - local/templates
+  - config/templates
 
 variables:
   - local/variables
@@ -27,6 +28,7 @@ renders:
     output_dir: "{{project}}/data/schemas"
     dependencies:
       - compiles-local
+
   - name: README.md
     output_dir: "."
     dependencies:
@@ -35,6 +37,11 @@ renders:
       - renders-python_readme_header.md
       - renders-python_readme_dep_graph.md
 
+  - name: FUNDING.yml
+    output_dir: ".github"
+    dependencies:
+      - compiles-local
+
 groups:
   - name: all
     dependencies:
@@ -42,3 +49,4 @@ groups:
       - groups-license
       - renders-README.md
       - renders-manifest.yaml
+      - renders-FUNDING.yml
