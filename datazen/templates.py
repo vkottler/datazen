@@ -4,7 +4,7 @@ datazen - Top-level APIs for loading and interacting with templates.
 
 # built-in
 import os
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Type
 
 # third-party
 import jinja2
@@ -30,6 +30,29 @@ def update_cache_primitives(dir_path: str, loads: LoadedFiles) -> None:
                     loads.files.append(fpath)
 
 
+def environment(
+    auto_reload: bool = False,
+    autoescape_kwargs: dict = None,
+    lstrip_blocks: bool = True,
+    trim_blocks: bool = True,
+    undefined: Type[jinja2.Undefined] = jinja2.StrictUndefined,
+    **kwargs
+) -> jinja2.Environment:
+    """Create a jinja environment with some sane defaults."""
+
+    if autoescape_kwargs is None:
+        autoescape_kwargs = {}
+
+    return jinja2.Environment(
+        auto_reload=auto_reload,
+        autoescape=jinja2.select_autoescape(**autoescape_kwargs),
+        lstrip_blocks=lstrip_blocks,
+        trim_blocks=trim_blocks,
+        undefined=undefined,
+        **kwargs
+    )
+
+
 def load(
     template_dirs: Iterable[Pathlike],
     loads: LoadedFiles = DEFAULT_LOADS,
@@ -39,21 +62,19 @@ def load(
     found.
     """
 
-    result = {}
-
     templates = [str(normalize(x)) for x in template_dirs]
 
-    # setup jinja environment
-    loader = jinja2.FileSystemLoader(templates, followlinks=True)
-    env = jinja2.Environment(
-        loader=loader, trim_blocks=True, lstrip_blocks=True
+    # Setup jinja environment.
+    env = environment(
+        loader=jinja2.FileSystemLoader(templates, followlinks=True)
     )
 
-    # manually inspect directories to write into the cache
+    # Manually inspect directories to write into the cache.
     for template_dir in templates:
         update_cache_primitives(template_dir, loads)
 
-    # load templates into a dictionary
+    # Load templates into a dictionary.
+    result = {}
     for template in env.list_templates():
         key = get_file_name(template)
         assert get_file_ext(template) == "j2"

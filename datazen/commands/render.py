@@ -26,9 +26,12 @@ def str_render(
 ) -> str:
     """Load configuration data and render a jinja2 template with it."""
 
-    return template.render(
-        ARBITER.decode(config_data_path, logger, True, **kwargs).data
-    )
+    data = ARBITER.decode(
+        config_data_path, logger=logger, require_success=True, **kwargs
+    ).data
+    data["global"] = data
+
+    return template.render(data)
 
 
 def cmd_render(

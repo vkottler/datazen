@@ -12,6 +12,11 @@ def test_load_templates():
     template_keys = ["a", "b", "c"]
     templates = ENV.get_templates(True)
 
+    configs = ENV.get_configs(True)
+    configs["global"] = configs
+
     for key in template_keys:
         assert templates[key]
-        templates[key].render(ENV.get_configs(True))
+        templates[key].render(configs)
+
+    del configs["global"]
