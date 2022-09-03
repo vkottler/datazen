@@ -1,6 +1,8 @@
 ---
 output_dir: "datazen-out-test"
 
+default_dirs: true
+
 params:
   renders: "test"
   renders_str: "renders"

@@ -1,8 +1,12 @@
 # =====================================
 # generator=datazen
-# version=3.0.10
-# hash=a266d3c5575326199ba01e10f0d55a99
+# version=3.0.11
+# hash=4c1dc7e8f5a0bbd708767f446abe2744
 # =====================================
+default_dirs:
+  type: boolean
+  default: true
+
 includes: paths
 
 output_dir:

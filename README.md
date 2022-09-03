@@ -1,12 +1,12 @@
 <!--
     =====================================
     generator=datazen
-    version=3.0.10
-    hash=111270b0f697d4aba9a427d6f31826b0
+    version=3.0.11
+    hash=a8dca5bbc0dc8ee9e22dd9f00c2f78ec
     =====================================
 -->
 
-# datazen ([3.0.10](https://pypi.org/project/datazen/))
+# datazen ([3.0.11](https://pypi.org/project/datazen/))
 
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
 ![Build Status](https://github.com/vkottler/datazen/workflows/Python%20Package/badge.svg)
@@ -46,6 +46,7 @@ templates, or just rendering final sets of serialized data.
 
 # Manifest Schema Reference
 
+* [Default Directories](#default-directories)
 * [Manifest Includes](#manifest-includes)
 * [Output Directory](#output-directory)
 * [Cache Directory](#cache-directory)
@@ -60,7 +61,7 @@ templates, or just rendering final sets of serialized data.
 # Usage
 
 ```
-$ ./venv3.7/bin/dz -h
+$ ./venv3.8/bin/dz -h
 
 usage: dz [-h] [--version] [-v] [-C DIR] [--line-ending {unix,dos,unix}]
           [-m MANIFEST] [-c] [--sync] [-d]
@@ -93,6 +94,21 @@ optional arguments:
 A manifest is provided to `datazen` to establish the set of targets
 that should be executed based on defaults or the command-line invocation.
 
+## Default Directories
+
+A boolean flag specifying whether or not to load directories relative
+to the current manifest file that coincide with names of load-able
+data types (e.g. "configs" loaded as configs, "variables" loaded as
+variables). By default these are loaded into the global namespace.
+
+Setting this false will not automatically load these directories.
+
+
+```
+default_dirs:
+  type: boolean
+  default: true
+```
 ## Manifest Includes
 
 Include additional files to build the final, root manifest with.

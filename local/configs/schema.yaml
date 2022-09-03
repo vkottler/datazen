@@ -1,5 +1,19 @@
 ---
 entries:
+  - name: "Default Directories"
+    slug: default-directories
+    description: |
+      A boolean flag specifying whether or not to load directories relative
+      to the current manifest file that coincide with names of load-able
+      data types (e.g. "configs" loaded as configs, "variables" loaded as
+      variables). By default these are loaded into the global namespace.
+
+      Setting this false will not automatically load these directories.
+    content: |
+      default_dirs:
+        type: boolean
+        default: true
+
   - name: "Manifest Includes"
     slug: manifest-includes
     description: |

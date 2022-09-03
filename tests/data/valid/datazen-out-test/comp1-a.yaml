@@ -22,21 +22,6 @@ empty:
 f: {f: f}
 json: json
 json2: json
-renders_b: 'json
-
-  yaml
-
-  {''a'': ''a'', ''b'': ''b'', ''c'': ''c''}
-
-  {''a'': ''a'', ''b'': ''b'', ''c'': ''c''}
-
-  {''a'': ''a'', ''b'': ''b'', ''c'': ''c''}
-
-  {''d'': ''d''}
-
-  {''e'': ''e''}
-
-  {''f'': ''f''}'
 test: a
 top_dict:
   a: {a: a}
