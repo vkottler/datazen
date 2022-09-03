@@ -89,6 +89,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         rel_path: str,
         namespace: str = ROOT_NAMESPACE,
         allow_dup: bool = False,
+        load_defaults: bool = True,
     ) -> None:
         """
         Looks for keys matching types of directories that can be loaded
@@ -108,7 +109,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             # if a directory list isn't provided, and the directory of the
             # same name of the key is present in the manifest directory,
             # load it
-            elif os.path.isdir(os.path.join(rel_path, key)):
+            elif os.path.isdir(os.path.join(rel_path, key)) and load_defaults:
                 handler([key], rel_path, namespace, allow_dup)
 
     def default_target(self) -> str:
@@ -161,7 +162,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         curr_manifest, loaded, _ = load_raw(path, params, {})
 
         # update params, load again so we can use self-referential params
-        if "params" in curr_manifest:
+        if loaded and "params" in curr_manifest:
             params = merge_dicts(
                 [params, dict_resolve_env_vars(curr_manifest["params"])]
             )
@@ -172,7 +173,12 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
 
         # load the data directories before resolving includes
         rel_path = os.path.dirname(path)
-        self.load_dirs(curr_manifest, rel_path, allow_dup=True)
+        self.load_dirs(
+            curr_manifest,
+            rel_path,
+            allow_dup=True,
+            load_defaults=curr_manifest.get("default_dirs", True),
+        )
         self.update_task_dirs(curr_manifest, rel_path)
 
         # resolve includes
