@@ -194,7 +194,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
                 all_manifests.append(result[0])
 
         # merge include data
-        curr_manifest = merge_dicts(all_manifests)
+        curr_manifest = merge_dicts(all_manifests, expect_overwrite=True)
 
         return curr_manifest, True
 

@@ -42,13 +42,20 @@ class CompileEnvironment(TaskEnvironment):
 
         path, output_type = get_compile_output(entry)
 
-        # load configs early to update cache
-        data, success, _ = self.cached_load_configs(namespace)
+        # load configs early to update cache, only enforce schemas if we don't
+        # have any dependency data to resolve
+        data, success, _ = self.cached_load_configs(
+            name=namespace, enforce_schemas=dep_data is None
+        )
         if not success:
             return TaskResult(False, False)
 
         # update this dict with the dependency data
         if dep_data is not None:
+            # don't write compile-task-specific data into the dictionary
+            # containing the underlying, loaded data
+            data = data.copy()
+
             if entry.get("merge_deps", False):
                 data = merge_dicts([data, dep_data], logger=logger)
 
@@ -56,6 +63,11 @@ class CompileEnvironment(TaskEnvironment):
             # (and tests) rely on it
             else:
                 data.update(dep_data)
+
+            # run schema validation now that all loaded data can be considered
+            if not self.cached_enforce_schemas(data, name=namespace):
+                logger.error("schema validation on merged config data failed")
+                return TaskResult(False, False)
 
         # advance the dict if it was requested
         if "index_path" in entry:

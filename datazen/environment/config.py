@@ -39,6 +39,7 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
         sch_types_loads: LoadedFiles = DEFAULT_LOADS,
         name: str = ROOT_NAMESPACE,
         logger: logging.Logger = logging.getLogger(__name__),
+        enforce_schemas: bool = True,
     ) -> LoadResult:
         """
         Load configuration data, resolve any un-loaded configuration
@@ -69,8 +70,11 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
                     self.update_load_state(data_type, to_load, name)
 
         # enforce schemas
-        if not self.enforce_schemas(
-            config_data, True, sch_loads, sch_types_loads, name
+        if enforce_schemas and not self.enforce_schemas(
+            config_data,
+            sch_loads=sch_loads,
+            sch_types_loads=sch_types_loads,
+            name=name,
         ):
             logger.error("schema validation failed, returning an empty dict")
             errors += 1

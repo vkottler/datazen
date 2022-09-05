@@ -3,6 +3,7 @@ datazen - Top-level APIs for loading and interacting with schema definitions.
 """
 
 # built-in
+from collections.abc import Mapping
 from contextlib import contextmanager
 import logging
 from typing import Dict, Iterable, Iterator, List, Type
@@ -89,6 +90,18 @@ def validate(
 
     for key, schema in schema_data.items():
         if key in data:
+            to_validate = data[key]
+
+            # ensure that the data can be validated
+            if not isinstance(to_validate, Mapping):
+                logger.error(
+                    "schema found for key '%s' but data "
+                    "('%s') is not a mapping!",
+                    key,
+                    to_validate,
+                )
+                return False
+
             if not ValidDict(key, data[key], schema, logger).valid:
                 return False
 

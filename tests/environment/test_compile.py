@@ -14,6 +14,7 @@ def test_compile_overrides():
 
     with scoped_environment() as env:
         assert env.group("compile-test") == TaskResult(True, True)
+        assert env.compile("unmerged-comp2-e") == TaskResult(False, False)
 
 
 def test_ini_basic():
