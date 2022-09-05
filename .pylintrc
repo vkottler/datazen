@@ -1,6 +1,6 @@
 [DESIGN]
 max-parents=13
-max-args=7
+max-args=8
 
 [MESSAGES CONTROL]
 disable=subprocess-run-check,duplicate-code

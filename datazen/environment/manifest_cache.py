@@ -141,21 +141,24 @@ class ManifestCacheEnvironment(ManifestEnvironment):
 
         return self.enforce_schemas(
             data,
-            require_all,
-            self.cache.get_data("schemas"),
-            self.cache.get_data("schema_types"),
-            name,
+            require_all=require_all,
+            sch_loads=self.cache.get_data("schemas"),
+            sch_types_loads=self.cache.get_data("schema_types"),
+            name=name,
         )
 
-    def cached_load_configs(self, name: str = ROOT_NAMESPACE) -> LoadResult:
+    def cached_load_configs(
+        self, name: str = ROOT_NAMESPACE, enforce_schemas: bool = True
+    ) -> LoadResult:
         """Load configs, proxied through the cache."""
 
         return self.load_configs(
-            self.cache.get_data("configs"),
-            self.cache.get_data("variables"),
-            self.cache.get_data("schemas"),
-            self.cache.get_data("schema_types"),
-            name,
+            cfg_loads=self.cache.get_data("configs"),
+            var_loads=self.cache.get_data("variables"),
+            sch_loads=self.cache.get_data("schemas"),
+            sch_types_loads=self.cache.get_data("schema_types"),
+            name=name,
+            enforce_schemas=enforce_schemas,
         )
 
     def cached_load_templates(
