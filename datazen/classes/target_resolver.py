@@ -4,9 +4,10 @@ datazen - Orchestrates the "parameterized target" capability.
 
 # built-in
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, cast
 
 # third-party
+from vcorelib.dict import GenericStrDict
 from vcorelib.target import Substitutions
 
 # internal
@@ -24,8 +25,8 @@ class TargetResolver:
     ) -> None:
         """Constuct a new target resolver."""
 
-        self.literals: Dict[str, dict] = {}
-        self.patterns: Dict[str, dict] = {}
+        self.literals: Dict[str, GenericStrDict] = {}
+        self.patterns: Dict[str, GenericStrDict] = {}
         self.logger = logger
 
     def clear(self) -> None:
@@ -35,7 +36,7 @@ class TargetResolver:
 
         self.literals = {}
 
-    def get_target(self, group: str, name: str) -> Optional[dict]:
+    def get_target(self, group: str, name: str) -> Optional[GenericStrDict]:
         """
         Attempt to get a literal target from what has been loaded so far.
         """
@@ -45,7 +46,7 @@ class TargetResolver:
         if group in self.literals and name in self.literals[group]:
             data = self.literals[group][name]
             assert data["literal"]
-            return data["data"]
+            return cast(GenericStrDict, data["data"])
 
         # short-circuit case where we don't have any patterns for this group
         # to try
@@ -53,7 +54,7 @@ class TargetResolver:
             return None
 
         # attempt to match this target to any of our patterns for this group
-        matches: List[Tuple[dict, Substitutions]] = []
+        matches: List[Tuple[GenericStrDict, Substitutions]] = []
         for pattern in self.patterns[group].values():
             result = pattern["parsed"].evaluate(name)
             if result.matched:
@@ -83,7 +84,7 @@ class TargetResolver:
         self.literals[group][new_literal["name"]] = data
         return new_literal
 
-    def register_group(self, name: str, targets: List[dict]) -> None:
+    def register_group(self, name: str, targets: List[GenericStrDict]) -> None:
         """
         From a name of a group that contains targets, initialize it by also
         providing its target datset.

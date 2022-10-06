@@ -10,15 +10,15 @@ import time
 
 # third-party
 import jinja2
-from vcorelib.dict import merge
+from vcorelib.dict import GenericDict, GenericStrDict, merge
 from vcorelib.io import ARBITER
 from vcorelib.io.types import DataStream, LoadResult, StreamProcessor
-from vcorelib.paths import Pathlike, file_md5_hex
+from vcorelib.paths import Pathlike, file_md5_hex, normalize
 
 LOG = logging.getLogger(__name__)
 
 
-def dedup_dict_lists(data: dict) -> dict:
+def dedup_dict_lists(data: GenericDict) -> GenericDict:
     """
     Finds list elements in a dictionary and removes duplicate entries, mutates
     the original list.
@@ -38,7 +38,7 @@ def dedup_dict_lists(data: dict) -> dict:
 
 
 def template_preprocessor_factory(
-    variables: dict, is_template: bool, stack: ExitStack
+    variables: GenericStrDict, is_template: bool, stack: ExitStack
 ) -> StreamProcessor:
     """Create a stream-processing function for data decoding."""
 
@@ -60,8 +60,8 @@ def template_preprocessor_factory(
 
 def load(
     path: Pathlike,
-    variables: dict,
-    dict_to_update: dict,
+    variables: GenericStrDict,
+    dict_to_update: GenericStrDict,
     expect_overwrite: bool = False,
     is_template: bool = True,
     logger: logging.Logger = LOG,
@@ -102,9 +102,12 @@ def load(
     )
 
 
-def set_file_hash(hashes: dict, path: Pathlike, set_new: bool = True) -> bool:
+def set_file_hash(
+    hashes: GenericStrDict, path: Pathlike, set_new: bool = True
+) -> bool:
     """Evaluate a hash dictionary and update it on a miss."""
 
+    path = str(normalize(path))
     str_hash = file_md5_hex(path)
     result = True
     if path in hashes and str_hash == hashes[path]["hash"]:

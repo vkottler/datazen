@@ -6,6 +6,9 @@ datazen - A child class for adding schema-data loading capabilities to the
 # built-in
 from typing import List
 
+# third-party
+from vcorelib.dict import GenericStrDict
+
 # internal
 from datazen import ROOT_NAMESPACE
 from datazen.enums import DataType
@@ -26,7 +29,7 @@ class SchemaEnvironment(BaseEnvironment):
         self,
         sch_loads: LoadedFiles = DEFAULT_LOADS,
         name: str = ROOT_NAMESPACE,
-    ) -> dict:
+    ) -> GenericStrDict:
         """Load custom schema types and resolve any un-loaded directories."""
 
         # determine directories that need to be loaded
@@ -49,7 +52,7 @@ class SchemaEnvironment(BaseEnvironment):
         sch_types_loads: LoadedFiles = DEFAULT_LOADS,
         name: str = ROOT_NAMESPACE,
         modify_registry: bool = True,
-    ) -> dict:
+    ) -> GenericStrDict:
         """Load schema data, resolve any un-loaded schema directories."""
 
         # determine directories that need to be loaded
@@ -72,7 +75,7 @@ class SchemaEnvironment(BaseEnvironment):
 
     def enforce_schemas(
         self,
-        data: dict,
+        data: GenericStrDict,
         require_all: bool = True,
         sch_loads: LoadedFiles = DEFAULT_LOADS,
         sch_types_loads: LoadedFiles = DEFAULT_LOADS,

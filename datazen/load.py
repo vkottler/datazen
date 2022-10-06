@@ -10,6 +10,7 @@ import os
 from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple, cast
 
 # third-party
+from vcorelib.dict import GenericStrDict
 from vcorelib.io.types import LoadResult
 from vcorelib.paths import Pathlike, get_file_name, normalize
 
@@ -33,14 +34,16 @@ class LoadedFiles(NamedTuple):
     """
 
     files: Optional[List[str]] = None
-    file_data: Optional[Dict[str, dict]] = None
+    file_data: Optional[Dict[str, GenericStrDict]] = None
 
 
 DEFAULT_LOADS = LoadedFiles()
 
 
 @contextmanager
-def data_added(key: Any, value: Any, data: dict = None) -> Iterator[dict]:
+def data_added(
+    key: Any, value: Any, data: GenericStrDict = None
+) -> Iterator[GenericStrDict]:
     """Inject a key-value pair into a dictionary, in a context."""
 
     if data is None:
@@ -55,8 +58,8 @@ def data_added(key: Any, value: Any, data: dict = None) -> Iterator[dict]:
 
 def meld_and_resolve(
     path: Pathlike,
-    existing_data: dict,
-    variables: dict,
+    existing_data: GenericStrDict,
+    variables: GenericStrDict,
     globals_added: bool = False,
     expect_overwrite: bool = False,
     is_template: bool = True,
@@ -67,7 +70,7 @@ def meld_and_resolve(
     existing data is a template and attempt to resolve variables.
     """
 
-    variables_root: dict = variables
+    variables_root: GenericStrDict = variables
 
     # allow directory/.{file_type} to be equivalent to directory.{file_type}
     key = get_file_name(path)
@@ -99,8 +102,8 @@ def meld_and_resolve(
 
 def load_dir(
     path: Pathlike,
-    existing_data: dict,
-    variables: dict = None,
+    existing_data: GenericStrDict,
+    variables: GenericStrDict = None,
     loads: LoadedFiles = DEFAULT_LOADS,
     expect_overwrite: bool = False,
     are_templates: bool = True,
@@ -183,8 +186,8 @@ def load_dir_only(
 def load_files(
     file_paths: List[Pathlike],
     root: str,
-    meld_data: Tuple[dict, dict, bool],
-    hashes: Dict[str, dict] = None,
+    meld_data: Tuple[GenericStrDict, GenericStrDict, bool],
+    hashes: Dict[str, GenericStrDict] = None,
     expect_overwrite: bool = False,
     are_templates: bool = True,
 ) -> Tuple[List[str], int]:

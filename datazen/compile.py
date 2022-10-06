@@ -7,10 +7,12 @@ from io import StringIO
 import logging
 import os
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Tuple
 
 # third-party
+from vcorelib.dict import GenericStrDict
 from vcorelib.io import ARBITER
+from vcorelib.paths import Pathlike, normalize
 
 # internal
 from datazen import DEFAULT_TYPE
@@ -19,18 +21,21 @@ LOG = logging.getLogger(__name__)
 
 
 def write_dir(
-    directory: Union[Path, str], data: dict, out_type: str = "json", **kwargs
+    directory: Pathlike, data: GenericStrDict, out_type: str = "json", **kwargs
 ) -> None:
     """Write dictionary data to the file-system."""
 
-    directory = str(directory)
+    directory = str(normalize(directory))
     os.makedirs(directory, exist_ok=True)
     for key, val in data.items():
         ARBITER.encode(Path(directory, f"{key}.{out_type}"), val, **kwargs)
 
 
 def str_compile(
-    configs: dict, data_type: str, logger: logging.Logger = LOG, **kwargs
+    configs: GenericStrDict,
+    data_type: str,
+    logger: logging.Logger = LOG,
+    **kwargs,
 ) -> str:
     """
     Serialize dictionary data into the String-form of a specific,
@@ -46,7 +51,7 @@ def str_compile(
 
 
 def get_compile_output(
-    entry: dict, default_type: str = DEFAULT_TYPE
+    entry: GenericStrDict, default_type: str = DEFAULT_TYPE
 ) -> Tuple[str, str]:
     """
     Determine the output path and type of a compile target, from the target's

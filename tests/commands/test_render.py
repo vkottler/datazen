@@ -6,8 +6,8 @@ datazen - Tests for the 'render' command interface.
 from contextlib import ExitStack
 
 # module under test
-from datazen.commands.compile import str_compile
 from datazen.commands.render import cmd_render
+from datazen.compile import str_compile
 
 # internal
 from tests import ENV

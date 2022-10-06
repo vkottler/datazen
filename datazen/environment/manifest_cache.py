@@ -5,10 +5,11 @@ datazen - A class for adding caching to the manifest-loading environment.
 # built-in
 import logging
 import os
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 # third-party
 import jinja2
+from vcorelib.dict import GenericStrDict
 from vcorelib.io.types import LoadResult
 from vcorelib.paths import get_file_name
 
@@ -22,7 +23,7 @@ from datazen.environment.manifest import ManifestEnvironment
 LOG = logging.getLogger(__name__)
 
 
-def manifest_cache_dir(path: str, manifest: dict) -> str:
+def manifest_cache_dir(path: str, manifest: GenericStrDict) -> str:
     """Find a manifest cache (path) from its path and data."""
 
     cache_name = f".{get_file_name(path)}{CACHE_SUFFIX}"
@@ -32,19 +33,19 @@ def manifest_cache_dir(path: str, manifest: dict) -> str:
     if "cache_dir" not in manifest["data"]:
         manifest["data"]["cache_dir"] = default_cache_dir
 
-    return os.path.abspath(manifest["data"]["cache_dir"])
+    return os.path.abspath(str(manifest["data"]["cache_dir"]))
 
 
 class ManifestCacheEnvironment(ManifestEnvironment):
     """A wrapper for the cache functionality for an environment."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Extend the environment with a notion of the cache being loaded."""
 
         super().__init__(**kwargs)
-        self.cache = None
-        self.aggregate_cache = None
-        self.initial_cache = None
+        self.cache: Optional[FileInfoCache] = None
+        self.aggregate_cache: Optional[FileInfoCache] = None
+        self.initial_cache: Optional[FileInfoCache] = None
         self.manifest_changed = True
 
     def load_manifest_with_cache(
@@ -90,19 +91,23 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         """Commit cached data to the file-system."""
 
         if self.cache is not None:
+            assert self.aggregate_cache is not None
             meld_cache(self.aggregate_cache, self.cache)
             self.aggregate_cache.write()
 
     def describe_cache(self) -> None:
         """Describe the [initial] cache for debugging purposes."""
 
+        assert self.initial_cache is not None
         self.initial_cache.describe()
 
     def restore_cache(self) -> None:
         """Return the cache to its initially-loaded state."""
 
         if self.cache is not None:
+            assert self.aggregate_cache is not None
             meld_cache(self.aggregate_cache, self.cache)
+            assert self.initial_cache is not None
             self.cache = copy_cache(self.initial_cache)
 
     def get_new_loaded(
@@ -113,6 +118,8 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         for a set of types;
         """
 
+        assert self.cache is not None
+        assert self.initial_cache is not None
         return cmp_total_loaded(
             self.cache, self.initial_cache, types, load_checks
         )
@@ -120,13 +127,15 @@ class ManifestCacheEnvironment(ManifestEnvironment):
     def cached_load_variables(self, name: str = ROOT_NAMESPACE) -> LoadResult:
         """Load variables, proxied through the cache."""
 
+        assert self.cache is not None
         return self.load_variables(self.cache.get_data("variables"), name)
 
     def cached_load_schemas(
         self, require_all: bool = True, name: str = ROOT_NAMESPACE
-    ) -> dict:
+    ) -> GenericStrDict:
         """Load schemas, proxied through the cache."""
 
+        assert self.cache is not None
         return self.load_schemas(
             require_all,
             self.cache.get_data("schemas"),
@@ -135,10 +144,14 @@ class ManifestCacheEnvironment(ManifestEnvironment):
         )
 
     def cached_enforce_schemas(
-        self, data: dict, require_all: bool = True, name: str = ROOT_NAMESPACE
+        self,
+        data: GenericStrDict,
+        require_all: bool = True,
+        name: str = ROOT_NAMESPACE,
     ) -> bool:
         """Enforce schemas, proxied through the cache."""
 
+        assert self.cache is not None
         return self.enforce_schemas(
             data,
             require_all=require_all,
@@ -152,6 +165,7 @@ class ManifestCacheEnvironment(ManifestEnvironment):
     ) -> LoadResult:
         """Load configs, proxied through the cache."""
 
+        assert self.cache is not None
         return self.load_configs(
             cfg_loads=self.cache.get_data("configs"),
             var_loads=self.cache.get_data("variables"),
@@ -166,4 +180,5 @@ class ManifestCacheEnvironment(ManifestEnvironment):
     ) -> Dict[str, jinja2.Template]:
         """Load templates, proxied through the cache."""
 
+        assert self.cache is not None
         return self.load_templates(self.cache.get_data("templates"), name)

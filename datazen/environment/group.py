@@ -6,6 +6,9 @@ datazen - A target-type for grouping other target-tasks together.
 import logging
 from typing import List
 
+# third-party
+from vcorelib.dict import GenericStrDict
+
 # internal
 from datazen.environment.base import TaskResult
 from datazen.environment.task import TaskEnvironment
@@ -22,9 +25,9 @@ class GroupEnvironment(TaskEnvironment):
 
     def valid_group(
         self,
-        entry: dict,
+        entry: GenericStrDict,
         _: str,
-        dep_data: dict = None,
+        dep_data: GenericStrDict = None,
         deps_changed: List[str] = None,
         logger: logging.Logger = logging.getLogger(__name__),
     ) -> TaskResult:

@@ -66,7 +66,7 @@ def test_entry():
 
     # restore the changed file
     with open(data_file, "w", encoding="utf-8") as manifest_file:
-        manifest_data = manifest_file.write(manifest_data)
+        manifest_file.write(manifest_data)
 
     assert datazen_main(args + ["-c"]) == 0
 

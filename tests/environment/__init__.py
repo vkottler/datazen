@@ -19,7 +19,7 @@ from tests.resources import get_resource
 class EnvironmentMock:
     """A class for simple test-data access."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize data storage."""
 
         manifest_path = get_resource(
