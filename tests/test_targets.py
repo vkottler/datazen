@@ -16,7 +16,10 @@ def test_parse_target_hiera():
     matcher = Target("test-{a.b.c}-target")
     result = matcher.evaluate("test-hello-target")
     assert result.matched
+
+    assert result.substitutions is not None
     assert unflatten_dict(result.substitutions) == {"a": {"b": {"c": "hello"}}}
+
     result = matcher.evaluate("test-asdf.asdf-target")
     assert result.matched
 
@@ -38,8 +41,10 @@ def test_parse_target_basic():
         "d": "{test1}-{test2}",
         "e": 1,
     }
-    result = resolve_target_data(target_data, result.substitutions)
-    assert result["a"][0] == "asdf-asdf"
-    assert result["a"][1] == ["asdf-asdf", "asdf-asdf"]
-    assert result["a"][2]["a"] == "asdf-asdf"
-    assert result["d"] == "asdf-asdf"
+
+    assert result.substitutions is not None
+    resolved = resolve_target_data(target_data, result.substitutions)
+    assert resolved["a"][0] == "asdf-asdf"
+    assert resolved["a"][1] == ["asdf-asdf", "asdf-asdf"]
+    assert resolved["a"][2]["a"] == "asdf-asdf"
+    assert resolved["d"] == "asdf-asdf"
