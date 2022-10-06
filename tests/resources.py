@@ -10,7 +10,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Iterator, List, TextIO
 
 # third-party
-import git
+from git import Repo  # type: ignore
 import pkg_resources
 
 # module under test
@@ -139,5 +139,5 @@ def get_temp_repo() -> Iterator[str]:
     """
 
     with TemporaryDirectory() as tmpdir:
-        git.Repo.init(tmpdir)
+        Repo.init(tmpdir)
         yield tmpdir

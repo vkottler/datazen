@@ -27,6 +27,7 @@ def write_dir(
 
     directory = str(normalize(directory))
     os.makedirs(directory, exist_ok=True)
+
     for key, val in data.items():
         ARBITER.encode(Path(directory, f"{key}.{out_type}"), val, **kwargs)
 
