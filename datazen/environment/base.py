@@ -10,6 +10,7 @@ import threading
 from typing import List, NamedTuple
 
 # third-party
+from vcorelib.dict import GenericStrDict
 from vcorelib.math.time import nano_str
 from vcorelib.paths import Pathlike
 
@@ -48,7 +49,7 @@ class TaskResult(NamedTuple):
     def __eq__(self, other: object) -> bool:
         """Don't compare timing when checking equivalence."""
         assert isinstance(other, (TaskResult, tuple))
-        return self.success == other[0] and self.fresh == other[1]
+        return bool(self.success == other[0] and self.fresh == other[1])
 
     def with_time(self, time_ns: int) -> "TaskResult":
         """Create a new result from this one, with the time set."""
@@ -128,7 +129,9 @@ class BaseEnvironment:
 
         return self.namespaces[name].get_to_load(dir_type)
 
-    def get_data(self, dir_type: DataType, name: str = ROOT_NAMESPACE) -> dict:
+    def get_data(
+        self, dir_type: DataType, name: str = ROOT_NAMESPACE
+    ) -> GenericStrDict:
         """Get the raw data for a directory type from a namespace."""
 
         return self.namespaces[name].data[dir_type]
@@ -177,7 +180,7 @@ class BaseEnvironment:
         )
 
     def get_namespace(
-        self, key_name: str, target: str, target_data: dict
+        self, key_name: str, target: str, target_data: GenericStrDict
     ) -> str:
         """
         Determine the namespace that a target should use, in general they

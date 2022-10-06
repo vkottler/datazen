@@ -7,6 +7,7 @@ import os
 from typing import Iterator, List, Tuple
 
 # third-party
+from vcorelib.dict import GenericStrDict
 from vcorelib.paths import Pathlike, normalize
 
 FMT_OPEN = "{"
@@ -27,7 +28,10 @@ def get_path_list(root: Pathlike, current: Pathlike) -> List[str]:
 
 
 def format_resolve_delims(
-    value: str, fmt_data: dict, delim: str = ".", delim_replace: str = "_"
+    value: str,
+    fmt_data: GenericStrDict,
+    delim: str = ".",
+    delim_replace: str = "_",
 ) -> str:
     """
     Attempt to resolve a format String with data, but handle replacements with
@@ -42,7 +46,7 @@ def format_resolve_delims(
         return value
 
     # replace "a.b.c" with "a_b_c", fmt_data should be a flat Dict[str, str]
-    new_data: dict = {}
+    new_data: GenericStrDict = {}
     for key, item in fmt_data.items():
         assert isinstance(key, str)
         new_data[key.replace(delim, delim_replace)] = item
@@ -65,12 +69,12 @@ def format_resolve_delims(
     return fstr.format(**new_data)
 
 
-def unflatten_dict(data: dict, delim: str = ".") -> dict:
+def unflatten_dict(data: GenericStrDict, delim: str = ".") -> GenericStrDict:
     """
     Attempt to unflatten dictionary data based on String keys and a delimeter.
     """
 
-    result: dict = {}
+    result: GenericStrDict = {}
 
     for key, value in data.items():
         # unflatten any dictionaries in the value
@@ -95,7 +99,9 @@ def unflatten_dict(data: dict, delim: str = ".") -> dict:
     return result
 
 
-def advance_dict_by_path(path_list: List[str], data: dict) -> dict:
+def advance_dict_by_path(
+    path_list: List[str], data: GenericStrDict
+) -> GenericStrDict:
     """
     Given a dictionary and a list of directory names, return the child
     dictionary advanced by each key, in order, from the provided data.

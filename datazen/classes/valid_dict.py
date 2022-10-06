@@ -7,13 +7,14 @@ from collections import UserDict
 import logging
 
 # third-party
+from vcorelib.dict import GenericStrDict
 from vcorelib.schemas import SchemaValidationError
 from vcorelib.schemas.base import Schema
 
 LOG = logging.getLogger(__name__)
 
 
-class ValidDict(UserDict):
+class ValidDict(UserDict):  # type: ignore
     """
     An object that behaves like a dictionary but can have a provided schema
     enforced.
@@ -22,7 +23,7 @@ class ValidDict(UserDict):
     def __init__(
         self,
         name: str,
-        data: dict,
+        data: GenericStrDict,
         schema: Schema,
         logger: logging.Logger = LOG,
     ) -> None:

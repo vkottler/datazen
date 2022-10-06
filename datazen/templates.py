@@ -8,6 +8,7 @@ from typing import Dict, Iterable, Type
 
 # third-party
 import jinja2
+from vcorelib.dict import GenericStrDict
 from vcorelib.paths import Pathlike, get_file_ext, get_file_name, normalize
 
 # internal
@@ -32,7 +33,7 @@ def update_cache_primitives(dir_path: str, loads: LoadedFiles) -> None:
 
 def environment(
     auto_reload: bool = False,
-    autoescape_kwargs: dict = None,
+    autoescape_kwargs: GenericStrDict = None,
     lstrip_blocks: bool = True,
     trim_blocks: bool = True,
     undefined: Type[jinja2.Undefined] = jinja2.StrictUndefined,

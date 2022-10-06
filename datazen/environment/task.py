@@ -12,7 +12,7 @@ from time import perf_counter_ns
 from typing import Callable, Dict, List, Optional, Tuple
 
 # third-party
-from vcorelib.dict import merge
+from vcorelib.dict import GenericStrDict, merge
 
 # internal
 from datazen import ROOT_NAMESPACE
@@ -34,9 +34,9 @@ class TaskEnvironment(ManifestCacheEnvironment):
 
     def valid_noop(
         self,
-        entry: dict,
+        entry: GenericStrDict,
         _: str,
-        __: dict = None,
+        __: GenericStrDict = None,
         ___: List[str] = None,
         logger: logging.Logger = LOG,
     ) -> TaskResult:
@@ -49,12 +49,12 @@ class TaskEnvironment(ManifestCacheEnvironment):
         )
         return TaskResult(False, False)
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Add a notion of 'visited' targets to the environment data."""
 
         super().__init__(**kwargs)
-        self.visited = defaultdict(bool)
-        self.is_new = defaultdict(bool)
+        self.visited: Dict[str, bool] = defaultdict(bool)
+        self.is_new: Dict[str, bool] = defaultdict(bool)
         self.default = "noop"
         self.handles: Dict[str, TaskFunction] = defaultdict(
             lambda: self.valid_noop
@@ -82,7 +82,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
             self.data_cache.clean(purge_data)
 
     @property
-    def task_data(self) -> dict:
+    def task_data(self) -> GenericStrDict:
         """Proxy task data through the cache."""
 
         assert self.data_cache is not None
@@ -129,13 +129,13 @@ class TaskEnvironment(ManifestCacheEnvironment):
         self,
         dep_list: List[str],
         logger: logging.Logger = LOG,
-    ) -> dict:
+    ) -> GenericStrDict:
         """
         From a list of dependencies, create a dictionary with any task data
         they've saved.
         """
 
-        dep_data: dict = {}
+        dep_data: GenericStrDict = {}
 
         # flatten all of the tasks' data into a single dict
         for dep in dep_list:
@@ -190,7 +190,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         task_stack: List[Task],
         target: str,
         logger: logging.Logger = LOG,
-    ) -> Tuple[bool, dict, List[str]]:
+    ) -> Tuple[bool, GenericStrDict, List[str]]:
         """
         Execute the entire chain of dependencies for a task, return the
         aggregate result as a boolean as well as the dependency data and which
@@ -220,10 +220,10 @@ class TaskEnvironment(ManifestCacheEnvironment):
         # provide dependency data as "flattened"
         return True, self.get_dep_data(dep_list, logger), deps_changed
 
-    def get_manifest_entry(self, category: str, name: str) -> dict:
+    def get_manifest_entry(self, category: str, name: str) -> GenericStrDict:
         """Get an entry from the manifest."""
 
-        result: dict = defaultdict(lambda: None)
+        result: GenericStrDict = defaultdict(lambda: None)
 
         with self.lock:
             candidate = self.target_resolver.get_target(category, name)
@@ -306,7 +306,7 @@ class TaskEnvironment(ManifestCacheEnvironment):
         return result
 
 
-def get_dep_list(entry: dict) -> List[str]:
+def get_dep_list(entry: GenericStrDict) -> List[str]:
     """From task data, build a list of task dependencies."""
 
     result = []
@@ -316,10 +316,10 @@ def get_dep_list(entry: dict) -> List[str]:
     return list(set(result))
 
 
-def get_path(entry: dict, key: str = "name") -> str:
+def get_path(entry: GenericStrDict, key: str = "name") -> str:
     """Get the full path to a render output from the manifest entry."""
 
-    path = entry[key]
+    path = str(entry[key])
     if "output_path" in entry:
         path = entry["output_path"]
     if not os.path.isabs(path):

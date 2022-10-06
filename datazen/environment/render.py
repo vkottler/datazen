@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, cast
 
 # third-party
 import jinja2
+from vcorelib.dict import GenericStrDict
 from vcorelib.paths import get_file_ext
 
 # internal
@@ -47,8 +48,8 @@ def get_render_str(
     template: jinja2.Template,
     name: str,
     indent: int,
-    data: dict = None,
-    out_data: dict = None,
+    data: GenericStrDict = None,
+    out_data: GenericStrDict = None,
     newline: str = os.linesep,
 ) -> str:
     """Render a template."""
@@ -74,8 +75,8 @@ def get_render_str(
 
 
 def get_render_children(
-    children: dict,
-    dep_data: dict,
+    children: GenericStrDict,
+    dep_data: GenericStrDict,
     default_op: str,
     indent: int,
     delimeter: str = "",
@@ -108,8 +109,8 @@ class RenderEnvironment(TaskEnvironment):
         template: jinja2.Template,
         all_templates: Dict[str, jinja2.Template],
         path: Optional[str],
-        entry: dict,
-        data: dict = None,
+        entry: GenericStrDict,
+        data: GenericStrDict = None,
         logger: logging.Logger = LOG,
     ) -> TaskResult:
         """
@@ -117,7 +118,7 @@ class RenderEnvironment(TaskEnvironment):
         """
 
         try:
-            out_data: dict = {}
+            out_data: GenericStrDict = {}
 
             # add template objects to render context
             with data_added(
@@ -173,7 +174,9 @@ class RenderEnvironment(TaskEnvironment):
 
         return TaskResult(True, True)
 
-    def store_render(self, entry: dict, data: dict) -> None:
+    def store_render(
+        self, entry: GenericStrDict, data: GenericStrDict
+    ) -> None:
         """Store data from the current render."""
 
         if "as" in entry and entry["as"]:
@@ -185,9 +188,9 @@ class RenderEnvironment(TaskEnvironment):
 
     def valid_render(
         self,
-        entry: dict,
+        entry: GenericStrDict,
         namespace: str,
-        dep_data: dict = None,
+        dep_data: GenericStrDict = None,
         deps_changed: List[str] = None,
         logger: logging.Logger = LOG,
     ) -> TaskResult:

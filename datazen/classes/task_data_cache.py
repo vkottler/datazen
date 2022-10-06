@@ -7,6 +7,9 @@ from collections import defaultdict
 import os
 import shutil
 
+# third-party
+from vcorelib.dict import GenericStrDict
+
 # internal
 from datazen.compile import write_dir
 from datazen.load import load_dir_only
@@ -21,7 +24,7 @@ class TaskDataCache:
     def __init__(self, cache_dir: str):
         """Construct an empty cache or optionally load from a directory."""
 
-        self.data: dict = defaultdict(lambda: defaultdict(dict))
+        self.data: GenericStrDict = defaultdict(lambda: defaultdict(dict))
         self.cache_dir = cache_dir
         self.load(self.cache_dir)
 

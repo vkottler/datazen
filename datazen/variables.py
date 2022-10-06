@@ -6,6 +6,7 @@ datazen - Top-level APIs for loading and interacting with variables.
 from typing import Iterable
 
 # third-party
+from vcorelib.dict import GenericStrDict
 from vcorelib.io.types import LoadResult
 from vcorelib.paths import Pathlike
 
@@ -19,7 +20,7 @@ def load(
 ) -> LoadResult:
     """Load variable data from a list of directories."""
 
-    result: dict = {}
+    result: GenericStrDict = {}
     errors = 0
     for directory in directories:
         errors += int(not load_dir(directory, result, None, loads)[1])

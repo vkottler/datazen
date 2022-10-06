@@ -10,6 +10,7 @@ from typing import Dict, Iterable, Iterator, List, Type
 
 # third-party
 from cerberus import rules_set_registry
+from vcorelib.dict import GenericStrDict
 from vcorelib.paths import Pathlike
 from vcorelib.schemas import CerberusSchemaMap
 from vcorelib.schemas.base import Schema, SchemaMap
@@ -29,7 +30,7 @@ def load(
 ) -> SchemaMap:
     """Load schemas from a list of directories."""
 
-    result: dict = {}
+    result: GenericStrDict = {}
 
     # load raw data
     for directory in directories:
@@ -43,7 +44,7 @@ def load(
 
 
 def add_global_schemas(
-    schema_data: Dict[str, dict], logger: logging.Logger = LOG
+    schema_data: Dict[str, GenericStrDict], logger: logging.Logger = LOG
 ) -> None:
     """Add schema-type registrations, globally."""
 
@@ -53,7 +54,7 @@ def add_global_schemas(
 
 
 def remove_global_schemas(
-    schema_data: Dict[str, dict], logger: logging.Logger = LOG
+    schema_data: Dict[str, GenericStrDict], logger: logging.Logger = LOG
 ) -> None:
     """Remove schema-type registrations by key name."""
 
@@ -67,10 +68,10 @@ def remove_global_schemas(
 def load_types(
     directories: List[Pathlike],
     loads: LoadedFiles = DEFAULT_LOADS,
-) -> Dict[str, dict]:
+) -> Dict[str, GenericStrDict]:
     """Load schema types and optionally register them."""
 
-    schema_data: Dict[str, dict] = {}
+    schema_data: Dict[str, GenericStrDict] = {}
 
     # load raw data
     for directory in directories:
@@ -80,7 +81,7 @@ def load_types(
 
 def validate(
     schema_data: Dict[str, Schema],
-    data: dict,
+    data: GenericStrDict,
     logger: logging.Logger = LOG,
 ) -> bool:
     """
@@ -115,7 +116,7 @@ def validate(
 
 @contextmanager
 def inject_custom_schemas(
-    schema_data: Dict[str, dict],
+    schema_data: Dict[str, GenericStrDict],
     should_inject: bool = True,
     logger: logging.Logger = LOG,
 ) -> Iterator[None]:

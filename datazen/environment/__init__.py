@@ -10,6 +10,7 @@ import threading
 from typing import Dict, List
 
 # third-party
+from vcorelib.dict import GenericStrDict
 from vcorelib.paths import Pathlike
 
 # internal
@@ -23,15 +24,15 @@ class EnvironmentNamespace:
     def __init__(self, name: str):
         """Base constructor."""
 
-        self.directories: Dict[DataType, List[dict]] = {}
+        self.directories: Dict[DataType, List[GenericStrDict]] = {}
         for dtype in DataType:
             self.directories[dtype] = []
 
-        self.data: Dict[DataType, dict] = {}
+        self.data: Dict[DataType, GenericStrDict] = {}
         for dtype in DataType:
             self.data[dtype] = {}
 
-        self.data_clone_strategy: Dict[DataType, dict] = {
+        self.data_clone_strategy: Dict[DataType, GenericStrDict] = {
             DataType.CONFIG: {"should": True, "method": deepcopy},
             DataType.SCHEMA: {"should": True, "method": deepcopy},
             DataType.SCHEMA_TYPES: {"should": False},
@@ -118,8 +119,8 @@ class EnvironmentNamespace:
                     def noop(*_, **__):
                         pass
 
-                    log_fn = noop if allow_dup else noop
-                    log_fn(
+                    log_fn = noop if allow_dup else self.logger.warning
+                    log_fn(  # type: ignore
                         "not adding duplicate directory '%s' to '%s'",
                         dir_path,
                         dir_type.value,

@@ -7,7 +7,7 @@ import logging
 from typing import List
 
 # third-party
-from vcorelib.dict import merge_dicts
+from vcorelib.dict import GenericStrDict, merge_dicts
 
 # internal
 from datazen.compile import get_compile_output, str_compile
@@ -22,7 +22,7 @@ LOG = logging.getLogger(__name__)
 class CompileEnvironment(TaskEnvironment):
     """Leverages a cache-equipped environment to perform compilations."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """
         Add compiled data to a dictionary whenever a compilation is performed.
         """
@@ -32,9 +32,9 @@ class CompileEnvironment(TaskEnvironment):
 
     def valid_compile(
         self,
-        entry: dict,
+        entry: GenericStrDict,
         namespace: str,
-        dep_data: dict = None,
+        dep_data: GenericStrDict = None,
         deps_changed: List[str] = None,
         logger: logging.Logger = LOG,
     ) -> TaskResult:
@@ -44,6 +44,7 @@ class CompileEnvironment(TaskEnvironment):
 
         # load configs early to update cache, only enforce schemas if we don't
         # have any dependency data to resolve
+        data: GenericStrDict
         data, success, _ = self.cached_load_configs(
             name=namespace, enforce_schemas=dep_data is None
         )
@@ -92,7 +93,7 @@ class CompileEnvironment(TaskEnvironment):
         mode = "a" if "append" in entry and entry["append"] else "w"
         with open(path, mode, encoding="utf-8") as out_file:
             if "key" in entry:
-                data = data.get(entry["key"], {})
+                data = data.get(str(entry["key"]), {})
             out_file.write(str_compile(data, output_type))
             logger.info("compiled '%s' data to '%s'", output_type, path)
 

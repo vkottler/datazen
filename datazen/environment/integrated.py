@@ -25,7 +25,7 @@ class Environment(
 ):
     """A wrapper for inheriting all environment-loading capabilities."""
 
-    def __init__(self, newline: str = os.linesep):
+    def __init__(self, newline: str = os.linesep) -> None:
         """Add a notion of 'visited' targets to the environment data."""
 
         super().__init__(newline=newline)
@@ -109,6 +109,7 @@ def from_manifest(
         logger.error("couldn't load manifest at '%s'", manifest_path)
     else:
         data_cache = f".{data_cache_name}{CACHE_SUFFIX}"
+        assert env.cache is not None
         path = os.path.join(os.path.dirname(env.cache.cache_dir), data_cache)
         env.init_cache(os.path.abspath(path))
 

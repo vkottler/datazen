@@ -4,9 +4,10 @@ datazen - Tests for the 'Environment' class.
 
 # built-in
 import os
+from typing import cast
 
 # module under test
-from datazen.environment.base import DataType
+from datazen.enums import DataType
 from datazen.environment.integrated import from_manifest
 
 # internal
@@ -115,4 +116,4 @@ def test_load_manifest():
 
         # make sure configs loaded correctly
         assert "yaml2" in cfg_data2 and "json2" in cfg_data2
-        assert len(cfg_data2["top_list"]) == 6
+        assert len(cast(list, cfg_data2["top_list"])) == 6

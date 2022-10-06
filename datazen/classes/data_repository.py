@@ -11,8 +11,8 @@ import threading
 from typing import Iterator
 
 # third-party
-import git
-from vcorelib.dict import merge
+from git import Repo  # type: ignore
+from vcorelib.dict import GenericStrDict, merge
 
 # internal
 from datazen.compile import write_dir
@@ -36,17 +36,20 @@ class DataRepository:
 
         self.root: str = os.path.realpath(root_dir)
         self.out_type = out_type
-        self.repo = git.Repo(self.root)
+        self.repo = Repo(self.root)
         # we should store some useful state - maybe what branch / head we're on
         # we may even want to split out the git stuff into its own class
-        self.data: dict = {}
+        self.data: GenericStrDict = {}
         self.lock = threading.RLock()
         self.logger = logger
 
     @contextmanager
     def meld(
-        self, data: dict, root_rel: str = ".", expect_overwrite: bool = False
-    ) -> Iterator[git.Repo]:
+        self,
+        data: GenericStrDict,
+        root_rel: str = ".",
+        expect_overwrite: bool = False,
+    ) -> Iterator[Repo]:
         """
         Update the data at some root-relative path, write it to disk and then
         provided the repository object still within a locked context.
@@ -66,7 +69,7 @@ class DataRepository:
     @contextmanager
     def loaded(
         self, root_rel: str = ".", write_back: bool = True
-    ) -> Iterator[dict]:
+    ) -> Iterator[GenericStrDict]:
         """
         Load a data directory, yield it to the caller and write it back when
         complete inside a locked context for this repository.

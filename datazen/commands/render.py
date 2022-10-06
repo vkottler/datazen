@@ -10,6 +10,7 @@ from typing import List
 
 # third-party
 import jinja2
+from vcorelib.dict import GenericStrDict
 from vcorelib.io import ARBITER
 
 # internal
@@ -26,7 +27,7 @@ def str_render(
 ) -> str:
     """Load configuration data and render a jinja2 template with it."""
 
-    data = ARBITER.decode(
+    data: GenericStrDict = ARBITER.decode(
         config_data_path, logger=logger, require_success=True, **kwargs
     ).data
     data["global"] = data

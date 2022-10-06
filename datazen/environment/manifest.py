@@ -5,10 +5,10 @@ datazen - A class for adding manifest-loading to environments.
 # built-in
 import logging
 import os
-from typing import List, Tuple, Type
+from typing import List, Tuple, Type, cast
 
 # third-party
-from vcorelib.dict import merge_dicts
+from vcorelib.dict import GenericDict, GenericStrDict, merge_dicts
 from vcorelib.dict.env import dict_resolve_env_vars
 from vcorelib.paths import resource
 from vcorelib.schemas import CerberusSchema
@@ -28,7 +28,7 @@ LOG = logging.getLogger(__name__)
 
 
 def get_output_dir(
-    data: dict, rel_path: str, default: str = DEFAULT_DIR
+    data: GenericStrDict, rel_path: str, default: str = DEFAULT_DIR
 ) -> str:
     """
     Get the resolved output directory based on a dictionary containing
@@ -43,7 +43,7 @@ def get_output_dir(
 
 
 def set_output_dir(
-    data: dict, rel_path: str, default: str = DEFAULT_DIR
+    data: GenericStrDict, rel_path: str, default: str = DEFAULT_DIR
 ) -> None:
     """Set the 'output_dir' key correctly on a dictionary."""
 
@@ -76,16 +76,16 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         "templates",
     ]
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Add a manifest dictionary to the environment."""
 
         super().__init__(**kwargs)
-        self.manifest = {}
+        self.manifest: GenericStrDict = {}
         self.target_resolver = TargetResolver()
 
     def load_dirs(
         self,
-        data: dict,
+        data: GenericStrDict,
         rel_path: str,
         namespace: str = ROOT_NAMESPACE,
         allow_dup: bool = False,
@@ -124,7 +124,7 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         return result
 
     @staticmethod
-    def update_task_dirs(data: dict, rel_path: str) -> None:
+    def update_task_dirs(data: GenericStrDict, rel_path: str) -> None:
         """
         Update path definitions in the provided manifest chunk to respect a
         relative path (e.g. the directory that the manifest chunk was loaded
@@ -145,10 +145,10 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         self,
         path: str,
         manifest_dir: str,
-        params: dict,
+        params: GenericDict,
         files: List[str],
         logger: logging.Logger = LOG,
-    ) -> Tuple[dict, bool]:
+    ) -> Tuple[GenericStrDict, bool]:
         """
         Load a manifest recursively by resolving includes and merging the
         results.
@@ -164,7 +164,12 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
         # update params, load again so we can use self-referential params
         if loaded and "params" in curr_manifest:
             params = merge_dicts(
-                [params, dict_resolve_env_vars(curr_manifest["params"])]
+                [
+                    params,
+                    dict_resolve_env_vars(
+                        cast(GenericDict, curr_manifest["params"])
+                    ),
+                ]
             )
             curr_manifest, loaded, _ = load_raw(path, params, {})
 
@@ -177,14 +182,14 @@ class ManifestEnvironment(ConfigEnvironment, TemplateEnvironment):
             curr_manifest,
             rel_path,
             allow_dup=True,
-            load_defaults=curr_manifest.get("default_dirs", True),
+            load_defaults=bool(curr_manifest.get("default_dirs", True)),
         )
         self.update_task_dirs(curr_manifest, rel_path)
 
         # resolve includes
         all_manifests = [curr_manifest]
         if "includes" in curr_manifest:
-            for include in curr_manifest["includes"]:
+            for include in cast(GenericStrDict, curr_manifest["includes"]):
                 result = self.load_manifest_reent(
                     include, rel_path, params, files, logger
                 )
@@ -259,7 +264,9 @@ def get_manifest_schema(
     )
 
 
-def validate_manifest(manifest: dict, logger: logging.Logger = LOG) -> bool:
+def validate_manifest(
+    manifest: GenericStrDict, logger: logging.Logger = LOG
+) -> bool:
     """Validate manifest data against the package schema."""
 
     schemas = resource("schema_types", package=PKG_NAME)

@@ -25,7 +25,7 @@ class ConfigEnvironment(VariableEnvironment, SchemaEnvironment):
     loading to function.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Extend the environment with a notion of configs being valid."""
 
         super().__init__(**kwargs)

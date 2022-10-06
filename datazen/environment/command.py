@@ -10,6 +10,7 @@ import subprocess
 from typing import List
 
 # third-party
+from vcorelib.dict import GenericStrDict
 from vcorelib.task.subprocess.run import is_windows, reconcile_platform
 
 # internal
@@ -20,7 +21,7 @@ from datazen.environment.task import TaskEnvironment, get_path
 class CommandEnvironment(TaskEnvironment):
     """Exposes command-line commanding capability to the environment."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Add the 'commands' handle."""
 
         super().__init__(**kwargs)
@@ -28,9 +29,9 @@ class CommandEnvironment(TaskEnvironment):
 
     def valid_command(
         self,
-        entry: dict,
+        entry: GenericStrDict,
         _: str,
-        __: dict = None,
+        __: GenericStrDict = None,
         deps_changed: List[str] = None,
         logger: logging.Logger = logging.getLogger(__name__),
     ) -> TaskResult:

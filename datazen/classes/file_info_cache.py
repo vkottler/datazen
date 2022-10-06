@@ -9,7 +9,10 @@ import logging
 import os
 import shutil
 import time
-from typing import Dict, List
+from typing import Dict, List, cast
+
+# third-party
+from vcorelib.dict import GenericStrDict
 
 # internal
 from datazen import VERSION
@@ -36,7 +39,7 @@ class FileInfoCache:
     ) -> None:
         """Construct an empty cache or optionally load from a directory."""
 
-        self.data: dict = deepcopy(DATA_DEFAULT)
+        self.data: GenericStrDict = deepcopy(DATA_DEFAULT)
         self.removed_data: Dict[str, List[str]] = defaultdict(list)
         self.cache_dir: str = ""
         if cache_dir is not None:
@@ -57,10 +60,10 @@ class FileInfoCache:
         for key in DATA_DEFAULT:
             self.data[key].update(new_data[key])
 
-    def get_hashes(self, sub_dir: str) -> Dict[str, dict]:
+    def get_hashes(self, sub_dir: str) -> GenericStrDict:
         """Get the cached, dictionary of file hashes for a certain key."""
 
-        return self.data["hashes"][sub_dir]
+        return cast(GenericStrDict, self.data["hashes"][sub_dir])
 
     def check_hit(
         self, sub_dir: str, path: str, also_cache: bool = True
@@ -82,7 +85,7 @@ class FileInfoCache:
     def get_loaded(self, sub_dir: str) -> List[str]:
         """Get the cached, list of loaded files for a certain key."""
 
-        return self.data["loaded"][sub_dir]
+        return cast(List[str], self.data["loaded"][sub_dir])
 
     def describe(self) -> None:
         """Describe this cache's contents for debugging purposes."""
@@ -216,7 +219,7 @@ def cmp_loaded_count(
     b_loaded = cache_b.get_loaded(name)
 
     # get counts of all the files from both caches
-    count_data: dict = defaultdict(lambda: {"a": 0, "b": 0})
+    count_data: GenericStrDict = defaultdict(lambda: {"a": 0, "b": 0})
     for item in a_loaded:
         count_data[item]["a"] = a_loaded.count(item)
     for item in b_loaded:
@@ -281,8 +284,8 @@ def cmp_total_loaded(
 
 
 def sync_cache_data(
-    cache_data: dict, removed_data: Dict[str, List[str]]
-) -> dict:
+    cache_data: GenericStrDict, removed_data: Dict[str, List[str]]
+) -> GenericStrDict:
     """
     Before writing a cache to disk we want to de-duplicate items in the loaded
     list and remove hash data for files that were removed so that if they
@@ -296,8 +299,8 @@ def sync_cache_data(
 
 
 def remove_missing_hashed_files(
-    data: dict, removed_data: Dict[str, List[str]]
-) -> dict:
+    data: GenericStrDict, removed_data: Dict[str, List[str]]
+) -> GenericStrDict:
     """Assign new hash data based on the files that are still present."""
 
     for category in data.keys():
@@ -312,7 +315,7 @@ def remove_missing_hashed_files(
     return data
 
 
-def remove_missing_loaded_files(data: dict) -> dict:
+def remove_missing_loaded_files(data: GenericStrDict) -> GenericStrDict:
     """
     Audit list elements in a dictionary recursively, assume the data is String
     and the elements are filenames, assign a new list for all of the elements
