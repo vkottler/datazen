@@ -37,7 +37,7 @@ def environment(
     lstrip_blocks: bool = True,
     trim_blocks: bool = True,
     undefined: Type[jinja2.Undefined] = jinja2.StrictUndefined,
-    **kwargs
+    **kwargs,
 ) -> jinja2.Environment:
     """Create a jinja environment with some sane defaults."""
 
@@ -50,7 +50,7 @@ def environment(
         lstrip_blocks=lstrip_blocks,
         trim_blocks=trim_blocks,
         undefined=undefined,
-        **kwargs
+        **kwargs,
     )
 
 
