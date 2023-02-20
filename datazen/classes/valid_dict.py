@@ -8,8 +8,7 @@ import logging
 
 # third-party
 from vcorelib.dict import GenericStrDict
-from vcorelib.schemas import SchemaValidationError
-from vcorelib.schemas.base import Schema
+from vcorelib.schemas.base import Schema, SchemaValidationError
 
 LOG = logging.getLogger(__name__)
 

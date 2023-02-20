@@ -1,4 +1,4 @@
 cerberus
 GitPython
 Jinja2
-vcorelib>=1.0.2
+vcorelib>=1.2.3
