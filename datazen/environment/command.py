@@ -11,11 +11,14 @@ from typing import List
 
 # third-party
 from vcorelib.dict import GenericStrDict
+from vcorelib.logging import log_time
 from vcorelib.task.subprocess.run import is_windows, reconcile_platform
 
 # internal
 from datazen.environment.base import TaskResult
 from datazen.environment.task import TaskEnvironment, get_path
+
+LOG = logging.getLogger(__name__)
 
 
 class CommandEnvironment(TaskEnvironment):
@@ -33,7 +36,7 @@ class CommandEnvironment(TaskEnvironment):
         _: str,
         __: GenericStrDict = None,
         deps_changed: List[str] = None,
-        logger: logging.Logger = logging.getLogger(__name__),
+        logger: logging.Logger = LOG,
     ) -> TaskResult:
         """Perform the command specified by the entry."""
 
@@ -68,7 +71,8 @@ class CommandEnvironment(TaskEnvironment):
         program = program.replace("/", "\\") if is_windows() else program
 
         program, args = reconcile_platform(program, cmd)
-        result = subprocess.run([program] + args, capture_output=True)
+        with log_time(logger, "Running '%s' with args: %s.", program, args):
+            result = subprocess.run([program] + args, capture_output=True)
 
         task_data[entry["name"]] = defaultdict(str)
         data = task_data[entry["name"]]
