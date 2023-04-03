@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, cast
 # third-party
 import jinja2
 from vcorelib.dict import GenericStrDict
-from vcorelib.paths import get_file_ext
+from vcorelib.paths import get_file_ext, rel
 
 # internal
 from datazen import GLOBAL_KEY, to_private
@@ -170,7 +170,7 @@ class RenderEnvironment(TaskEnvironment):
             )
             return TaskResult(False, False)
 
-        logger.info("(%s) rendered '%s'", entry["name"], path)
+        logger.info("(%s) rendered '%s'", entry["name"], rel(path))
 
         return TaskResult(True, True)
 

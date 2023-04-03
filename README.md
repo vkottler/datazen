@@ -2,11 +2,11 @@
     =====================================
     generator=datazen
     version=3.1.1
-    hash=dbbcd491db0694d3350dc02877774c23
+    hash=4b9615d388d51665e51354af2b12d253
     =====================================
 -->
 
-# datazen ([3.1.1](https://pypi.org/project/datazen/))
+# datazen ([3.1.2](https://pypi.org/project/datazen/))
 
 [![python](https://img.shields.io/pypi/pyversions/datazen.svg)](https://pypi.org/project/datazen/)
 ![Build Status](https://github.com/vkottler/datazen/workflows/Python%20Package/badge.svg)
@@ -27,6 +27,7 @@ This package is tested with the following Python minor versions:
 * [`python3.8`](https://docs.python.org/3.8/)
 * [`python3.9`](https://docs.python.org/3.9/)
 * [`python3.10`](https://docs.python.org/3.10/)
+* [`python3.11`](https://docs.python.org/3.11/)
 
 ## Platform Support
 
