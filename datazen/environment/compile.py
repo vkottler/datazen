@@ -8,6 +8,7 @@ from typing import List
 
 # third-party
 from vcorelib.dict import GenericStrDict, merge_dicts
+from vcorelib.paths import rel
 
 # internal
 from datazen.compile import get_compile_output, str_compile
@@ -95,6 +96,6 @@ class CompileEnvironment(TaskEnvironment):
             if "key" in entry:
                 data = data.get(str(entry["key"]), {})
             out_file.write(str_compile(data, output_type))
-            logger.info("compiled '%s' data to '%s'", output_type, path)
+            logger.info("compiled '%s' data to '%s'", output_type, rel(path))
 
         return TaskResult(True, True)

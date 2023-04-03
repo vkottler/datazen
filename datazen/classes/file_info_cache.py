@@ -13,6 +13,7 @@ from typing import Dict, List, cast
 
 # third-party
 from vcorelib.dict import GenericStrDict
+from vcorelib.paths import rel
 
 # internal
 from datazen import VERSION
@@ -272,7 +273,7 @@ def cmp_total_loaded(
                     "%d changes detected for '%s' in '%s'",
                     iter_result,
                     known,
-                    load_checks[known],
+                    list(str(rel(x)) for x in load_checks[known]),
                 )
             result += iter_result
         else:
