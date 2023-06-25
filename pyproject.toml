@@ -37,7 +37,8 @@ test = [
   "mypy",
   "isort",
   "yamllint",
-  "setuptools-wrapper"
+  "setuptools-wrapper",
+  "pytest"
 ]
 
 [project.scripts]
