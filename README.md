@@ -1,8 +1,8 @@
 <!--
     =====================================
     generator=datazen
-    version=3.1.1
-    hash=4b9615d388d51665e51354af2b12d253
+    version=3.1.2
+    hash=e2c406dac8ad9fe350b161929a8ac707
     =====================================
 -->
 
@@ -23,7 +23,6 @@ See also: [generated documentation](https://vkottler.github.io/python/pydoc/data
 
 This package is tested with the following Python minor versions:
 
-* [`python3.7`](https://docs.python.org/3.7/)
 * [`python3.8`](https://docs.python.org/3.8/)
 * [`python3.9`](https://docs.python.org/3.9/)
 * [`python3.10`](https://docs.python.org/3.10/)
@@ -62,18 +61,18 @@ templates, or just rendering final sets of serialized data.
 # Usage
 
 ```
-$ ./venv3.8/bin/dz -h
+$ ./venv3.11/bin/dz -h
 
 usage: dz [-h] [--version] [-v] [-C DIR] [--line-ending {unix,dos,unix}]
           [-m MANIFEST] [-c] [--sync] [-d]
-          [targets [targets ...]]
+          [targets ...]
 
 Compile and render schema-validated configuration data.
 
 positional arguments:
   targets               target(s) to execute
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   -v, --verbose         set to increase logging verbosity
