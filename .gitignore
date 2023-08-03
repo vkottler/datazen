@@ -13,3 +13,5 @@ htmlcov
 datazen-out
 *.pyi
 tags
+docs
+mklocal
