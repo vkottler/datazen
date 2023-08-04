@@ -42,11 +42,11 @@ entries:
     description: >-
       For each of these keys, add paths that should be loaded globally.
     content: |
-      configs:      paths
-      schemas:      paths
+      configs: paths
+      schemas: paths
       schema_types: paths
-      templates:    paths
-      variables:    paths
+      templates: paths
+      variables: paths
 
   - name: "Manifest Parameters"
     slug: manifest-parameters

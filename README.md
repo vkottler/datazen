@@ -2,7 +2,7 @@
     =====================================
     generator=datazen
     version=3.1.2
-    hash=10884652cf0dc9562fbdb1ea87522e07
+    hash=82b576fb89b3cde20cf964d9376b583f
     =====================================
 -->
 
@@ -145,11 +145,11 @@ cache_dir:
 For each of these keys, add paths that should be loaded globally.
 
 ```
-configs:      paths
-schemas:      paths
+configs: paths
+schemas: paths
 schema_types: paths
-templates:    paths
-variables:    paths
+templates: paths
+variables: paths
 ```
 ## Manifest Parameters
 
