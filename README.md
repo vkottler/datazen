@@ -2,7 +2,7 @@
     =====================================
     generator=datazen
     version=3.1.2
-    hash=e2c406dac8ad9fe350b161929a8ac707
+    hash=10884652cf0dc9562fbdb1ea87522e07
     =====================================
 -->
 
@@ -16,8 +16,14 @@
 
 *Compile and render schema-validated configuration data.*
 
-See also: [generated documentation](https://vkottler.github.io/python/pydoc/datazen.html)
-(created with [`pydoc`](https://docs.python.org/3/library/pydoc.html)).
+## Documentation
+
+### Generated
+
+* By [sphinx-apidoc](https://vkottler.github.io/python/sphinx/datazen)
+(What's [`sphinx-apidoc`](https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html)?)
+* By [pydoc](https://vkottler.github.io/python/pydoc/datazen.html)
+(What's [`pydoc`](https://docs.python.org/3/library/pydoc.html)?)
 
 ## Python Version Support
 
