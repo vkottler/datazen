@@ -1,8 +1,9 @@
 # =====================================
 # generator=datazen
 # version=3.1.2
-# hash=4c1dc7e8f5a0bbd708767f446abe2744
+# hash=96b5e887b1d934d78879c6fedf46154a
 # =====================================
+---
 default_dirs:
   type: boolean
   default: true
@@ -15,11 +16,11 @@ output_dir:
 cache_dir:
   type: string
 
-configs:      paths
-schemas:      paths
+configs: paths
+schemas: paths
 schema_types: paths
-templates:    paths
-variables:    paths
+templates: paths
+variables: paths
 
 params:
   type: dict
