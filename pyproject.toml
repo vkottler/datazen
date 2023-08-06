@@ -39,6 +39,8 @@ test = [
   "yamllint",
   "yambs",
   "vmklib",
+  "sphinx",
+  "sphinx-book-theme",
   "setuptools-wrapper",
   "pytest"
 ]
