@@ -2,7 +2,7 @@
     =====================================
     generator=datazen
     version=3.1.3
-    hash=b75e2ba0093fa4965f164f9b41bc7c80
+    hash=1540b6cd01b8a69f0045a669dffd1508
     =====================================
 -->
 
@@ -29,8 +29,6 @@
 
 This package is tested with the following Python minor versions:
 
-* [`python3.8`](https://docs.python.org/3.8/)
-* [`python3.9`](https://docs.python.org/3.9/)
 * [`python3.10`](https://docs.python.org/3.10/)
 * [`python3.11`](https://docs.python.org/3.11/)
 
@@ -69,8 +67,8 @@ templates, or just rendering final sets of serialized data.
 ```
 $ ./venv3.11/bin/dz -h
 
-usage: dz [-h] [--version] [-v] [-C DIR] [--line-ending {unix,dos,unix}]
-          [-m MANIFEST] [-c] [--sync] [-d]
+usage: dz [-h] [--version] [-v] [-q] [--curses] [--no-uvloop] [-C DIR]
+          [--line-ending {unix,dos,unix}] [-m MANIFEST] [-c] [--sync] [-d]
           [targets ...]
 
 Compile and render schema-validated configuration data.
@@ -82,6 +80,9 @@ options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   -v, --verbose         set to increase logging verbosity
+  -q, --quiet           set to reduce output
+  --curses              whether or not to use curses.wrapper when starting
+  --no-uvloop           whether or not to disable uvloop as event loop driver
   -C DIR, --dir DIR     execute from a specific directory
   --line-ending {unix,dos,unix}
                         line-ending option to use by default (default: 'unix')
