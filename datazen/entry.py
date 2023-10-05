@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=3.1.3
-# hash=825956f7f2a679cc10ec94cdc80833c1
+# version=3.1.4
+# hash=5b6c3f6a7a2743f25e4939b11daf96b1
 # =====================================
 
 """
@@ -10,13 +10,14 @@ This package's command-line entry-point (boilerplate).
 
 # built-in
 import argparse
+from logging import getLogger
 import os
 from pathlib import Path
 import sys
 from typing import List
 
 # third-party
-from vcorelib.logging import init_logging, logging_args
+from vcorelib.logging import init_logging, log_time, logging_args
 
 # internal
 from datazen import DESCRIPTION, VERSION
@@ -68,7 +69,8 @@ def main(argv: List[str] = None) -> int:
         os.chdir(args.dir)
 
         # run the application
-        result = entry(args)
+        with log_time(getLogger(__name__), "Command"):
+            result = entry(args)
     except SystemExit as exc:
         result = 1
         if exc.code is not None and isinstance(exc.code, int):
