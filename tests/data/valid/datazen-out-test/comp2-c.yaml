@@ -1,30 +1,73 @@
-a: {a: a, b: b, c: c}
-b: {a: a, b: b, c: c}
+---
+json: json
+yaml: yaml
+top_list:
+  - d
+  - e
+  - f
+  - a
+  - b
+  - c
+top_dict:
+  b:
+    b: b
+  a:
+    a: a
 bad: 5
-c: {a: a, b: b, c: c}
-custom:
-  a: [test1, test2]
-  b: [test1, test2]
-  c: [test1, test2]
-  nested:
-    a: {a: a, b: b, c: c}
-    b: {a: a, b: b, c: c}
-    c: {a: a, b: b, c: c}
-    custom:
-      a: [test1, test2]
-      b: [test1, test2]
-      c: [test1, test2]
-d: {d: d}
-e: {e: e}
+b:
+  a: a
+  b: b
+  c: c
+c:
+  a: a
+  b: b
+  c: c
+d:
+  d: d
+e:
+  e: e
+f:
+  f: f
+a:
+  a: a
+  b: b
+  c: c
 empty:
   a:
-    a: {a: a}
-f: {f: f}
-json: json
+    a:
+      a: a
 json2: json
-top_dict:
-  a: {a: a}
-  b: {b: b}
-top_list: [d, e, f, a, b, c]
-yaml: yaml
 yaml2: yaml
+custom:
+  a:
+    - test1
+    - test2
+  b:
+    - test1
+    - test2
+  c:
+    - test1
+    - test2
+  nested:
+    a:
+      a: a
+      b: b
+      c: c
+    b:
+      a: a
+      b: b
+      c: c
+    c:
+      a: a
+      b: b
+      c: c
+    custom:
+      a:
+        - test1
+        - test2
+      b:
+        - test1
+        - test2
+      c:
+        - test1
+        - test2
