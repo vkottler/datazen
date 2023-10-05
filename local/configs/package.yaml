@@ -3,11 +3,14 @@ name: datazen
 version: "{{major}}.{{minor}}.{{patch}}"
 description: "Compile and render schema-validated configuration data."
 entry: {{entry}}
+time_command: true
+
 requirements:
   - cerberus
   - GitPython
   - Jinja2
   - vcorelib>=1.2.3
+
 dev_requirements:
   - setuptools-wrapper
   - pytest
