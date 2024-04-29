@@ -1443,7 +1443,7 @@
 <!-- vcorelib_logging -->
 <g id="node47" class="node">
 <title>vcorelib_logging</title><style>.edge>path:hover{stroke-width:8}</style>
-<ellipse fill="#b50bdf" stroke="black" cx="2672.93" cy="-2069.66" rx="41.94" ry="21.43"/>
+<ellipse fill="#b005db" stroke="black" cx="2672.93" cy="-2069.66" rx="41.94" ry="21.43"/>
 <text text-anchor="middle" x="2672.93" y="-2072.66" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#ffffff">vcorelib.</text>
 <text text-anchor="middle" x="2672.93" y="-2061.66" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#ffffff">logging</text>
 </g>
@@ -1457,19 +1457,19 @@
 <title>vcorelib_logging&#45;&gt;datazen_environment_command</title><style>.edge>path:hover{stroke-width:8}</style>
 <path fill="none" stroke="black" d="M3616.93,-1990.23C3680.68,-1947.03 3691.93,-1911.04 3691.93,-1834.03 3691.93,-1834.03 3691.93,-1834.03 3691.93,-1507.84 3691.93,-1425.19 3708.97,-1402.75 3691.93,-1321.88"/>
 <path fill="none" stroke="black" d="M3691.93,-1319.88C3656.92,-1173.1 3595.07,-1157.85 3509.93,-1033.27 3480.69,-990.49 3472.18,-980.63 3440.93,-939.29 3428.71,-923.12 3424.62,-919.85 3412.93,-903.29 3347.23,-810.24 3274.93,-801.24 3274.93,-687.33 3274.93,-687.33 3274.93,-687.33 3274.93,-591.35 3274.93,-435.27 2053.66,-409.95 1749.1,-406.06"/>
-<polygon fill="#b50bdf" stroke="black" points="1749.12,-402.56 1739.08,-405.93 1749.03,-409.56 1749.12,-402.56"/>
+<polygon fill="#b005db" stroke="black" points="1749.12,-402.56 1739.08,-405.93 1749.03,-409.56 1749.12,-402.56"/>
 </g>
 <!-- vcorelib_logging&#45;&gt;datazen_environment_integrated -->
 <g id="edge178" class="edge">
 <title>vcorelib_logging&#45;&gt;datazen_environment_integrated</title><style>.edge>path:hover{stroke-width:8}</style>
 <path fill="none" stroke="black" d="M2631.43,-2066.92C2483.64,-2060.66 1969.14,-2038.28 1544.93,-2012.45 969.45,-1977.41 605.32,-2237.71 270.93,-1768.04 -39.63,-1331.84 -142.7,-882.95 286.93,-563.36 585.16,-341.52 1055.85,-313.44 1230.63,-311.03"/>
-<polygon fill="#b50bdf" stroke="black" points="1230.76,-314.53 1240.72,-310.91 1230.68,-307.53 1230.76,-314.53"/>
+<polygon fill="#b005db" stroke="black" points="1230.76,-314.53 1240.72,-310.91 1230.68,-307.53 1230.76,-314.53"/>
 </g>
 <!-- vcorelib_logging&#45;&gt;vcorelib_dict -->
 <g id="edge179" class="edge">
 <title>vcorelib_logging&#45;&gt;vcorelib_dict</title><style>.edge>path:hover{stroke-width:8}</style>
 <path fill="none" stroke="black" d="M2632.23,-2064.95C2494.37,-2052.38 2044.99,-2011.39 1888.92,-1997.16"/>
-<polygon fill="#b50bdf" stroke="black" points="1888.91,-1993.64 1878.63,-1996.22 1888.27,-2000.61 1888.91,-1993.64"/>
+<polygon fill="#b005db" stroke="black" points="1888.91,-1993.64 1878.63,-1996.22 1888.27,-2000.61 1888.91,-1993.64"/>
 </g>
 <!-- vcorelib_logging&#45;&gt;vcorelib_io_types -->
 <g id="edge180" class="edge">
@@ -1481,7 +1481,7 @@
 <title>vcorelib_logging&#45;&gt;vcorelib_task</title><style>.edge>path:hover{stroke-width:8}</style>
 <path fill="none" stroke="black" d="M2714.64,-2067.65C2883.43,-2063.36 3510.75,-2045.32 3592.93,-2012.45 3605.88,-2007.27 3605.39,-2000.06 3616.93,-1992.23"/>
 <path fill="none" stroke="black" d="M3616.93,-1990.23C3631.22,-1980.55 3630.35,-1960.53 3626.38,-1943.88"/>
-<polygon fill="#b50bdf" stroke="black" points="3629.7,-1942.74 3623.62,-1934.06 3622.96,-1944.63 3629.7,-1942.74"/>
+<polygon fill="#b005db" stroke="black" points="3629.7,-1942.74 3623.62,-1934.06 3622.96,-1944.63 3629.7,-1942.74"/>
 </g>
 <!-- vcorelib_math -->
 <g id="node48" class="node">

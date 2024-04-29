@@ -2,7 +2,7 @@
     =====================================
     generator=datazen
     version=3.1.4
-    hash=fd1a16159a70c17239bad87ae8b0de27
+    hash=33d9ce9535e85b9dbd89b2a674a32d25
     =====================================
 -->
 
@@ -66,7 +66,7 @@ templates, or just rendering final sets of serialized data.
 # Usage
 
 ```
-$ ./venv3.11/bin/dz -h
+$ ./venv3.12/bin/dz -h
 
 usage: dz [-h] [--version] [-v] [-q] [--curses] [--no-uvloop] [-C DIR]
           [--line-ending {unix,dos,unix}] [-m MANIFEST] [-c] [--sync] [-d]

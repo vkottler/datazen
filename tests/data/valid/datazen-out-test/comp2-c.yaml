@@ -1,5 +1,19 @@
 ---
 json: json
+f:
+  f: f
+c:
+  a: a
+  b: b
+  c: c
+d:
+  d: d
+e:
+  e: e
+a:
+  a: a
+  b: b
+  c: c
 yaml: yaml
 top_list:
   - d
@@ -18,26 +32,11 @@ b:
   a: a
   b: b
   c: c
-c:
-  a: a
-  b: b
-  c: c
-d:
-  d: d
-e:
-  e: e
-f:
-  f: f
-a:
-  a: a
-  b: b
-  c: c
 empty:
   a:
     a:
       a: a
 json2: json
-yaml2: yaml
 custom:
   a:
     - test1
@@ -71,3 +70,4 @@ custom:
       c:
         - test1
         - test2
+yaml2: yaml

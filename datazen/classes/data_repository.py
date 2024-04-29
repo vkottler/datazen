@@ -11,7 +11,7 @@ import threading
 from typing import Iterator
 
 # third-party
-from git import Repo  # type: ignore
+from git import Repo
 from vcorelib.dict import GenericStrDict, merge
 
 # internal

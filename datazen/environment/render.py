@@ -148,9 +148,11 @@ class RenderEnvironment(TaskEnvironment):
             fprint = build_fingerprint(
                 # Ensure that file hashes are evaluated based on the configured
                 # newlines and not the platform ones.
-                render_str.replace(os.linesep, self.newline)
-                if os.linesep != self.newline
-                else render_str,
+                (
+                    render_str.replace(os.linesep, self.newline)
+                    if os.linesep != self.newline
+                    else render_str
+                ),
                 get_file_ext(get_path(entry)),
                 dynamic=dynamic,
                 newline=self.newline,
