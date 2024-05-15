@@ -1,19 +1,23 @@
 ---
-json: json
-f:
-  f: f
 c:
   a: a
   b: b
   c: c
-d:
-  d: d
 e:
   e: e
 a:
   a: a
   b: b
   c: c
+f:
+  f: f
+b:
+  a: a
+  b: b
+  c: c
+json: json
+d:
+  d: d
 yaml: yaml
 top_list:
   - d
@@ -28,15 +32,10 @@ top_dict:
   a:
     a: a
 bad: 5
-b:
-  a: a
-  b: b
-  c: c
 empty:
   a:
     a:
       a: a
-json2: json
 custom:
   a:
     - test1
@@ -70,6 +69,7 @@ custom:
       c:
         - test1
         - test2
+json2: json
 yaml2: yaml
 yaml3: yaml
 yaml3_dict:
