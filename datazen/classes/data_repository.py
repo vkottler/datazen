@@ -43,6 +43,20 @@ class DataRepository:
         self.lock = threading.RLock()
         self.logger = logger
 
+    def _update_data(
+        self,
+        data: GenericStrDict,
+        root_rel: str = ".",
+        expect_overwrite: bool = False,
+    ) -> None:
+        """Update internal data with loaded contents."""
+
+        # update data with contents provided
+        with self.loaded(root_rel) as curr_data:
+            self.data = merge(
+                curr_data, data, expect_overwrite=expect_overwrite
+            )
+
     @contextmanager
     def meld(
         self,
@@ -56,11 +70,9 @@ class DataRepository:
         """
 
         with self.lock:
-            # update data with contents provided
-            with self.loaded(root_rel) as curr_data:
-                self.data = merge(
-                    curr_data, data, expect_overwrite=expect_overwrite
-                )
+            self._update_data(
+                data, root_rel=root_rel, expect_overwrite=expect_overwrite
+            )
 
             # yield the repository after we've written disk but before
             # releasing the lock
