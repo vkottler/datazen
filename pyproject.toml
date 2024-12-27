@@ -4,20 +4,19 @@ build-backend = "setuptools.build_meta:__legacy__"
 
 [project]
 name = "datazen"
-version = "3.1.4"
+version = "3.2.0"
 description = "Compile and render schema-validated configuration data."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 authors = [
-  {name = "Vaughn Kottler", email = "vaughnkottler@gmail.com"}
+  {name = "Vaughn Kottler", email = "vaughn@libre-embedded.com"}
 ]
 maintainers = [
-  {name = "Vaughn Kottler", email = "vaughnkottler@gmail.com"}
+  {name = "Vaughn Kottler", email = "vaughn@libre-embedded.com"}
 ]
 classifiers = [
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: MacOS",
   "Operating System :: POSIX :: Linux",
@@ -37,7 +36,7 @@ test = [
   "isort",
   "yamllint",
   "yambs",
-  "vmklib",
+  "vmklib>=2.0.3",
   "sphinx",
   "sphinx-book-theme",
   "setuptools-wrapper",

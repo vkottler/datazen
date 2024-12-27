@@ -120,7 +120,7 @@ class EnvironmentNamespace:
                         pass
 
                     log_fn = noop if allow_dup else self.logger.warning
-                    log_fn(  # type: ignore
+                    log_fn(
                         "not adding duplicate directory '%s' to '%s'",
                         dir_path,
                         dir_type.value,
