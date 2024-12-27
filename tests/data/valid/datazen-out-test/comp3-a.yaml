@@ -1,21 +1,12 @@
 ---
-c:
-  a: a
-  b: b
-  c: c
 e:
   e: e
-a:
-  a: a
-  b: b
-  c: c
 f:
   f: f
 b:
   a: a
   b: b
   c: c
-json: json
 d:
   d: d
 yaml: yaml
@@ -32,10 +23,21 @@ top_dict:
   a:
     a: a
 bad: 5
+a:
+  a: a
+  b: b
+  c: c
+json: json
+c:
+  a: a
+  b: b
+  c: c
 empty:
   a:
     a:
       a: a
+yaml2: yaml
+json2: json
 custom:
   a:
     - test1
@@ -69,8 +71,6 @@ custom:
       c:
         - test1
         - test2
-json2: json
-yaml2: yaml
 yaml3: yaml
 yaml3_dict:
   a: a

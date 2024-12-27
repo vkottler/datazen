@@ -61,9 +61,18 @@ def resolve_encapsulation(
     new_lines = []
 
     ext = file_ext.lower()
-    if ext in ("py", "mk", "yaml"):
+
+    simple = {
+        "py": "#",
+        "mk": "#",
+        "yaml": "#",
+        "lua": "--",
+    }
+    if ext in simple:
+        prefix = f"{simple[ext]} "
         for line in comment_lines:
-            new_lines.append("# " + line if line else line)
+            new_lines.append(prefix + line if line else line)
+
     elif ext in ("md", "html", "svg"):
         new_lines.append("<!--")
         for line in comment_lines:
